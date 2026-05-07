@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrices: definitions, operations & properties | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,91,255,0.25);
+  }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .tok { display:inline-block; padding:4px 10px; border-radius:100px; font-family: var(--mono); font-size:0.85rem; font-weight:600; margin:2px 3px; border:1px solid; vertical-align:middle; }
+  .tok-id    { background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; }
+  .tok-num   { background:#d1fae5; border-color:#10b981; color:#065f46; }
+  .tok-op    { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+  .tok-kw    { background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+  .tok-paren { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .tok-nt    { background:#ede9fe; border-color:#8b5cf6; color:#5b21b6; }
+  .tok-term  { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .quiz-card { background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%); border:1px solid #6a1b9a; border-radius:10px; padding:30px 32px; margin:22px 0; scroll-margin-top: 90px; }
+  .quiz-card h2 { font-family: var(--serif); color: #6a1b9a; font-weight: 600; font-size: 1.55rem; margin: 0 0 0.5rem; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { font-size: 0.78rem; color: var(--brand); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 8px; display: block; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Linear Algebra<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 01 · Linear Algebra · Matrices</div>
+  <h1 class="lecture-title">Matrices: definitions, operations & properties</h1>
+  <p class="lecture-subtitle">From rectangular arrays to a small algebra you can compute with — addition, scalar multiplication, the row-by-column rule, and the structural types that show up everywhere downstream.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 01</span>
+  </div>
+</header>
+
+<div class="voice">Today we treat a whole grid of numbers as a single object. That sounds modest, but it lets us write a system of equations, a coordinate change, or a quantum measurement as one symbol $A$ and then <em>do algebra on it</em>. We'll define what a matrix is, fix the notation, work out the four core operations — equality, scalar multiplication, addition, and the row-by-column product — and then meet the special shapes (diagonal, identity, zero, triangular, transpose, symmetric) that the rest of the course will keep returning to.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span> What this lecture covers</h2>
+  <p>We start with the basic definitions: what a matrix <em>is</em>, how we name its entries, and what it means for two matrices to be equal. Then we build the four core operations — scalar multiplication, addition, multiplying a row by a column, and the general matrix product — and stress-test them on small numerical examples.</p>
+  <p>The second half is structural. We classify matrices by shape: square, diagonal, identity, zero, triangular, transposed, symmetric and skew-symmetric. The Kronecker delta $\delta_{i,j}$ gives us a clean tool for proving the identity-matrix theorem, and we close with the algebraic properties — associativity, distributivity, the transpose-of-a-product rule — that justify treating $A,B,C$ a lot like ordinary numbers (with one big exception: $AB \neq BA$ in general).</p>
+  <div class="voice">If you only remember one thing: a matrix is <em>one</em> object you can compute with, not a bag of numbers. Everything else in this lecture is bookkeeping that makes that idea precise.</div>
+  <div class="callout blue"><strong>Why we care.</strong> Matrices encode systems of linear equations, differential equations, quantum observables, internet-era cryptography, and graphics transforms — all with the same algebra.</div>
+</section>
+
+<section class="card" id="basic-definitions">
+  <h2><span class="badge">1</span> Basic definitions: size, entries, notation</h2>
+  <p>A <strong>matrix</strong> is a rectangular array of numbers (or symbols, or functions) that we agree to add and multiply by certain rules. We write matrices with capital letters $A, B, C, \ldots$</p>
+  <p>The <strong>size</strong> of a matrix is the pair (rows, columns). An $m \times n$ matrix (read <em>m-by-n</em>) has $m$ rows and $n$ columns; $m$ and $n$ are its <strong>dimensions</strong>. Two matrices have the same size when their dimensions agree.</p>
+  <p>The individual numbers inside the array are its <strong>entries</strong> or <strong>matrix elements</strong>. The entry in row $i$, column $j$ of $A$ is written $a_{i,j}$ or $A_{i,j}$ — <em>row first, column second</em>. A short form for the whole matrix is $A = \|a_{i,j}\|$.</p>
+  <p>A matrix with a single row is a <strong>row matrix</strong>; a single column is a <strong>column matrix</strong>. A matrix with the same number of rows as columns is <strong>square</strong>, and the count is its <strong>order</strong> — an $n \times n$ matrix is of order $n$.</p>
+  <div class="voice">Row first, column second. Forever. The number of bugs this convention prevents over a career is genuinely large.</div>
+  <div class="callout amber"><strong>Indexing trap.</strong> $a_{2,3}$ means <em>row 2, column 3</em>. Don't read it as a coordinate $(x,y)$ — that flips the order.</div>
+  <div class="code-block">
+    <div class="code-label">three example matrices of different sizes</div>
+    <pre><code>A (2×3) = | 2  -7  0 |
+         | 1   0  4 |
+
+B (3×2) = |  5  1 |
+         | -3  3 |
+         |  3  8 |
+
+C (2×2) = |  sin x   cos x |
+         | -cos x   sin x |</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Entry indexer · click $a_{i,j}$ and watch row-then-column highlight</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="entry-indexer"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="equality-scalar">
+  <h2><span class="badge">2</span> Equality and scalar multiplication</h2>
+  <p>Two matrices $A = \|a_{i,j}\|$ and $B = \|b_{i,j}\|$ are <strong>equal</strong> when they have the same size <em>and</em> their entries match position-by-position: $a_{i,j} = b_{i,j}$ for every $(i,j)$. Different sizes ⇒ not equal, no matter what the entries look like.</p>
+  <p><strong>Scalar multiplication.</strong> Any matrix $A$ can be multiplied on the left or right by a scalar $\lambda$. The result $B = \lambda A$ has the same size as $A$, with $b_{i,j} = \lambda\, a_{i,j}$ — <em>every entry gets multiplied</em>.</p>
+  <div class="voice">Scalar multiplication is the easy operation. The scalar passes through the matrix and touches every cell, end of story.</div>
+  <div class="callout blue"><strong>Equality is strict.</strong> Same size <strong>and</strong> same entries pairwise. A 2×3 and a 3×2 are never equal, even if they share the same six numbers.</div>
+  <div class="code-block">
+    <div class="code-label">scalar multiplication, λ = 5</div>
+    <pre><code>A = | 2  -3  0 |        5A = | 10  -15   0 |
+    | 1   4  1 |             |  5   20   5 |</code></pre>
+  </div>
+</section>
+
+<section class="card" id="matrix-sum">
+  <h2><span class="badge">3</span> The sum of matrices</h2>
+  <p>If $A$ and $B$ are matrices <strong>of the same size</strong>, their sum $C = A + B$ is the matrix of that same size with $c_{i,j} = a_{i,j} + b_{i,j}$ — entries add componentwise.</p>
+  <p>If the sizes differ, the sum is simply not defined.</p>
+  <div class="callout green"><strong>It's componentwise.</strong> Addition never mixes positions. The entry at $(i,j)$ in $A+B$ depends only on the entries at $(i,j)$ in $A$ and $B$.</div>
+  <div class="code-block">
+    <div class="code-label">adding two 2×3 matrices</div>
+    <pre><code>A = | 3  7  -1 |    B = | 6  -15  3 |
+    | 1  2   0 |        | 4    1  2 |
+
+A + B = |  9  -8  2 |
+        |  5   3  2 |</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Add or not? · pick a pair and see if the sum is defined</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="add-or-not"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="row-times-column">
+  <h2><span class="badge">4</span> Multiplying a row by a column</h2>
+  <p>This is the <em>atom</em> out of which all matrix multiplication is built.</p>
+  <p>Let $A$ be a row matrix with $n$ entries and $B$ a column matrix with $n$ entries. Their product is the single number</p>
+  <p>$AB = a_{1,1} b_{1,1} + a_{1,2} b_{2,1} + \cdots + a_{1,n} b_{n,1} = \sum_{k=1}^{n} a_{1,k}\, b_{k,1}.$</p>
+  <p>In words: pair up the corresponding elements, multiply each pair, sum the results. A row times a column gives a number — and any number can be regarded as a $1 \times 1$ matrix.</p>
+  <p>For a <em>two</em>-row matrix times a column, do this once per row; the answer is a column with one entry per row of $A$. The general $m \times n$ pattern works the same way: each row of the left matrix shakes hands with the column on the right.</p>
+  <div class="voice">Every matrix product, no matter how big, is just rows-meet-columns repeated. Internalise this one rule and the rest is bookkeeping.</div>
+  <div class="callout teal"><strong>Length must match.</strong> You can only pair a row with a column when they have the same number of entries — that's the dimensional precondition for matrix multiplication.</div>
+  <div class="code-block">
+    <div class="code-label">row × column → a number</div>
+    <pre><code>[1  2  3] · | 5 |
+            |-4 | = 1·5 + 2·(-4) + 3·0 = -3
+            | 0 |</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Row meets column · pair, multiply, sum</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="row-meets-column"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="matrix-multiplication">
+  <h2><span class="badge">5</span> Matrix multiplication: the general rule</h2>
+  <p>The product $AB$ is <strong>defined only when</strong> the number of columns of $A$ equals the number of rows of $B$. If $A$ is $m \times l$ and $B$ is $l \times n$, then $C = AB$ is $m \times n$, and</p>
+  <p>$c_{i,j} = \sum_{k=1}^{l} a_{i,k}\, b_{k,j}.$</p>
+  <p>That is, the $(i,j)$ entry of $AB$ is <em>the $i$-th row of $A$ multiplied by the $j$-th column of $B$</em>.</p>
+  <p>For a square matrix, repeated products are written as powers: $A^2 = A\cdot A$, $A^3 = A\cdot A\cdot A$, and $A^n = A \cdots A$ ($n$ factors).</p>
+  <p><strong>Crucial warning.</strong> Matrix multiplication is <em>not commutative</em> in general: even when both $AB$ and $BA$ are defined and have the same size, usually $AB \neq BA$.</p>
+  <div class="voice">Order matters. $AB$ and $BA$ are different operations the way 'add salt, then water' and 'add water, then salt' are different recipes.</div>
+  <div class="callout red"><strong>AB ≠ BA in general.</strong> This is the single biggest break from ordinary number algebra. Whenever you manipulate a matrix expression, never silently swap the order of a product.</div>
+  <div class="callout amber"><strong>Dimensional gate.</strong> Inner dimensions must match: $(m \times l)\,(l \times n) = (m \times n)$. If the inner numbers don't agree, the product simply doesn't exist.</div>
+  <div class="code-block">
+    <div class="code-label">AB vs BA — different matrices</div>
+    <pre><code>A = | 2 1 |    B = |  3  5 |
+    | 0 3 |        |  4 -1 |
+
+AB = | 10  9 |     BA = |  6 18 |
+     | 12 -3 |          |  8  1 |
+
+AB - BA = | 4 -9 |
+          | 4 -4 |</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build $AB$ entry by entry · pick a row, pick a column, drop the cell</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="build-the-product"></div>
+    </div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">$AB$ vs $BA$ · pick the order, see what changes</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="swap-the-order"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="worked-examples">
+  <h2><span class="badge">6</span> Worked examples</h2>
+  <p><strong>(a) Solving a matrix equation.</strong> Given $A = \begin{pmatrix}1 & -3\\ 2 & 4\end{pmatrix}$ and $B = \begin{pmatrix}4 & 10\\ 5 & 15\end{pmatrix}$, solve $X + 4A = B$ for $X$:</p>
+  <p>$X = B - 4A = \begin{pmatrix}4 & 10\\ 5 & 15\end{pmatrix} - \begin{pmatrix}4 & -12\\ 8 & 16\end{pmatrix} = \begin{pmatrix}0 & 22\\ -3 & -1\end{pmatrix}.$</p>
+  <p><strong>(b) A row times a column, and the column times the row.</strong> With $A = (1\ 2\ 3)$ and $B = (5,\, -4,\, 0)^T$, $AB$ is a single number ($-3$), but $BA$ is a $3\times 3$ matrix — so $AB$ and $BA$ aren't even the same size.</p>
+  <p><strong>(c) Spotting a pattern.</strong> For $A = \begin{pmatrix}1 & 1\\ 0 & 1\end{pmatrix}$, computing $A^2, A^3, A^4$ shows the top-right entry counts the power: $A^n = \begin{pmatrix}1 & n\\ 0 & 1\end{pmatrix}$. So $A^{2002} = \begin{pmatrix}1 & 2002\\ 0 & 1\end{pmatrix}$.</p>
+  <div class="voice">Examples (b) and (c) are worth re-doing by hand. (b) cures the instinct to think $AB$ and $BA$ are 'basically the same'; (c) shows how powers of structured matrices stay structured — a theme we'll return to.</div>
+  <div class="callout purple"><strong>Pattern-finding pays.</strong> You almost never compute $A^{2002}$ by brute force. Compute $A^2, A^3$, conjecture the pattern, and either verify or prove it by induction.</div>
+  <div class="code-block">
+    <div class="code-label">successive powers reveal the pattern</div>
+    <pre><code>A   = | 1 1 |   A^2 = | 1 2 |   A^3 = | 1 3 |   A^n = | 1 n |
+      | 0 1 |        | 0 1 |        | 0 1 |        | 0 1 |</code></pre>
+  </div>
+</section>
+
+<section class="card" id="types-of-matrices">
+  <h2><span class="badge">7</span> Types of matrices: diagonal, identity, zero, triangular</h2>
+  <p>In a square matrix $A$, the entries $a_{i,i}$ form the <strong>leading (principal) diagonal</strong>.</p>
+  <p><strong>Diagonal matrix.</strong> A square matrix whose off-diagonal entries are all zero: $a_{i,j} = 0$ whenever $i \neq j$.</p>
+  <p><strong>Identity matrix $I$.</strong> A diagonal matrix whose diagonal entries are all $1$. It satisfies $IA = A$ and $AI = A$ — the matrix analogue of the number $1$.</p>
+  <p><strong>Zero matrix $0$.</strong> Every entry is $0$. It satisfies $A \cdot 0 = 0 \cdot A = 0$ and $A + 0 = A$. <strong>However, $AB = 0$ does <em>not</em> imply $A = 0$ or $B = 0$</strong> — there exist non-zero matrices whose product is the zero matrix.</p>
+  <p><strong>Triangular matrices.</strong> A square matrix is <em>upper-triangular</em> if every entry <strong>below</strong> the diagonal is zero ($a_{i,j} = 0$ for $i > j$), and <em>lower-triangular</em> if every entry <strong>above</strong> the diagonal is zero ($a_{i,j} = 0$ for $i < j$).</p>
+  <div class="callout red"><strong>Zero divisors exist.</strong> Take $A = \begin{pmatrix}0 & 1\\ 0 & 4\end{pmatrix}$ and $B = \begin{pmatrix}3 & 2\\ 0 & 0\end{pmatrix}$. Both are non-zero, but $AB = 0$. Matrix algebra has zero divisors; ordinary number algebra does not.</div>
+  <div class="callout blue"><strong>Identity is the multiplicative '1'.</strong> Compare $1 \cdot a = a \cdot 1 = a$ with $I A = A I = A$. The identity matrix is genuinely playing the role of $1$.</div>
+  <div class="code-block">
+    <div class="code-label">shapes at a glance</div>
+    <pre><code>diagonal:    | a 0 0 |   identity:  | 1 0 0 |   zero:  | 0 0 0 |
+             | 0 b 0 |              | 0 1 0 |        | 0 0 0 |
+             | 0 0 c |              | 0 0 1 |        | 0 0 0 |
+
+upper-triangular:  | 2 5 a |   lower-triangular:  |  1  0  0 |
+                   | 0 b c |                      |  4  7  0 |
+                   | 0 0 4 |                      | -2  0  3 |</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Classify the shape · diagonal, triangular, symmetric, skew?</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="classify-the-shape"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="transpose-symmetric">
+  <h2><span class="badge">8</span> Transpose, symmetric and skew-symmetric matrices</h2>
+  <p>Given an $m \times n$ matrix $A = \|a_{i,j}\|$, its <strong>transpose</strong> $A^T$ is the $n \times m$ matrix obtained by swapping rows and columns: $(A^T)_{i,j} = a_{j,i}$. Rows of $A$ become columns of $A^T$, and vice versa.</p>
+  <p>A square matrix $A$ is <strong>symmetric</strong> if $A^T = A$, equivalently $a_{i,j} = a_{j,i}$ — the entries are mirror-images across the diagonal.</p>
+  <p>It is <strong>skew-symmetric</strong> if $A^T = -A$, equivalently $a_{i,j} = -a_{j,i}$. Setting $i = j$ in this last identity forces $a_{i,i} = -a_{i,i}$, so the <em>diagonal of a skew-symmetric matrix is all zeros</em>.</p>
+  <div class="voice">Symmetric matrices show up everywhere — covariance matrices, quadratic forms, the Hessian. Skew-symmetric ones show up in rotations and angular velocity. Worth recognising on sight.</div>
+  <div class="callout green"><strong>Quick check.</strong> To test symmetry, fold the matrix along the diagonal. To test skew-symmetry, do the same and check that opposite entries differ only by sign — and that the diagonal is zero.</div>
+  <div class="code-block">
+    <div class="code-label">transpose, symmetric, skew-symmetric</div>
+    <pre><code>A = | 2 -7 |     A^T = |  2  1  3 |
+    | 1  0 |           | -7  0  4 |
+    | 3  4 |
+
+symmetric:  | a d e |     skew-symmetric:  |  0  3 -1 |
+            | d b f |                      | -3  0  2 |
+            | e f c |                      |  1 -2  0 |</code></pre>
+  </div>
+</section>
+
+<section class="card" id="kronecker-delta">
+  <h2><span class="badge">9</span> The Kronecker delta and the identity-matrix theorem</h2>
+  <p>The <strong>Kronecker delta symbol</strong> is</p>
+  <p>$\delta_{i,j} = \begin{cases}1, & i = j,\\ 0, & i \neq j.\end{cases}$</p>
+  <p>Its magic property is that it <em>cancels</em> a summation index. Inside a sum like $\sum_i a_{i,k}\, \delta_{i,j}$, every term where $i \neq j$ vanishes, so only the $i = j$ term survives:</p>
+  <p>$\sum_{i=k}^{n} a_i\, \delta_{i,j} = a_j \quad (k \le j \le n), \qquad \sum_{i=k}^{n} a_i\, \delta_{i,j} = 0 \ \text{otherwise}.$</p>
+  <p><strong>Theorem.</strong> The matrix $I = \|\delta_{i,j}\|$ — i.e. ones on the diagonal, zeros elsewhere — is the identity matrix.</p>
+  <p><strong>Proof sketch.</strong> Take any $m \times n$ matrix $A$ and the $n$-th order identity $I = \|\delta_{i,j}\|$. Then
+  $(IA)_{i,j} = \sum_{k=1}^{n} \delta_{i,k}\, a_{k,j} = a_{i,j},$
+  because only the $k = i$ term survives. Entries match pairwise, so $IA = A$. ∎</p>
+  <div class="callout purple"><strong>Why bother with δ?</strong> Once you can write 'the identity matrix' as $\delta_{i,j}$ inside a sum, identity-related proofs collapse to one line. The same trick reappears in tensor calculus and physics.</div>
+  <div class="code-block">
+    <div class="code-label">the delta cancels the sum</div>
+    <pre><code>sum_{i=1}^{100}  i^2 · δ_{i,3}   =   3^2 = 9
+sum_{k=1}^{20}   2k · δ_{k,10}   =   2·10 = 20
+sum_{k=1}^{5}    2k · δ_{k,10}   =   0       (10 not in range)</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Collapse the sum · let $\delta_{i,j}$ kill every term but one</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="delta-collapse"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="properties">
+  <h2><span class="badge">10</span> Algebraic properties of matrix operations</h2>
+  <p><strong>Addition.</strong> For matrices of the same size:</p>
+  <ul>
+    <li>An <em>opposite</em> matrix exists: $A + (-A) = 0$.</li>
+    <li>Commutative: $A + B = B + A$.</li>
+    <li>Associative: $(A + B) + C = A + (B + C)$.</li>
+    <li>Transpose distributes: $(A + B)^T = A^T + B^T$.</li>
+  </ul>
+  <p><strong>Multiplication.</strong> Whenever the products are defined and $\lambda, \mu$ are scalars:</p>
+  <ul>
+    <li>$(\lambda \mu) A = \lambda(\mu A)$.</li>
+    <li>$\lambda(AB) = (\lambda A)B = A(\lambda B)$.</li>
+    <li>Associative: $(AB)C = A(BC)$.</li>
+    <li>Transpose of a product <em>reverses</em> the order: $(AB)^T = B^T A^T$.</li>
+    <li>Two diagonal matrices of the same order commute: $AB = BA$.</li>
+  </ul>
+  <p><strong>Mixed.</strong></p>
+  <ul>
+    <li>Distributive on the left: $A(B + C) = AB + AC$.</li>
+    <li>Distributive on the right: $(A + B)C = AC + BC$.</li>
+    <li>Scalar over a sum: $\lambda(A + B) = \lambda A + \lambda B$.</li>
+  </ul>
+  <p><strong>Bottom line.</strong> Matrices behave a lot like real numbers — <em>except</em> for non-commutativity of multiplication, the existence of zero divisors ($AB = 0$ without $A=0$ or $B=0$), and the order-reversal in $(AB)^T = B^T A^T$. A $1\times 1$ matrix $\|a_{1,1}\|$ behaves <em>exactly</em> like the number $a_{1,1}$, so the matrix algebra is a genuine generalisation of ordinary arithmetic.</p>
+  <div class="voice">Three things to memorise on sight: $(AB)^T = B^T A^T$ (reverse the order!), $(AB)C = A(BC)$ (associativity is your friend), and $AB \neq BA$ in general. The rest you can re-derive.</div>
+  <div class="callout amber"><strong>Transpose flips order.</strong> $(AB)^T = B^T A^T$, <em>not</em> $A^T B^T$. The same flip happens for matrix inverses later: $(AB)^{-1} = B^{-1} A^{-1}$.</div>
+  <div class="callout teal"><strong>Polynomial in a matrix.</strong> Because addition, scalar multiplication, and powers all make sense, you can plug a square matrix into a polynomial: if $f(x) = x^2 - 2x + 1$, then $f(A) = A^2 - 2A + I$. The constant term becomes the identity, not the number 1.</div>
+  <div class="code-block">
+    <div class="code-label">f(A) for a polynomial f</div>
+    <pre><code>f(x) = x^2 - 2x + 1
+A   = | 1 -1 |       A^2 = | 1 -3 |
+      | 0  2 |             | 0  4 |
+
+f(A) = A^2 - 2A + I
+     = | 1 -3 | - | 2 -2 | + | 1 0 |  =  | 0 -1 |
+       | 0  4 |   | 0  4 |   | 0 1 |     | 0  1 |</code></pre>
+  </div>
+</section>
+
+<section class="homework" id="homework">
+  <h2><span class="badge">★</span> Homework</h2>
+  <p class="hw-intro">Four exercises to consolidate the operations and structural rules from this lecture.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Operations drill</h4>
+      <p>Given $A = \begin{pmatrix}1 & -1\\ 2 & 0\\ 3 & 4\end{pmatrix}$ and $B = \begin{pmatrix}2 & 5 & 0\\ -1 & 3 & 1\end{pmatrix}$, compute (where defined) $A+B$, $A^T + B$, $AB$, $BA$, $A^T B^T$, and $3A - 2A^T$. Flag any operation that is <em>undefined</em> and say why.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>2 · Powers and patterns</h4>
+      <p>For $A = \begin{pmatrix}1 & 0\\ 1 & 1\end{pmatrix}$, compute $A^2, A^3, A^4$, conjecture a closed form for $A^n$, and verify it for $n = 5$.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Transpose-of-product proof</h4>
+      <p>Take two arbitrary $2\times 2$ matrices $A = \|a_{i,j}\|$ and $B = \|b_{i,j}\|$. By writing out the entries on both sides, verify the identity $(AB)^T = B^T A^T$. State clearly where the order-reversal comes from.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>4 · Polynomial in a matrix</h4>
+      <p>Let $f(x) = x^2 - 3x + 2$ and $A = \begin{pmatrix}2 & -1\\ 0 & 1\end{pmatrix}$. Compute $f(A)$. Show your $A^2$, the scalar product $-3A$, and the substitution $f(A) = A^2 - 3A + 2I$ explicitly.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#basic-definitions">1 · Basic definitions: size, entries, notation</a></li>
+      <li><a href="#equality-scalar">2 · Equality and scalar multiplication</a></li>
+      <li><a href="#matrix-sum">3 · The sum of matrices</a></li>
+      <li><a href="#row-times-column">4 · Multiplying a row by a column</a></li>
+      <li><a href="#matrix-multiplication">5 · Matrix multiplication: the general rule</a></li>
+      <li><a href="#worked-examples">6 · Worked examples</a></li>
+      <li><a href="#types-of-matrices">7 · Types of matrices</a></li>
+      <li><a href="#transpose-symmetric">8 · Transpose, symmetric & skew-symmetric</a></li>
+      <li><a href="#kronecker-delta">9 · Kronecker delta & identity theorem</a></li>
+      <li><a href="#properties">10 · Algebraic properties</a></li>
+      <li><a href="#homework">★ Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Linear Algebra · Lecture 01 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ─────────────────────────  1. Entry indexer  ───────────────────────── */
+function EntryIndexerWidget() {
+  const M = [
+    [3, -2, 7, 0],
+    [1, 5, -4, 8],
+    [2, 0, 6, -1]
+  ];
+  const presets = [[2,3],[1,1],[3,4],[2,1]];
+  const [target, setTarget] = useState({i:2, j:3});
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    if (stage === 0) return;
+    if (stage >= 3) return;
+    const t = setTimeout(() => setStage(s => s + 1), 700);
+    return () => clearTimeout(t);
+  }, [stage]);
+
+  const start = (i, j) => {
+    setTarget({i, j});
+    setStage(0);
+    setTimeout(() => setStage(1), 60);
+  };
+
+  return (
+    <div>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:14}}>
+        {presets.map(([i,j]) => (
+          <button key={i+'-'+j} className="btn secondary"
+                  onClick={() => start(i, j)}>
+            a<sub>{i},{j}</sub>
+          </button>
+        ))}
+        <button className="btn" onClick={() => setStage(0)}>↺ Reset</button>
+      </div>
+      <div style={{display:'inline-block', position:'relative', padding:'24px 0 0 30px'}}>
+        <div style={{display:'flex', position:'absolute', top:0, left:30}}>
+          {[1,2,3,4].map(j => (
+            <div key={j} style={{
+              width:54, textAlign:'center', fontFamily:'var(--mono)',
+              fontSize:'0.82rem',
+              color: stage>=2 && j===target.j ? '#16a34a' : 'var(--ink-soft)',
+              fontWeight: stage>=2 && j===target.j ? 700 : 400,
+              transition:'all 0.3s'
+            }}>j={j}</div>
+          ))}
+        </div>
+        <div style={{position:'absolute', top:24, left:0, display:'flex', flexDirection:'column'}}>
+          {[1,2,3].map(i => (
+            <div key={i} style={{
+              height:46, display:'flex', alignItems:'center',
+              fontFamily:'var(--mono)', fontSize:'0.82rem',
+              color: stage>=1 && i===target.i ? '#dc2626' : 'var(--ink-soft)',
+              fontWeight: stage>=1 && i===target.i ? 700 : 400,
+              width: 30, transition:'all 0.3s'
+            }}>i={i}</div>
+          ))}
+        </div>
+        <table style={{borderCollapse:'collapse'}}>
+          <tbody>
+            {M.map((row, ri) => (
+              <tr key={ri}>
+                {row.map((val, ci) => {
+                  const i = ri+1, j = ci+1;
+                  const inRow = stage>=1 && i===target.i;
+                  const inCol = stage>=2 && j===target.j;
+                  const isCell = stage>=3 && i===target.i && j===target.j;
+                  let bg = 'white';
+                  if (isCell) bg = '#fef3c7';
+                  else if (inRow && inCol) bg = '#fff7ed';
+                  else if (inRow) bg = '#fee2e2';
+                  else if (inCol) bg = '#dcfce7';
+                  return (
+                    <td key={ci} onClick={() => start(i, j)}
+                        style={{
+                          width:54, height:46, border:'1px solid var(--rule)',
+                          textAlign:'center', fontFamily:'var(--mono)', fontSize:'1rem',
+                          background: bg, cursor:'pointer',
+                          transform: isCell ? 'scale(1.1)' : 'scale(1)',
+                          transition:'all 0.3s', fontWeight: isCell ? 700 : 400
+                        }}>{val}</td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div style={{marginTop:16, padding:'10px 14px', background:'var(--brand-soft)', borderRadius:6, fontFamily:'var(--mono)', fontSize:'0.95rem'}}>
+        {stage === 0 && <span style={{color:'var(--ink-soft)'}}>Click a preset or any cell — watch row first, column second.</span>}
+        {stage === 1 && <span>Row first: <strong style={{color:'#dc2626'}}>i = {target.i}</strong></span>}
+        {stage === 2 && <span>Then column: <strong style={{color:'#dc2626'}}>i = {target.i}</strong>, <strong style={{color:'#16a34a'}}>j = {target.j}</strong></span>}
+        {stage === 3 && <span>a<sub>{target.i},{target.j}</sub> = <strong>{M[target.i-1][target.j-1]}</strong> ✓</span>}
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────  2. Add or not  ───────────────────────── */
+function AddOrNotWidget() {
+  const matrices = [
+    {label:'A (2×3)', m:[[3,7,-1],[1,2,0]]},
+    {label:'B (2×3)', m:[[6,-15,3],[4,1,2]]},
+    {label:'C (3×2)', m:[[1,4],[2,5],[3,6]]},
+    {label:'D (2×2)', m:[[0,1],[1,0]]},
+    {label:'E (2×3)', m:[[-1,0,2],[5,-2,1]]}
+  ];
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(1);
+  const [step, setStep] = useState(0);
+  const A = matrices[a], B = matrices[b];
+  const sameSize = A.m.length === B.m.length && A.m[0].length === B.m[0].length;
+
+  useEffect(() => {
+    setStep(0);
+    if (!sameSize) return;
+    const total = A.m.length * A.m[0].length;
+    let i = 0;
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled) return;
+      i++;
+      setStep(i);
+      if (i < total) setTimeout(tick, 280);
+    };
+    const t = setTimeout(tick, 280);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [a, b, sameSize]);
+
+  const cellsRevealed = (ri, ci) => {
+    const idx = ri * A.m[0].length + ci;
+    return idx < step;
+  };
+
+  const renderM = (m, color) => (
+    <table style={{borderCollapse:'collapse', display:'inline-table'}}>
+      <tbody>
+        {m.map((row, ri) => (
+          <tr key={ri}>
+            {row.map((v, ci) => (
+              <td key={ci} style={{
+                width:46, height:36, border:'1px solid var(--rule)',
+                textAlign:'center', fontFamily:'var(--mono)',
+                background: sameSize && cellsRevealed(ri,ci) ? color : 'white',
+                transition:'all 0.3s'
+              }}>{v}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  let sumM = null;
+  if (sameSize) {
+    sumM = A.m.map((row, ri) => row.map((v, ci) => v + B.m[ri][ci]));
+  }
+
+  const sizeLabel = (mat) => mat.m.length + '×' + mat.m[0].length;
+
+  return (
+    <div>
+      <div style={{display:'flex', gap:18, flexWrap:'wrap', marginBottom:14}}>
+        <div>
+          <label style={{fontSize:'0.85rem', color:'var(--ink-soft)', marginRight:6}}>Left:</label>
+          <select className="input-mono" style={{width:120, display:'inline-block'}} value={a} onChange={e => setA(+e.target.value)}>
+            {matrices.map((m, i) => <option key={i} value={i}>{m.label}</option>)}
+          </select>
+        </div>
+        <div>
+          <label style={{fontSize:'0.85rem', color:'var(--ink-soft)', marginRight:6}}>Right:</label>
+          <select className="input-mono" style={{width:120, display:'inline-block'}} value={b} onChange={e => setB(+e.target.value)}>
+            {matrices.map((m, i) => <option key={i} value={i}>{m.label}</option>)}
+          </select>
+        </div>
+      </div>
+      <div style={{display:'flex', gap:14, alignItems:'center', flexWrap:'wrap'}}>
+        {renderM(A.m, '#fee2e2')}
+        <span style={{fontSize:'1.4rem', fontWeight:700}}>+</span>
+        {renderM(B.m, '#dcfce7')}
+        {sameSize && (
+          <>
+            <span style={{fontSize:'1.4rem', fontWeight:700}}>=</span>
+            <table style={{borderCollapse:'collapse', display:'inline-table'}}>
+              <tbody>
+                {sumM.map((row, ri) => (
+                  <tr key={ri}>
+                    {row.map((v, ci) => (
+                      <td key={ci} style={{
+                        width:46, height:36, border:'1px solid var(--rule)',
+                        textAlign:'center', fontFamily:'var(--mono)',
+                        fontWeight: cellsRevealed(ri,ci) ? 700 : 400,
+                        color: cellsRevealed(ri,ci) ? 'var(--brand)' : 'var(--ink-soft)',
+                        background: cellsRevealed(ri,ci) ? '#fef3c7' : '#fafaf7',
+                        transition:'all 0.3s'
+                      }}>{cellsRevealed(ri,ci) ? v : '·'}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+      </div>
+      {!sameSize ? (
+        <div className="callout red" style={{marginTop:14}}>
+          <strong>Sizes don't match.</strong> {sizeLabel(A)} + {sizeLabel(B)} — sum undefined. Addition is strictly componentwise; the entries simply have nowhere to land.
+        </div>
+      ) : (
+        <div className="callout green" style={{marginTop:14}}>
+          <strong>Componentwise add.</strong> Each cell of C = A + B is just a<sub>i,j</sub> + b<sub>i,j</sub>. Sizes line up, so every position has exactly one partner.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────  3. Row meets column  ───────────────────────── */
+function RowMeetsColumnWidget() {
+  const presets = [
+    {row:[1,2,3], col:[5,-4,0]},
+    {row:[2,-1,0,4], col:[3,3,5,1]},
+    {row:[1,1], col:[7,9]}
+  ];
+  const [pIdx, setPIdx] = useState(0);
+  const [k, setK] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [showMismatch, setShowMismatch] = useState(false);
+  const {row, col} = presets[pIdx];
+
+  useEffect(() => {
+    setK(0); setPlaying(false);
+  }, [pIdx, showMismatch]);
+
+  useEffect(() => {
+    if (!playing) return;
+    if (k >= row.length) { setPlaying(false); return; }
+    const t = setTimeout(() => setK(prev => prev + 1), 800);
+    return () => clearTimeout(t);
+  }, [playing, k, row.length]);
+
+  const partials = row.map((a, i) => a * col[i]);
+  const total = partials.reduce((s,v)=>s+v, 0);
+
+  if (showMismatch) {
+    return (
+      <div>
+        <div style={{display:'flex', gap:10, marginBottom:14}}>
+          <button className="btn secondary" onClick={() => setShowMismatch(false)}>← Back to live demo</button>
+        </div>
+        <div className="callout red">
+          <strong>Length mismatch.</strong> A length-3 row paired with a length-4 column: the operation is undefined. The handshake metaphor is literal — each row entry needs exactly one partner in the column.
+        </div>
+        <div style={{display:'flex', gap:10, marginTop:14, alignItems:'center', fontFamily:'var(--mono)'}}>
+          <span>[1, 2, 3]</span>
+          <span>·</span>
+          <span>[5, -4, 0, 7]ᵀ</span>
+          <span>=</span>
+          <span style={{color:'#dc2626', fontWeight:700}}>undefined</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{display:'flex', gap:8, flexWrap:'wrap', marginBottom:14}}>
+        {presets.map((p,i) => (
+          <button key={i} className="btn secondary" style={{
+            background: pIdx===i ? 'var(--brand-soft)' : 'white'
+          }} onClick={() => setPIdx(i)}>
+            n = {p.row.length}
+          </button>
+        ))}
+        <button className="btn" onClick={() => setShowMismatch(true)}>show mismatch</button>
+      </div>
+      <div style={{display:'flex', gap:24, alignItems:'flex-start'}}>
+        <div>
+          <div style={{fontSize:'0.78rem', color:'var(--ink-soft)', marginBottom:4}}>row (1×{row.length})</div>
+          <div style={{display:'flex'}}>
+            {row.map((v,i) => (
+              <div key={i} style={{
+                width:46, height:38, border:'1px solid var(--rule)',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontFamily:'var(--mono)',
+                background: i===k-1 ? '#fef3c7' : i<k-1 ? '#fafaf7' : 'white',
+                transform: i===k-1 ? 'scale(1.08)' : 'scale(1)',
+                transition:'all 0.25s'
+              }}>{v}</div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{fontSize:'0.78rem', color:'var(--ink-soft)', marginBottom:4}}>column ({col.length}×1)</div>
+          <div style={{display:'flex', flexDirection:'column'}}>
+            {col.map((v,i) => (
+              <div key={i} style={{
+                width:46, height:38, border:'1px solid var(--rule)',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontFamily:'var(--mono)',
+                background: i===k-1 ? '#fef3c7' : i<k-1 ? '#fafaf7' : 'white',
+                transform: i===k-1 ? 'scale(1.08)' : 'scale(1)',
+                transition:'all 0.25s'
+              }}>{v}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div style={{marginTop:16, padding:'12px 16px', background:'var(--math-bg)', borderRadius:6, fontFamily:'var(--mono)', fontSize:'0.95rem', minHeight:42, border:'1px solid var(--rule)'}}>
+        {k === 0 ? (
+          <span style={{color:'var(--ink-soft)'}}>Press play to walk through the handshake.</span>
+        ) : (
+          <span>
+            {partials.slice(0, k).map((p,i) => (
+              <span key={i}>
+                {i>0 && ' + '}
+                <span style={{color: i===k-1 ? '#7c3aed' : 'inherit', fontWeight: i===k-1 ? 700 : 400}}>
+                  {row[i]}·{col[i]<0 ? '('+col[i]+')' : col[i]}
+                </span>
+              </span>
+            ))}
+            {k >= row.length && <strong style={{marginLeft:10, color:'var(--brand)'}}>= {total}</strong>}
+          </span>
+        )}
+      </div>
+      <div style={{display:'flex', gap:8, marginTop:12}}>
+        <button className="btn purple" onClick={() => {
+          if (k >= row.length) { setK(0); setPlaying(true); return; }
+          setPlaying(p => !p);
+        }}>{playing ? '⏸ Pause' : (k >= row.length ? '↻ Replay' : '▶ Play')}</button>
+        <button className="btn secondary" onClick={() => { setK(prev => Math.min(prev+1, row.length)); setPlaying(false); }}>Step ▸</button>
+        <button className="btn secondary" onClick={() => { setK(0); setPlaying(false); }}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────  4. Build the product  ───────────────────────── */
+function BuildTheProductWidget() {
+  const A = [[2,1],[0,3]];
+  const B = [[3,5],[4,-1]];
+  const AB = A.map(row => B[0].map((_, j) =>
+    row.reduce((s, v, k) => s + v * B[k][j], 0)
+  ));
+  const BA = B.map(row => A[0].map((_, j) =>
+    row.reduce((s, v, k) => s + v * A[k][j], 0)
+  ));
+
+  const [pickedRow, setPickedRow] = useState(null);
+  const [pickedCol, setPickedCol] = useState(null);
+  const [filled, setFilled] = useState({});
+  const [history, setHistory] = useState([]);
+  const [showBA, setShowBA] = useState(false);
+
+  const tryFill = (i, j) => {
+    if (pickedRow == null || pickedCol == null) return;
+    if (pickedRow !== i || pickedCol !== j) return;
+    const key = i + ',' + j;
+    if (filled[key] != null) return;
+    const value = A[i].reduce((s, v, k) => s + v * B[k][j], 0);
+    setFilled(f => ({...f, [key]: value}));
+    setHistory(h => [...h, key]);
+    setPickedRow(null);
+    setPickedCol(null);
+  };
+
+  const allFilled = Object.keys(filled).length === 4;
+
+  const undo = () => {
+    if (history.length === 0) return;
+    const last = history[history.length-1];
+    setFilled(f => { const nf = {...f}; delete nf[last]; return nf; });
+    setHistory(h => h.slice(0,-1));
+  };
+
+  const reset = () => {
+    setFilled({}); setHistory([]);
+    setPickedRow(null); setPickedCol(null);
+    setShowBA(false);
+  };
+
+  return (
+    <div>
+      <div style={{fontSize:'0.88rem', color:'var(--ink-soft)', marginBottom:14}}>
+        Click a row of A → click a column of B → click the target cell of C.
+      </div>
+      <div style={{display:'flex', gap:18, alignItems:'center', flexWrap:'wrap'}}>
+        <div>
+          <div style={{textAlign:'center', fontFamily:'var(--mono)', color:'var(--ink-soft)', fontSize:'0.85rem', marginBottom:2}}>A</div>
+          <table style={{borderCollapse:'collapse'}}>
+            <tbody>
+              {A.map((row, ri) => (
+                <tr key={ri}>
+                  {row.map((v, ci) => (
+                    <td key={ci}
+                        onClick={() => setPickedRow(ri)}
+                        style={{
+                          width:46, height:38, border:'1px solid var(--rule)',
+                          textAlign:'center', fontFamily:'var(--mono)',
+                          background: pickedRow === ri ? '#fee2e2' : 'white',
+                          cursor:'pointer', transition:'background 0.2s'
+                        }}>{v}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <span style={{fontSize:'1.5rem', fontWeight:700}}>·</span>
+        <div>
+          <div style={{textAlign:'center', fontFamily:'var(--mono)', color:'var(--ink-soft)', fontSize:'0.85rem', marginBottom:2}}>B</div>
+          <table style={{borderCollapse:'collapse'}}>
+            <tbody>
+              {B.map((row, ri) => (
+                <tr key={ri}>
+                  {row.map((v, ci) => (
+                    <td key={ci}
+                        onClick={() => setPickedCol(ci)}
+                        style={{
+                          width:46, height:38, border:'1px solid var(--rule)',
+                          textAlign:'center', fontFamily:'var(--mono)',
+                          background: pickedCol === ci ? '#dcfce7' : 'white',
+                          cursor:'pointer', transition:'background 0.2s'
+                        }}>{v}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <span style={{fontSize:'1.5rem', fontWeight:700}}>=</span>
+        <div>
+          <div style={{textAlign:'center', fontFamily:'var(--mono)', color:'var(--brand)', fontSize:'0.85rem', marginBottom:2}}>C = AB</div>
+          <table style={{borderCollapse:'collapse'}}>
+            <tbody>
+              {[0,1].map(i => (
+                <tr key={i}>
+                  {[0,1].map(j => {
+                    const key = i + ',' + j;
+                    const v = filled[key];
+                    const armed = pickedRow != null && pickedCol != null;
+                    const isTarget = armed && pickedRow === i && pickedCol === j;
+                    return (
+                      <td key={j} onClick={() => tryFill(i,j)}
+                          style={{
+                            width:54, height:42, border:'1px solid var(--rule)',
+                            textAlign:'center', fontFamily:'var(--mono)',
+                            background: isTarget ? '#fef3c7' : v != null ? '#e8eef8' : 'white',
+                            color: v != null ? 'var(--brand)' : 'var(--ink-soft)',
+                            fontWeight: v != null ? 700 : 400,
+                            cursor: armed ? 'pointer' : 'default',
+                            transition:'all 0.25s'
+                          }}>{v != null ? v : '?'}</td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style={{marginTop:14, padding:'10px 14px', background:'var(--brand-soft)', borderRadius:6, fontFamily:'var(--mono)', fontSize:'0.92rem'}}>
+        {allFilled ? <strong style={{color:'#16a34a'}}>✓ AB built — every entry is one row meeting one column.</strong> :
+         pickedRow != null && pickedCol != null ? <span>Row {pickedRow+1} of A · Column {pickedCol+1} of B → click cell C<sub>{pickedRow+1},{pickedCol+1}</sub>.</span> :
+         pickedRow != null ? <span>Row {pickedRow+1} of A picked. Now pick a column of B.</span> :
+         pickedCol != null ? <span>Column {pickedCol+1} of B picked. Now pick a row of A.</span> :
+         <span style={{color:'var(--ink-soft)'}}>Pick a row of A and a column of B.</span>}
+      </div>
+      <div style={{display:'flex', gap:8, marginTop:12}}>
+        <button className="btn secondary" onClick={undo} disabled={history.length===0}>↶ Undo</button>
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+        {allFilled && <button className="btn purple" onClick={() => setShowBA(s => !s)}>{showBA ? 'Hide BA' : 'Now show BA →'}</button>}
+      </div>
+      {showBA && (
+        <div style={{marginTop:16}}>
+          <div className="callout amber">
+            <strong>Order matters.</strong> Same A and B — just swap who's on the left. Different matrix.
+          </div>
+          <div style={{display:'flex', gap:24, marginTop:8, flexWrap:'wrap'}}>
+            <div>
+              <div style={{textAlign:'center', color:'var(--brand)', fontFamily:'var(--mono)', fontSize:'0.85rem'}}>AB</div>
+              <table style={{borderCollapse:'collapse'}}><tbody>
+                {[0,1].map(i => (
+                  <tr key={i}>{[0,1].map(j => <td key={j} style={{width:54,height:38,border:'1px solid var(--rule)',textAlign:'center',fontFamily:'var(--mono)',background:'#e8eef8',color:'var(--brand)',fontWeight:700}}>{AB[i][j]}</td>)}</tr>
+                ))}
+              </tbody></table>
+            </div>
+            <div>
+              <div style={{textAlign:'center', color:'#dc2626', fontFamily:'var(--mono)', fontSize:'0.85rem'}}>BA</div>
+              <table style={{borderCollapse:'collapse'}}><tbody>
+                {[0,1].map(i => (
+                  <tr key={i}>{[0,1].map(j => <td key={j} style={{width:54,height:38,border:'1px solid var(--rule)',textAlign:'center',fontFamily:'var(--mono)',background:'#fee2e2',color:'#dc2626',fontWeight:700}}>{BA[i][j]}</td>)}</tr>
+                ))}
+              </tbody></table>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────  5. Swap the order  ───────────────────────── */
+function SwapTheOrderWidget() {
+  const A = [[2,1],[0,3]];
+  const B = [[3,5],[4,-1]];
+  const mul = (X, Y) => X.map(row => Y[0].map((_, j) =>
+    row.reduce((s, v, k) => s + v * Y[k][j], 0)
+  ));
+  const sub = (X, Y) => X.map((row, i) => row.map((v, j) => v - Y[i][j]));
+
+  const [view, setView] = useState('AB');
+  const [hover, setHover] = useState(null);
+
+  const AB = mul(A, B);
+  const BA = mul(B, A);
+  const diff = sub(AB, BA);
+
+  const data = view === 'AB' ? AB : view === 'BA' ? BA : diff;
+  const left = view === 'AB' ? A : view === 'BA' ? B : null;
+  const right = view === 'AB' ? B : view === 'BA' ? A : null;
+
+  const cellExpr = (i, j) => {
+    if (view === 'AB') return A[i][0]+'·'+B[0][j]+' + '+A[i][1]+'·'+B[1][j];
+    if (view === 'BA') return B[i][0]+'·'+A[0][j]+' + '+B[i][1]+'·'+A[1][j];
+    return '(AB)'+(i+1)+(j+1)+' − (BA)'+(i+1)+(j+1)+' = '+AB[i][j]+' − '+BA[i][j];
+  };
+
+  const isActive = v => (view==='AB'&&v==='AB')||(view==='BA'&&v==='BA')||(view==='diff'&&v==='diff');
+
+  return (
+    <div>
+      <div style={{display:'flex', gap:8, marginBottom:14}}>
+        {[['AB','AB'],['BA','BA'],['AB − BA','diff']].map(([label, key]) => (
+          <button key={key} onClick={() => setView(key)} style={{
+            background: isActive(key) ? 'var(--brand)' : 'white',
+            color: isActive(key) ? 'white' : 'var(--brand)',
+            border:'1px solid var(--brand)',
+            padding:'0.45rem 1.1rem', borderRadius:6, cursor:'pointer',
+            fontWeight:600, fontSize:'0.9rem'
+          }}>{label}</button>
+        ))}
+      </div>
+      <div style={{display:'flex', gap:14, alignItems:'center', flexWrap:'wrap'}}>
+        {view !== 'diff' && (
+          <>
+            <table style={{borderCollapse:'collapse'}}><tbody>
+              {left.map((row,i) => <tr key={i}>{row.map((v,j) => <td key={j} style={{
+                width:42, height:36, border:'1px solid var(--rule)',
+                textAlign:'center', fontFamily:'var(--mono)',
+                background: hover && hover.i===i ? '#fee2e2' : 'white',
+                transition:'all 0.2s'
+              }}>{v}</td>)}</tr>)}
+            </tbody></table>
+            <span style={{fontSize:'1.4rem', fontWeight:700}}>·</span>
+            <table style={{borderCollapse:'collapse'}}><tbody>
+              {right.map((row,i) => <tr key={i}>{row.map((v,j) => <td key={j} style={{
+                width:42, height:36, border:'1px solid var(--rule)',
+                textAlign:'center', fontFamily:'var(--mono)',
+                background: hover && hover.j===j ? '#dcfce7' : 'white',
+                transition:'all 0.2s'
+              }}>{v}</td>)}</tr>)}
+            </tbody></table>
+            <span style={{fontSize:'1.4rem', fontWeight:700}}>=</span>
+          </>
+        )}
+        <table style={{borderCollapse:'collapse'}}><tbody>
+          {data.map((row,i) => <tr key={i}>{row.map((v,j) => {
+            const isHover = hover && hover.i===i && hover.j===j;
+            const bg = isHover ? '#fef3c7' :
+              view === 'diff' && v !== 0 ? '#fee2e2' :
+              view === 'diff' ? '#fafaf7' : '#e8eef8';
+            return <td key={j}
+              onMouseEnter={() => setHover({i,j})}
+              onMouseLeave={() => setHover(null)}
+              style={{
+                width:50, height:38, border:'1px solid var(--rule)',
+                textAlign:'center', fontFamily:'var(--mono)',
+                background: bg, fontWeight: 700, color: 'var(--brand)',
+                cursor:'help', transition:'all 0.2s'
+              }}>{v}</td>;
+          })}</tr>)}
+        </tbody></table>
+      </div>
+      <div style={{marginTop:14, minHeight:48, padding:'10px 14px', background:'var(--math-bg)', borderRadius:6, fontFamily:'var(--mono)', fontSize:'0.92rem', border:'1px solid var(--rule)'}}>
+        {hover ? <span>cell ({hover.i+1},{hover.j+1}): {cellExpr(hover.i, hover.j)} = <strong>{data[hover.i][hover.j]}</strong></span> :
+         <span style={{color:'var(--ink-soft)'}}>Hover any cell to see its row·column derivation.</span>}
+      </div>
+      {view === 'diff' && (
+        <div className="callout red" style={{marginTop:14}}>
+          <strong>The commutator [A,B].</strong> AB − BA is non-zero — the visual proof that AB ≠ BA. The further from zero, the more order matters.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────  6. Classify the shape  ───────────────────────── */
+function ClassifyTheShapeWidget() {
+  const questions = [
+    {
+      q: "Which label fits the diagonal matrix below?",
+      qFull: "A = | 2   0   0 |\n    | 0  -1   0 |\n    | 0   0   5 |",
+      options: [
+        "upper-triangular only",
+        "diagonal (and therefore both triangular and symmetric)",
+        "skew-symmetric",
+        "identity"
+      ],
+      correct: 1,
+      explain: "Off-diagonal entries are all zero, so A is diagonal. Every diagonal matrix is simultaneously upper- and lower-triangular, and symmetric (a_{i,j} = a_{j,i} = 0 for i ≠ j)."
+    },
+    {
+      q: "What is B?",
+      qFull: "B = | 1   4  -2 |\n    | 0   7   3 |\n    | 0   0   5 |",
+      options: [
+        "lower-triangular",
+        "upper-triangular",
+        "symmetric",
+        "skew-symmetric"
+      ],
+      correct: 1,
+      explain: "Entries strictly below the diagonal are zero (a_{i,j} = 0 for i > j) — that's the definition of upper-triangular."
+    },
+    {
+      q: "What is C?",
+      qFull: "C = |  0   3  -1 |\n    | -3   0   2 |\n    |  1  -2   0 |",
+      options: [
+        "symmetric",
+        "skew-symmetric",
+        "diagonal",
+        "upper-triangular"
+      ],
+      correct: 1,
+      explain: "c_{i,j} = -c_{j,i} for every off-diagonal pair, and the diagonal is zero — both signatures of skew-symmetry."
+    },
+    {
+      q: "True or false: if AB = 0, then either A = 0 or B = 0.",
+      options: [
+        "True — same as for real numbers",
+        "True, but only for square matrices",
+        "False — non-zero A, B can have AB = 0 (zero divisors)",
+        "False, but only for non-square matrices"
+      ],
+      correct: 2,
+      explain: "Take A = [[0,1],[0,4]] and B = [[3,2],[0,0]]: both non-zero, yet AB = 0. Matrix algebra has zero divisors — one of the key breaks from ordinary arithmetic."
+    }
+  ];
+
+  const [picks, setPicks] = useState({});
+  const pick = (qi, oi) => {
+    if (picks[qi] != null) return;
+    setPicks(p => ({...p, [qi]: oi}));
+  };
+  const reset = () => setPicks({});
+  const score = Object.entries(picks).filter(([qi, oi]) => questions[qi].correct === oi).length;
+
+  return (
+    <div>
+      {questions.map((q, qi) => (
+        <div key={qi} style={{marginBottom:18, padding:'14px 16px', background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8}}>
+          <div style={{fontWeight:600, marginBottom:8}}>{qi+1}. {q.q}</div>
+          {q.qFull && <pre style={{margin:'4px 0 10px', padding:'8px 12px', fontSize:'0.84rem', background:'white', border:'1px solid var(--rule)', borderRadius:4, fontFamily:'var(--mono)', boxShadow:'none'}}>{q.qFull}</pre>}
+          <div style={{display:'flex', flexDirection:'column', gap:6}}>
+            {q.options.map((opt, oi) => {
+              const picked = picks[qi];
+              const showResult = picked != null;
+              const isCorrect = oi === q.correct;
+              const isPicked = picked === oi;
+              let bg = 'white';
+              let border = 'var(--rule)';
+              if (showResult) {
+                if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; }
+                else if (isPicked) { bg = '#fee2e2'; border = '#dc2626'; }
+                else { bg = '#fafaf7'; }
+              }
+              return (
+                <button key={oi} onClick={() => pick(qi, oi)}
+                        disabled={showResult}
+                        style={{
+                          textAlign:'left', padding:'9px 12px',
+                          background: bg, border:'1px solid '+border,
+                          borderRadius: 6,
+                          cursor: showResult ? 'default' : 'pointer',
+                          fontFamily:'var(--sans)', fontSize:'0.92rem',
+                          color: 'var(--ink)', transition:'all 0.2s'
+                        }}>
+                  {showResult && isCorrect && <span style={{color:'#16a34a', fontWeight:700, marginRight:6}}>✓</span>}
+                  {showResult && isPicked && !isCorrect && <span style={{color:'#dc2626', fontWeight:700, marginRight:6}}>✗</span>}
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {picks[qi] != null && (
+            <div style={{marginTop:10, padding:'10px 12px', background:'var(--brand-soft)', borderRadius:6, fontSize:'0.9rem', color:'var(--ink)'}}>
+              <strong style={{color:'var(--brand)'}}>Why.</strong> {q.explain}
+            </div>
+          )}
+        </div>
+      ))}
+      <div style={{display:'flex', gap:10, alignItems:'center'}}>
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+        <span style={{fontSize:'0.9rem', color:'var(--ink-soft)'}}>
+          {Object.keys(picks).length}/{questions.length} answered · {score} correct
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────  7. Delta collapse  ───────────────────────── */
+function DeltaCollapseWidget() {
+  const targets = [
+    {
+      label: "(IA)_{i,j} = a_{i,j}",
+      stages: [
+        "Σ_{k=1..n} δ_{i,k} · a_{k,j}",
+        "δ_{i,1}·a_{1,j} + δ_{i,2}·a_{2,j} + ⋯ + δ_{i,n}·a_{n,j}",
+        "0 + 0 + ⋯ + δ_{i,i}·a_{i,j} + ⋯ + 0",
+        "1 · a_{i,j}",
+        "a_{i,j}"
+      ],
+      rules: ["expand sum", "δ_{i,k}=0 for k≠i", "δ_{i,i}=1", "simplify 1·x"]
+    },
+    {
+      label: "Σ_{i=1..100} i² · δ_{i,3} = 9",
+      stages: [
+        "Σ_{i=1..100} i² · δ_{i,3}",
+        "1²·δ_{1,3} + 2²·δ_{2,3} + 3²·δ_{3,3} + 4²·δ_{4,3} + ⋯",
+        "0 + 0 + 9·1 + 0 + ⋯",
+        "9"
+      ],
+      rules: ["expand sum", "apply δ definition", "simplify"]
+    },
+    {
+      label: "Σ_{k=1..20} 2k · δ_{k,10} = 20",
+      stages: [
+        "Σ_{k=1..20} 2k · δ_{k,10}",
+        "2·1·δ_{1,10} + ⋯ + 2·10·δ_{10,10} + ⋯ + 2·20·δ_{20,10}",
+        "0 + ⋯ + 20·1 + ⋯ + 0",
+        "20"
+      ],
+      rules: ["expand sum", "apply δ definition", "simplify"]
+    },
+    {
+      label: "Σ_{k=1..5} 2k · δ_{k,10} = 0  (10 out of range)",
+      stages: [
+        "Σ_{k=1..5} 2k · δ_{k,10}",
+        "2·1·δ_{1,10} + 2·2·δ_{2,10} + ⋯ + 2·5·δ_{5,10}",
+        "2·1·0 + 2·2·0 + ⋯ + 2·5·0",
+        "0"
+      ],
+      rules: ["expand sum", "all δ vanish (10 ∉ [1,5])", "simplify"]
+    }
+  ];
+
+  const [tIdx, setTIdx] = useState(0);
+  const [step, setStep] = useState(0);
+  const [hint, setHint] = useState(false);
+  const [history, setHistory] = useState([]);
+
+  const t = targets[tIdx];
+  const totalSteps = t.stages.length - 1;
+
+  useEffect(() => { setStep(0); setHint(false); setHistory([]); }, [tIdx]);
+
+  const apply = (ruleIdx) => {
+    if (ruleIdx === step) {
+      setStep(s => Math.min(s+1, totalSteps));
+      setHistory(h => [...h, ruleIdx]);
+      setHint(false);
+    } else {
+      setHint(true);
+      setTimeout(() => setHint(false), 1800);
+    }
+  };
+
+  const undo = () => {
+    if (history.length === 0) return;
+    setStep(s => Math.max(0, s-1));
+    setHistory(h => h.slice(0,-1));
+  };
+
+  const reset = () => { setStep(0); setHint(false); setHistory([]); };
+
+  return (
+    <div>
+      <div style={{display:'flex', gap:8, flexWrap:'wrap', marginBottom:14}}>
+        {targets.map((tt, i) => (
+          <button key={i} className="btn secondary" style={{
+            background: tIdx===i ? 'var(--brand-soft)' : 'white',
+            fontSize:'0.82rem', padding:'0.4rem 0.8rem'
+          }} onClick={() => setTIdx(i)}>target {i+1}</button>
+        ))}
+      </div>
+      <div style={{padding:'12px 14px', background:'var(--brand-soft)', borderRadius:6, marginBottom:14, fontFamily:'var(--mono)', fontSize:'0.9rem'}}>
+        <strong style={{color:'var(--brand)'}}>target →</strong> {t.label}
+      </div>
+      <div style={{background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8, padding:'14px 16px', marginBottom:12, minHeight:90}}>
+        {t.stages.slice(0, step+1).map((s, i) => (
+          <div key={i} style={{
+            fontFamily:'var(--mono)', fontSize:'0.93rem',
+            padding:'5px 0',
+            opacity: i === step ? 1 : 0.55,
+            color: i === step ? 'var(--brand)' : 'var(--ink-soft)',
+            fontWeight: i === step ? 700 : 400,
+            transition:'all 0.3s'
+          }}>{i > 0 && <span style={{color:'var(--ink-soft)', marginRight:6}}>=</span>}{s}</div>
+        ))}
+      </div>
+      <div style={{fontSize:'0.85rem', color:'var(--ink-soft)', marginBottom:8}}>
+        Apply a rule (in order):
+      </div>
+      <div style={{display:'flex', gap:8, flexWrap:'wrap', marginBottom:12}}>
+        {t.rules.map((r, ri) => (
+          <button key={ri} className="btn purple" disabled={step >= totalSteps}
+                  onClick={() => apply(ri)}
+                  style={{fontSize:'0.85rem', padding:'0.4rem 0.9rem'}}>{r}</button>
+        ))}
+      </div>
+      {hint && (
+        <div className="callout amber">
+          <strong>Not yet.</strong> Try the rule that matches the current line. Hint: the rules are usually applied in the listed order.
+        </div>
+      )}
+      {step >= totalSteps && (
+        <div className="callout green">
+          <strong>✓ Derived!</strong> The Kronecker delta cancelled the sum and left exactly the term where the indices coincide. {tIdx === 0 && "Since (IA)_{i,j} = a_{i,j} entry-by-entry, IA = A — the matrix ‖δ_{i,j}‖ is the identity."}
+        </div>
+      )}
+      <div style={{display:'flex', gap:8, marginTop:8}}>
+        <button className="btn secondary" onClick={undo} disabled={history.length===0}>↶ Undo</button>
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────  Mounts  ───────────────────────── */
+const mounts = [
+  ['entry-indexer',     EntryIndexerWidget],
+  ['add-or-not',        AddOrNotWidget],
+  ['row-meets-column',  RowMeetsColumnWidget],
+  ['build-the-product', BuildTheProductWidget],
+  ['swap-the-order',    SwapTheOrderWidget],
+  ['classify-the-shape',ClassifyTheShapeWidget],
+  ['delta-collapse',    DeltaCollapseWidget]
+];
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+/* ── Side-ToC active-section highlighter ── */
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are TSI Buddy, a warm, attentive tutor for bibliosense's Linear Algebra course (lecturer: bibliosense).",
+    "This page is Lecture 01 — Matrices: definitions, operations & properties.",
+    "Your job on THIS page:",
+    "• Build intuition for what a matrix is and why we treat a whole grid of numbers as one symbol.",
+    "• Drill 'row first, column second' indexing until it's automatic.",
+    "• Coach the student through the row-by-column rule, and the way every matrix product is just that rule, repeated.",
+    "• Anchor the named shapes — diagonal, identity, zero, triangular, transpose, symmetric, skew-symmetric — and the Kronecker delta.",
+    "• Steer them toward the right widget when their question maps to one (entry-indexer, add-or-not, row-meets-column, build-the-product, swap-the-order, classify-the-shape, delta-collapse).",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "## Key definitions",
+    "A matrix is an m×n grid; entry at row i, column j is a_{i,j} (row first, column second).",
+    "Equality: same size AND a_{i,j} = b_{i,j} for every (i,j).",
+    "Scalar: (λA)_{i,j} = λ·a_{i,j}. Sum (same size only): (A+B)_{i,j} = a_{i,j} + b_{i,j}.",
+    "Product: defined when cols(A) = rows(B); (AB)_{i,j} = Σ_{k=1}^{l} a_{i,k} b_{k,j}.",
+    "Transpose: (A^T)_{i,j} = a_{j,i}. Symmetric: A^T = A. Skew-symmetric: A^T = −A (so the diagonal is zero).",
+    "Kronecker delta: δ_{i,j} = 1 if i = j else 0; identity matrix I = ‖δ_{i,j}‖.",
+    "",
+    "## Why",
+    "A matrix packages a whole transformation, system of equations, or data table into one symbol so we can manipulate it like a number. The row-by-column rule isn't arbitrary — it's exactly what you need so 'apply B, then apply A' composes into the single matrix AB. Componentwise addition and scalar multiplication just inherit structure from numbers; the multiplication rule is what makes matrices powerful and genuinely non-commutative.",
+    "",
+    "## The gotcha",
+    "Treating AB and BA as interchangeable. They usually aren't equal, often aren't even the same size, and sometimes only one of the two is defined. The same instinct produces the wrong (AB)^T = A^T B^T — the correct rule reverses the order: (AB)^T = B^T A^T. Also a frequent slip: AB = 0 does NOT imply A = 0 or B = 0. Matrices have zero divisors.",
+    "",
+    "## Boundary cases",
+    "• 1×1 matrix ‖a‖ behaves exactly like the number a — matrices generalise scalars, they don't replace them.",
+    "• Row × column collapses to a single number; column × row of the same vectors gives a full square matrix. Same ingredients, very different outputs.",
+    "• Diagonal × diagonal of the same order DOES commute — a rare case where AB = BA.",
+    "• Skew-symmetric forces diagonal = 0 (from a_{i,i} = −a_{i,i}).",
+    "• Inner-dimension mismatch: the product is undefined, not zero.",
+    "",
+    "## Analogy",
+    "Think of AB as a recipe: 'first do B, then do A.' Like 'rinse, then chop' vs 'chop, then rinse,' AB and BA describe different processes. The row-by-column rule is two people shaking hands across a table: each row of A reaches across and pairs entry-by-entry with a column of B, multiplies the pairs, sums. One handshake = one entry of the answer.",
+    "",
+    "## Where this fits",
+    "Before today: arithmetic, scalars, vectors-as-lists. This lecture turns those into a small algebra of grids — equality, addition, scalar multiplication, the row-by-column product, and the named shapes. Next week we use this algebra to solve linear systems, and the structural types (especially the identity, transpose, and symmetry) reappear constantly.",
+    "",
+    "## Common student questions",
+    "• When is AB defined? When the number of columns of A equals the number of rows of B.",
+    "• Is matrix multiplication ever commutative? Sometimes — e.g. two diagonal matrices of the same order, or A with the identity. Not in general.",
+    "• If AB = 0, can I conclude A = 0 or B = 0? No — matrices have zero divisors.",
+    "• Why is (AB)^T = B^T A^T, not A^T B^T? Transposing flips every (i,j) into (j,i), and writing out the sum forces the order to reverse.",
+    "• How do I compute A^{2002} without 2002 multiplications? Compute A^2, A^3, A^4, conjecture a pattern, then verify (induction works for upper-triangular shapes like the worked example).",
+    "",
+    "# PEDAGOGY GUARDS",
+    "Never reveal the correct option of a quiz question outright. Scaffold instead: ask which definition applies, prompt the student to test entries, point them at the relevant callout. Never spell out a derivation start-to-finish — give a one-step nudge and let them take the next step. When a question maps to a live widget on the page, send them there explicitly: e.g. 'open the row-meets-column widget, set n=3, watch the partial sum build.' The widgets are your primary teaching tools — use them.",
+    "",
+    "# LANGUAGE",
+    "Default to English. Switch only on a clearly non-English signal (the student writes in another language, or asks for one). When you reply in another language, append a short '*EN summary:*' line so an English-speaking peer reading over their shoulder can follow the gist.",
+    "",
+    "# REPLY STYLE",
+    "60–180 words. Plain language. When you ground a claim, quote a short anchor phrase from the lecture. No invented facts. If a student asks something this lecture doesn't cover, say so and stay close to today's scope — matrices, the four operations, named shapes, Kronecker delta, algebraic properties. Warm but precise: you are a working mathematician helping a peer build the picture, not a search engine."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Linear Algebra · Lecture 01',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>
