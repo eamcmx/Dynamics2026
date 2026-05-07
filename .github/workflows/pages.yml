@@ -7,6 +7,7 @@ on:
       - lecture-02-dynamics
       - lecture-04-dynamics
       - lecture-05-dynamics
+      - lecture-06-dynamics
   workflow_dispatch:
 
 permissions:
