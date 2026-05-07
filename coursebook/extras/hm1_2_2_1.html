@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vectors — definitions, geometry & linear operations | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<!-- React + Babel-standalone for inline JSX widgets (no build step). -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- KaTeX runtime + auto-render: any text inside $...$, \[...\], etc. is
+     typeset on DOMContentLoaded. Widgets can also call katex.render(tex, el, opts)
+     directly from React effects to typeset dynamic math. -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$',right:'$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<!-- ES-module importmap so widgets that need richer visuals can pull in
+     three.js (3D scenes for spatial topics) or mathjs (matrix ops) via
+     plain `import` inside a <script type="module"> block. -->
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,91,255,0.25);
+  }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .tok { display:inline-block; padding:4px 10px; border-radius:100px; font-family: var(--mono); font-size:0.85rem; font-weight:600; margin:2px 3px; border:1px solid; vertical-align:middle; }
+  .tok-id    { background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; }
+  .tok-num   { background:#d1fae5; border-color:#10b981; color:#065f46; }
+  .tok-op    { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+  .tok-kw    { background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+  .tok-paren { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .tok-nt    { background:#ede9fe; border-color:#8b5cf6; color:#5b21b6; }
+  .tok-term  { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .quiz-card { background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%); border:1px solid #6a1b9a; border-radius:10px; padding:30px 32px; margin:22px 0; scroll-margin-top: 90px; }
+  .quiz-card h2 { font-family: var(--serif); color: #6a1b9a; font-weight: 600; font-size: 1.55rem; margin: 0 0 0.5rem; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { font-size: 0.78rem; color: var(--brand); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 8px; display: block; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+
+  /* widget-specific helpers */
+  .mcq-q { margin-bottom: 18px; padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fafaf7; }
+  .mcq-q-prompt { font-weight: 600; margin-bottom: 8px; color: var(--ink); }
+  .mcq-opt { display: block; width: 100%; text-align: left; padding: 8px 12px; margin: 5px 0; background: white; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.92rem; font-family: inherit; color: var(--ink); transition: background 0.12s, border-color 0.12s; }
+  .mcq-opt:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
+  .mcq-opt.is-correct { background: #d1fae5; border-color: #16a34a; color: #065f46; font-weight: 600; }
+  .mcq-opt.is-wrong   { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+  .mcq-opt.is-reveal  { background: #ecfdf5; border: 1px dashed #16a34a; color: #065f46; }
+  .mcq-explain { margin-top: 8px; padding: 8px 12px; border-radius: 4px; font-size: 0.9rem; line-height: 1.55; }
+  .mcq-explain.ok   { background: #d1fae5; border-left: 3px solid #16a34a; color: #065f46; }
+  .mcq-explain.bad  { background: #fef3c7; border-left: 3px solid #d97706; color: #78350f; }
+  .preset-pill { display: inline-block; padding: 5px 12px; margin: 3px 5px 3px 0; border-radius: 999px; border: 1px solid #cbd5e1; background: white; cursor: pointer; font-size: 0.84rem; font-family: inherit; }
+  .preset-pill.is-on { background: var(--brand); color: white; border-color: var(--brand); }
+  .stage-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 14px; }
+  .stage-pip { flex: 1 1 80px; min-width: 80px; padding: 8px 10px; border-radius: 6px; background: #f1f5f9; border: 1px solid #cbd5e1; font-size: 0.8rem; color: var(--ink-soft); transition: all 0.3s; }
+  .stage-pip.is-active { background: #ede9fe; border-color: #7c3aed; color: #5b21b6; transform: translateY(-2px); box-shadow: 0 4px 10px -4px rgba(124,58,237,0.5); }
+  .stage-pip.is-done { background: #d1fae5; border-color: #16a34a; color: #065f46; }
+  .coord-input { width: 70px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-family: var(--mono); font-size: 0.95rem; text-align: center; }
+  .coord-input.is-good { border-color: #16a34a; background: #ecfdf5; }
+  .coord-input.is-bad  { border-color: #dc2626; background: #fef2f2; }
+  .axis-x { color: #dc2626; }
+  .axis-y { color: #16a34a; }
+  .axis-z { color: #2F5496; }
+  .vec-display { font-family: var(--mono); font-size: 0.95rem; padding: 4px 10px; background: #f1f5f9; border-radius: 6px; display: inline-block; }
+  .deriv-step { padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; margin: 8px 0; font-family: var(--mono); font-size: 0.95rem; transition: all 0.25s; }
+  .deriv-step.is-current { border-color: #7c3aed; background: #faf5ff; box-shadow: 0 4px 14px -6px rgba(124,58,237,0.4); }
+  .deriv-step.is-pending { opacity: 0.4; }
+  .deriv-step.is-done    { background: #ecfdf5; border-color: #16a34a; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Vector Algebra<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 05 · Vector Algebra</div>
+  <h1 class="lecture-title">Vectors — definitions, geometry &amp; linear operations</h1>
+  <p class="lecture-subtitle">From an ordered triplet of numbers to a directed segment we can add, scale, project, and decompose.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 05</span>
+  </div>
+</header>
+
+<div class="voice">We start with the simplest possible object that carries both a <em>size</em> and a <em>direction</em>: a vector. The trick is that one object lives in two worlds at once — a triplet of numbers in some coordinate system, and a directed line segment you can draw on paper. Today we set up the algebra (addition, scaling, subtraction), the geometry (translation, projection), and the rectangular basis $\mathbf{i}, \mathbf{j}, \mathbf{k}$ that lets us pass freely between the two.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span> What this lecture covers</h2>
+  <div class="voice">Two views of the same object — a triplet $\{a_1,a_2,a_3\}$ and an arrow in space — and the entire lecture is the bridge between them.</div>
+  <p>We introduce <strong>vectors</strong> as ordered triplets of numbers in a coordinate system, equipped with rules of addition and multiplication by a scalar, and transforming under rotations exactly as the coordinates of a point do.</p>
+  <p>From there we move to the <strong>geometric picture</strong>: a vector as the directed segment $\overrightarrow{P_1P_2}$, its length $|\mathbf{a}|$, the unit vector $\mathbf{u} = \mathbf{a}/a$, and the <strong>projection</strong> of one vector onto another. We close with the <strong>properties of linear operations</strong> and the first step toward decomposition into a rectangular orthogonal basis.</p>
+  <div class="callout blue">
+    <strong>Notation.</strong> Vectors are written in <strong>boldface</strong>: $\mathbf{a}, \mathbf{b}, \mathbf{c}$. The italic $a = |\mathbf{a}|$ is the <em>magnitude</em> — a scalar.
+  </div>
+</section>
+
+<section class="card" id="basic-definitions">
+  <h2><span class="badge">1</span> Basic definitions</h2>
+  <div class="voice">The transformation rule under rotation is what separates a real vector from any old triplet of numbers.</div>
+  <p>A <strong>three-dimensional vector</strong> in a given coordinate system is an ordered triplet of numbers that obeys certain rules of addition and multiplication, and that <em>transforms under rotations of the coordinate system just as the coordinates of a point do</em>. The members of the triplet are the <strong>coordinates</strong> of the vector. The same idea generalises to $n$-dimensional vectors.</p>
+  <p>The notation $\mathbf{a} = \{a_1, a_2, a_3\}$ means that $a_1, a_2, a_3$ are the coordinates of $\mathbf{a}$ in 3-D. Two vectors are <strong>equal</strong> iff their coordinates are respectively equal: $\mathbf{a} = \mathbf{b} \iff a_1 = b_1,\; a_2 = b_2,\; a_3 = b_3.$ A single vector equality is therefore equivalent to a <em>system of three scalar equalities</em>.</p>
+  <div class="callout amber">
+    <strong>Why the rotation rule matters.</strong> Many triplets of numbers (e.g. $\{m, T, V\}$ — mass, temperature, volume) are <em>not</em> vectors. The transformation rule is the actual definition.
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Triplet or vector? · the rotation rule decides</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="triplet-vs-vector-mcq"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="linear-operations">
+  <h2><span class="badge">2</span> Linear vector operations: scaling, sum, difference</h2>
+  <div class="voice">Componentwise on the algebra side; tip-to-tail on the geometric side. Same object, two languages.</div>
+  <p><strong>Scalar multiplication.</strong> If $\mathbf{b} = \lambda \mathbf{a}$, then each coordinate is scaled by $\lambda$: $b_1 = \lambda a_1,\quad b_2 = \lambda a_2,\quad b_3 = \lambda a_3.$</p>
+  <p><strong>Addition.</strong> The sum of $\mathbf{a} = \{a_1, a_2, a_3\}$ and $\mathbf{b} = \{b_1, b_2, b_3\}$ is $\mathbf{c} = \mathbf{a} + \mathbf{b} = \{a_1+b_1,\; a_2+b_2,\; a_3+b_3\}.$</p>
+  <p><strong>Difference.</strong> Subtraction is defined via addition of the opposite: $\mathbf{c} = \mathbf{a} - \mathbf{b} = \mathbf{a} + (-\mathbf{b}), \quad c_i = a_i - b_i.$</p>
+  <div class="callout green">
+    <strong>Geometric check.</strong> $\mathbf{c} = \mathbf{a} - \mathbf{b}$ is exactly the vector that satisfies $\mathbf{c} + \mathbf{b} = \mathbf{a}$ — i.e. <em>the arrow from the head of $\mathbf{b}$ to the head of $\mathbf{a}$</em> when both share a tail.
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build a + b, a − b, λa · componentwise</h3>
+      <span class="widget-tag tag-warm">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="componentwise-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="geometric-3d">
+  <h2><span class="badge">3</span> Geometric interpretation in 3-D space</h2>
+  <div class="voice">Pick <em>any</em> tail you like — by parallel translation, equal vectors slide on top of each other.</div>
+  <p>Place a rectangular coordinate system. Given $\mathbf{a} = \{a_1, a_2, a_3\}$ we can always choose two points $P_1(x_1,y_1,z_1)$ and $P_2(x_2,y_2,z_2)$ such that $a_1 = x_2 - x_1,\quad a_2 = y_2 - y_1,\quad a_3 = z_2 - z_1.$ Then $\mathbf{a}$ is interpreted as the <strong>directed line segment</strong> $\overrightarrow{P_1P_2}$. $P_1$ is the <strong>tail</strong> (base, origin); $P_2$ is the <strong>head</strong>.</p>
+  <p>The coordinates of $\overrightarrow{P_1P_2}$ are the <em>differences</em> of the coordinates of head and tail: $\overrightarrow{P_1P_2} = \{x_2-x_1,\; y_2-y_1,\; z_2-z_1\}.$</p>
+  <p>The <strong>length</strong> of $\mathbf{a}$ is the length of the segment $P_1P_2$. A vector carries <strong>magnitude and direction</strong> at once: $\mathbf{a}$ is the vector, $a = |\mathbf{a}|$ is its scalar magnitude.</p>
+  <p>If the tail sits at the origin and the head at $P(x,y,z)$, the vector is the <strong>radius-vector</strong> of $P$, written $\mathbf{r}$.</p>
+  <div class="callout blue">
+    <strong>Free vs. bound.</strong> Because equal vectors coincide under parallel translation, a vector is essentially <em>free</em> — only its magnitude and direction matter, not where you draw it.
+  </div>
+</section>
+
+<section class="card" id="geometric-ops">
+  <h2><span class="badge">4</span> Linear operations, geometrically</h2>
+  <div class="voice">Scaling stretches; negation flips; addition slides one tail onto the other's head.</div>
+  <p><strong>Equality.</strong> By parallel translation, equal vectors coincide.</p>
+  <p><strong>Scalar multiplication.</strong> $\mathbf{b} = \lambda \mathbf{a}$ has length $|\mathbf{b}| = |\lambda|\,a$. If $\lambda > 0$, $\mathbf{b}$ points the <em>same way</em> as $\mathbf{a}$; if $\lambda < 0$, $\mathbf{b}$ points the <em>opposite way</em>. The opposite of $\overrightarrow{AB}$ is $\overrightarrow{BA} = -\overrightarrow{AB}$.</p>
+  <p><strong>Unit vector.</strong> A unit vector has length 1. For any non-zero $\mathbf{a}$, $\mathbf{u} = \dfrac{\mathbf{a}}{a}$ is the unit vector in the direction of $\mathbf{a}$.</p>
+  <p><strong>Sum.</strong> Tip-to-tail: place the tail of $\mathbf{b}$ at the head of $\mathbf{a}$; the sum runs from the tail of $\mathbf{a}$ to the head of $\mathbf{b}$ (parallelogram rule).</p>
+  <p><strong>Difference.</strong> $\mathbf{c} = \mathbf{a} - \mathbf{b} = \mathbf{a} + (-\mathbf{b})$, equivalently the unique $\mathbf{c}$ with $\mathbf{c} + \mathbf{b} = \mathbf{a}$.</p>
+  <div class="callout teal">
+    <strong>Unit vectors.</strong> Dividing a vector by its own length always gives a direction-only object — handy for separating <em>where it points</em> from <em>how big it is</em>.
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Tip-to-tail animator · slide b's tail onto a's head</h3>
+      <span class="widget-tag tag-violet">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="tip-to-tail-animator"></div>
+    </div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Strip the magnitude · build the unit vector</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="unit-vector-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="projection">
+  <h2><span class="badge">5</span> Projection of a vector in a given direction</h2>
+  <div class="voice">The projection is a <em>signed shadow</em>: same direction is positive, opposite direction is negative.</div>
+  <p>Let $\theta$ be the angle between two vectors $\mathbf{a}$ and $\mathbf{b}$. The <strong>projection of $\mathbf{a}$ onto $\mathbf{b}$</strong> is the scalar $\operatorname{Proj}_{\mathbf{b}} \mathbf{a} = a \cos\theta. \qquad (1)$</p>
+  <ul>
+    <li>If $\theta$ is <strong>acute</strong>, the projection is <strong>positive</strong>.</li>
+    <li>If $\theta$ is <strong>obtuse</strong>, the projection is <strong>negative</strong>.</li>
+  </ul>
+  <p>If the chosen direction is the $x$-axis, then the projection of $\mathbf{a}$ onto the $x$-axis equals the difference between the $x$-coordinates of the endpoints of the vector — exactly the first coordinate of $\mathbf{a}$.</p>
+  <div class="callout amber">
+    <strong>Sign matters.</strong> Forgetting that $\cos\theta < 0$ for obtuse $\theta$ is the most common projection mistake. The sign carries real geometric information.
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Pick the angle · watch the signed shadow</h3>
+      <span class="widget-tag tag-warm">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="projection-picker"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="properties">
+  <h2><span class="badge">6</span> Properties of linear vector operations</h2>
+  <div class="voice">Vectors form a <em>vector space</em> — these three rules are the axioms doing the heavy lifting.</div>
+  <p>All of the following follow directly from the properties of real numbers applied componentwise — proofs are left as a short exercise.</p>
+  <p><strong>1. Commutative law for addition:</strong> $\mathbf{a} + \mathbf{b} = \mathbf{b} + \mathbf{a}.$</p>
+  <p><strong>2. Associative law for addition:</strong> $\mathbf{a} + (\mathbf{b} + \mathbf{c}) = (\mathbf{a} + \mathbf{b}) + \mathbf{c} = \mathbf{a} + \mathbf{b} + \mathbf{c}.$</p>
+  <p><strong>3. Distributive laws for scalar multiplication over addition:</strong> $\lambda(\mathbf{a} + \mathbf{b}) = \lambda\mathbf{a} + \lambda\mathbf{b}, \qquad (\lambda + \mu)\,\mathbf{a} = \lambda\mathbf{a} + \mu\mathbf{a}.$</p>
+  <div class="callout purple">
+    <strong>Try it.</strong> Pick any concrete $\mathbf{a},\mathbf{b},\mathbf{c}$ and any $\lambda,\mu \in \mathbb{R}$ and verify each law componentwise — that <em>is</em> the proof.
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Spot the law · which axiom did we just use?</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="properties-mcq"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="rectangular-basis">
+  <h2><span class="badge">7</span> Decomposition: the rectangular orthogonal basis</h2>
+  <div class="voice">A basis is just a minimal set of arrows you can mix to build everything else.</div>
+  <p>Let $\mathbf{i} = \{1, 0, 0\}$ be the unit vector in the positive direction of the $x$-axis. Any vector lying along the $x$-axis, $\mathbf{a} = \{a_x, 0, 0\}$, can be written as $\mathbf{a} = \{a_x, 0, 0\} = a_x\{1, 0, 0\} = a_x\,\mathbf{i}.$</p>
+  <p>The single vector $\mathbf{i}$ is a <strong>basis</strong> for the one-dimensional space of vectors along the $x$-axis: every such vector is <em>one scalar multiple</em> of $\mathbf{i}$.</p>
+  <p>This is the foundation for the full 3-D rectangular basis $\mathbf{i}, \mathbf{j}, \mathbf{k}$ — to be built up in the next section, decomposing an arbitrary $\mathbf{a}$ as $a_x\mathbf{i} + a_y\mathbf{j} + a_z\mathbf{k}$.</p>
+  <div class="callout green">
+    <strong>What's coming.</strong> Add $\mathbf{j} = \{0,1,0\}$ and $\mathbf{k} = \{0,0,1\}$ and you can write <em>any</em> 3-D vector as $\mathbf{a} = a_x\mathbf{i} + a_y\mathbf{j} + a_z\mathbf{k}$.
+  </div>
+  <div class="code-block">
+    <div class="code-label">the 1-D decomposition</div>
+    <pre><code>i = {1, 0, 0}
+a = {a_x, 0, 0} = a_x · {1, 0, 0} = a_x · i</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Derive a as a sum of basis vectors</h3>
+      <span class="widget-tag tag-warm">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="basis-derive"></div>
+    </div>
+  </div>
+</section>
+
+<section class="homework" id="homework">
+  <h2><span class="badge">HW</span> Homework</h2>
+  <p class="hw-intro">Four short exercises — bring written solutions to the next lecture. The widgets above will let you verify each answer.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Componentwise sum and difference</h4>
+      <p>Given $\mathbf{a} = \{2, -1, 3\}$ and $\mathbf{b} = \{-4, 5, 1\}$, compute $\mathbf{a}+\mathbf{b}$, $\mathbf{a}-\mathbf{b}$, and $3\mathbf{a} - 2\mathbf{b}$. Then sketch each result tip-to-tail.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>2 · From points to a vector</h4>
+      <p>Let $P_1 = (1, 2, -1)$ and $P_2 = (4, 0, 3)$. Find $\overrightarrow{P_1P_2}$, its length, and the unit vector $\mathbf{u}$ in its direction.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Projection sign check</h4>
+      <p>For $\mathbf{a} = \{3, 4, 0\}$ and $\mathbf{b}$ along the negative $x$-axis, compute $\operatorname{Proj}_{\mathbf{b}}\mathbf{a}$. Explain the sign in one sentence.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>4 · Prove a property</h4>
+      <p>Prove the distributive law $(\lambda + \mu)\mathbf{a} = \lambda\mathbf{a} + \mu\mathbf{a}$ by writing both sides componentwise.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#basic-definitions">1 · Basic definitions</a></li>
+      <li><a href="#linear-operations">2 · Linear vector operations</a></li>
+      <li><a href="#geometric-3d">3 · Geometric interpretation in 3-D</a></li>
+      <li><a href="#geometric-ops">4 · Linear operations, geometrically</a></li>
+      <li><a href="#projection">5 · Projection</a></li>
+      <li><a href="#properties">6 · Properties of linear operations</a></li>
+      <li><a href="#rectangular-basis">7 · Rectangular orthogonal basis</a></li>
+      <li><a href="#homework">HW · Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Vector Algebra · Lecture 05 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ─────────────────── helpers ─────────────────── */
+function Arrow({ x1, y1, x2, y2, color, width, dashed, label, labelOffset }) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.hypot(dx, dy);
+  if (len < 0.5) return null;
+  const ux = dx / len, uy = dy / len;
+  const headLen = Math.min(10, len * 0.3);
+  const headW = 5;
+  const baseX = x2 - ux * headLen;
+  const baseY = y2 - uy * headLen;
+  const perpX = -uy, perpY = ux;
+  const p1 = [baseX + perpX * headW, baseY + perpY * headW];
+  const p2 = [baseX - perpX * headW, baseY - perpY * headW];
+  const lo = labelOffset || 12;
+  return (
+    <g>
+      <line x1={x1} y1={y1} x2={baseX} y2={baseY}
+            stroke={color} strokeWidth={width || 2.5}
+            strokeDasharray={dashed ? '5 4' : undefined}
+            strokeLinecap="round" />
+      <polygon points={`${x2},${y2} ${p1[0]},${p1[1]} ${p2[0]},${p2[1]}`} fill={color} />
+      {label && (
+        <text x={x2 + ux * lo - perpX * lo * 0.4} y={y2 + uy * lo - perpY * lo * 0.4}
+              fill={color} fontSize="13" fontWeight="700"
+              fontFamily="Georgia, serif" fontStyle="italic"
+              textAnchor="middle" dominantBaseline="middle">
+          {label}
+        </text>
+      )}
+    </g>
+  );
+}
+
+function PresetPills({ presets, idx, onPick }) {
+  return (
+    <div style={{ marginBottom: 12 }}>
+      {presets.map((p, i) => (
+        <button key={i} className={'preset-pill' + (i === idx ? ' is-on' : '')}
+                onClick={() => onPick(i)}>
+          {p.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ─────────────────── 1. Triplet vs vector MCQ ─────────────────── */
+function TripletMcq() {
+  const Qs = [
+    {
+      q: 'Which of these triplets is a genuine 3-D vector?',
+      options: [
+        '{mass, temperature, volume} of a gas sample',
+        "{x, y, z} components of a particle's velocity",
+        '{price, weight, count} of items in a basket',
+        '{red, green, blue} channel intensities of a pixel'
+      ],
+      correct: 1,
+      explain: 'Velocity components rotate with the axes — exactly like coordinates of a point. The other triplets are just unrelated scalars stuffed into braces.'
+    },
+    {
+      q: 'Two vectors a and b in 3-D are equal. How many scalar equations does that one vector equation represent?',
+      options: ['One', 'Two', 'Three', 'Depends on the basis'],
+      correct: 2,
+      explain: 'a = b ⇔ a₁=b₁, a₂=b₂, a₃=b₃ — one vector equality is exactly three scalar equalities.'
+    },
+    {
+      q: 'You rotate the coordinate axes by 90° about z. The triplet {a₁, a₂, a₃} is a vector. What happens to it?',
+      options: [
+        'The numbers stay the same — vectors are coordinate-free',
+        'The numbers reshuffle/sign-flip according to the rotation',
+        'Only a₃ changes; a₁ and a₂ are invariant',
+        'All three coordinates double'
+      ],
+      correct: 1,
+      explain: 'The arrow in space is unchanged, but its coordinates change because the axes did. That transformation rule is the definition of a vector.'
+    },
+    {
+      q: "A student writes 'a = {2, -1, 3}'. What is this notation actually saying?",
+      options: [
+        'a is the number 2·(-1)·3 = -6',
+        'a is a set containing 2, -1, 3 in any order',
+        'a is an ordered triplet whose coordinates in the current system are 2, -1, 3',
+        'a is the length of a segment of size 6'
+      ],
+      correct: 2,
+      explain: "Order matters and the values are tied to a chosen coordinate system — that is what 'ordered triplet' means."
+    }
+  ];
+  const [picked, setPicked] = useState({});
+  const score = Object.entries(picked).filter(([i,p]) => p === Qs[i].correct).length;
+  const answered = Object.keys(picked).length;
+
+  return (
+    <div>
+      {Qs.map((Q, i) => {
+        const p = picked[i];
+        const isAnswered = p !== undefined;
+        return (
+          <div key={i} className="mcq-q">
+            <div className="mcq-q-prompt">Q{i+1}. {Q.q}</div>
+            {Q.options.map((opt, j) => {
+              let cls = 'mcq-opt';
+              if (isAnswered) {
+                if (j === p && j === Q.correct) cls += ' is-correct';
+                else if (j === p) cls += ' is-wrong';
+                else if (j === Q.correct) cls += ' is-reveal';
+              }
+              return (
+                <button key={j} className={cls} disabled={isAnswered}
+                        onClick={() => setPicked(prev => ({ ...prev, [i]: j }))}>
+                  <strong>{String.fromCharCode(65+j)}.</strong> {opt}
+                </button>
+              );
+            })}
+            {isAnswered && (
+              <div className={'mcq-explain ' + (p === Q.correct ? 'ok' : 'bad')}>
+                <strong>{p === Q.correct ? '✓ Correct.' : '✗ Not quite.'}</strong> {Q.explain}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 8 }}>
+        <button className="btn secondary" onClick={() => setPicked({})}>↺ Reset</button>
+        <span style={{ fontSize: '0.88rem', color: '#4b515c' }}>
+          {answered === 0 ? 'Pick one option per question.' :
+            answered < Qs.length ? `${answered}/${Qs.length} answered · ${score} correct so far` :
+            `Done — ${score}/${Qs.length} correct`}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────── 2. Componentwise builder ─────────────────── */
+function ComponentwiseBuilder() {
+  const PRESETS = [
+    { a: [2,-1,3], b: [-4,5,1], lam: 1,  mu:  1, label: 'a + b' },
+    { a: [2,-1,3], b: [-4,5,1], lam: 1,  mu: -1, label: 'a − b' },
+    { a: [2,-1,3], b: [-4,5,1], lam: 3,  mu: -2, label: '3a − 2b (HW 1)' }
+  ];
+  const [pIdx, setPIdx] = useState(0);
+  const [c, setC] = useState(['','','']);
+  const P = PRESETS[pIdx];
+  const target = P.a.map((x, i) => P.lam * x + P.mu * P.b[i]);
+  const status = c.map((s, i) => {
+    if (s === '' || s === '-') return 'empty';
+    const n = Number(s);
+    if (Number.isNaN(n)) return 'bad';
+    return n === target[i] ? 'good' : 'bad';
+  });
+  const allDone = status.every(s => s === 'good');
+
+  function setCoord(i, v) { const next = [...c]; next[i] = v; setC(next); }
+  function changePreset(i) { setPIdx(i); setC(['','','']); }
+  function reveal() { setC(target.map(String)); }
+
+  // SVG: 2D arrows for a, b, c (using x and y components)
+  const SVG = (() => {
+    const cx = 200, cy = 130, scale = 14;
+    const pt = ([x,y]) => [cx + x*scale, cy - y*scale];
+    const aT = pt([P.a[0], P.a[1]]);
+    const bT = pt([P.b[0], P.b[1]]);
+    const cT = pt([target[0], target[1]]);
+    return (
+      <svg width="400" height="260" style={{ display: 'block', margin: '12px auto', background: '#fbfaf5', borderRadius: 8, border: '1px solid #e6e1d3' }}>
+        {/* grid */}
+        {[-12,-8,-4,4,8,12].map(g => (
+          <line key={'h'+g} x1={cx + g*scale} y1={20} x2={cx + g*scale} y2={240} stroke="#e6e1d3" strokeWidth="0.5"/>
+        ))}
+        {[-7,-3,3,7].map(g => (
+          <line key={'v'+g} x1={20} y1={cy + g*scale} x2={380} y2={cy + g*scale} stroke="#e6e1d3" strokeWidth="0.5"/>
+        ))}
+        <line x1={20} y1={cy} x2={380} y2={cy} stroke="#94a3b8" strokeWidth="1"/>
+        <line x1={cx} y1={20} x2={cx} y2={240} stroke="#94a3b8" strokeWidth="1"/>
+        <text x={375} y={cy-5} fontSize="11" fill="#dc2626" fontWeight="700" fontStyle="italic">x</text>
+        <text x={cx+5} y={28} fontSize="11" fill="#16a34a" fontWeight="700" fontStyle="italic">y</text>
+        <Arrow x1={cx} y1={cy} x2={aT[0]} y2={aT[1]} color="#2F5496" width={3} label="a" />
+        <Arrow x1={cx} y1={cy} x2={bT[0]} y2={bT[1]} color="#c2a25a" width={3} label="b" />
+        {allDone && <Arrow x1={cx} y1={cy} x2={cT[0]} y2={cT[1]} color="#7c3aed" width={3} label="c" />}
+      </svg>
+    );
+  })();
+
+  return (
+    <div>
+      <PresetPills presets={PRESETS} idx={pIdx} onPick={changePreset} />
+      <div style={{ background: '#f7f5ee', padding: '12px 14px', borderRadius: 8, fontSize: '0.92rem', marginBottom: 10 }}>
+        Compute <strong>c = λa + μb</strong> where{' '}
+        <span className="vec-display">a = {'{' + P.a.join(', ') + '}'}</span>{', '}
+        <span className="vec-display">b = {'{' + P.b.join(', ') + '}'}</span>{', '}
+        λ = <strong>{P.lam}</strong>, μ = <strong>{P.mu}</strong>.
+      </div>
+      <table style={{ borderCollapse: 'collapse', margin: '6px 0' }}>
+        <tbody>
+          {[0,1,2].map(i => (
+            <tr key={i}>
+              <td style={{ padding: '6px 12px 6px 0', fontFamily: 'var(--mono)', fontSize: '0.92rem', color: '#4b515c' }}>
+                c<sub>{i+1}</sub> = ({P.lam})·({P.a[i]}) + ({P.mu})·({P.b[i]}) =
+              </td>
+              <td>
+                <input className={'coord-input ' + (status[i] === 'good' ? 'is-good' : status[i] === 'bad' ? 'is-bad' : '')}
+                       value={c[i]}
+                       onChange={e => setCoord(i, e.target.value)}
+                       placeholder="?" />
+              </td>
+              <td style={{ paddingLeft: 10, fontSize: '1.15rem' }}>
+                {status[i] === 'good' ? <span style={{ color: '#16a34a' }}>✓</span> :
+                 status[i] === 'bad'  ? <span style={{ color: '#dc2626' }}>✗</span> :
+                 <span style={{ color: '#cbd5e1' }}>·</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+        <button className="btn secondary" onClick={() => setC(['','',''])}>↺ Clear</button>
+        <button className="btn purple" onClick={reveal} disabled={allDone}>👁 Reveal</button>
+      </div>
+      {allDone && (
+        <>
+          <div className="callout green" style={{ marginTop: 14 }}>
+            <strong>✓ Built it.</strong> c = <span className="vec-display">{'{' + target.join(', ') + '}'}</span>. Below: a, b, c drawn from a shared origin (only x and y projected — z is free).
+          </div>
+          {SVG}
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────── 3. Tip-to-tail animator ─────────────────── */
+function TipToTail() {
+  const PRESETS = [
+    { a: [3,1],  b: [1,2],  label: 'acute' },
+    { a: [3,1],  b: [-2,2], label: 'obtuse — visible cancellation' },
+    { a: [2,0],  b: [-2,0], label: 'a + (−a) = 0' }
+  ];
+  const STAGES = [
+    { name: 'place a', desc: 'Draw a from the origin.' },
+    { name: 'place b', desc: 'Draw b from the same origin.' },
+    { name: 'translate b', desc: "Slide b parallel until its tail sits on a's head." },
+    { name: 'draw c', desc: "Draw c = a + b from origin to b's new head." },
+    { name: 'parallelogram', desc: 'Translate a onto b — both constructions meet at the same point.' },
+    { name: 'compare', desc: 'Both routes deliver the same c. That is the parallelogram law.' }
+  ];
+  const [pIdx, setPIdx] = useState(0);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const P = PRESETS[pIdx];
+  const ax = P.a[0], ay = P.a[1], bx = P.b[0], by = P.b[1];
+  const cx_ = ax + bx, cy_ = ay + by;
+
+  useEffect(() => {
+    if (!playing) return;
+    const t = setTimeout(() => {
+      setStep(s => {
+        if (s >= STAGES.length - 1) { setPlaying(false); return s; }
+        return s + 1;
+      });
+    }, 1100);
+    return () => clearTimeout(t);
+  }, [playing, step]);
+
+  const ORIGIN = [200, 180], SCALE = 32;
+  const pt = ([x,y]) => [ORIGIN[0] + x*SCALE, ORIGIN[1] - y*SCALE];
+
+  const aTip = pt([ax, ay]);
+  const bTipFromO = pt([bx, by]);
+  const bTipFromA = pt([ax+bx, ay+by]);
+  const aTipFromB = pt([bx+ax, by+ay]);
+  const cTip = pt([cx_, cy_]);
+
+  function changePreset(i) { setPIdx(i); setStep(0); setPlaying(false); }
+
+  return (
+    <div>
+      <PresetPills presets={PRESETS} idx={pIdx} onPick={changePreset} />
+      <div className="stage-row">
+        {STAGES.map((s, i) => (
+          <div key={i}
+               className={'stage-pip' + (i === step ? ' is-active' : i < step ? ' is-done' : '')}>
+            <div style={{ fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{i+1}</div>
+            <div>{s.name}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ minHeight: 52, padding: '10px 14px', background: '#faf5ff', borderRadius: 8, border: '1px solid #ede9fe', fontSize: '0.93rem' }}>
+        <strong>Stage {step+1}.</strong> {STAGES[step].desc}
+      </div>
+      <svg width="100%" viewBox="0 0 400 320" style={{ display: 'block', margin: '12px 0', background: '#fbfaf5', borderRadius: 8, border: '1px solid #e6e1d3' }}>
+        {/* grid */}
+        {[-5,-4,-3,-2,-1,1,2,3,4,5].map(g => (
+          <line key={'h'+g} x1={ORIGIN[0]+g*SCALE} y1={20} x2={ORIGIN[0]+g*SCALE} y2={300} stroke="#eeebde" strokeWidth="0.5"/>
+        ))}
+        {[-4,-3,-2,-1,1,2,3,4].map(g => (
+          <line key={'v'+g} x1={20} y1={ORIGIN[1]+g*SCALE} x2={380} y2={ORIGIN[1]+g*SCALE} stroke="#eeebde" strokeWidth="0.5"/>
+        ))}
+        <line x1={20} y1={ORIGIN[1]} x2={380} y2={ORIGIN[1]} stroke="#94a3b8" strokeWidth="1"/>
+        <line x1={ORIGIN[0]} y1={20} x2={ORIGIN[0]} y2={300} stroke="#94a3b8" strokeWidth="1"/>
+        <text x={375} y={ORIGIN[1]-5} fontSize="11" fill="#dc2626" fontWeight="700" fontStyle="italic">x</text>
+        <text x={ORIGIN[0]+5} y={28} fontSize="11" fill="#16a34a" fontWeight="700" fontStyle="italic">y</text>
+
+        {step >= 0 && <Arrow x1={ORIGIN[0]} y1={ORIGIN[1]} x2={aTip[0]} y2={aTip[1]} color="#2F5496" width={3} label="a"/>}
+        {step >= 1 && step < 4 && <Arrow x1={ORIGIN[0]} y1={ORIGIN[1]} x2={bTipFromO[0]} y2={bTipFromO[1]} color="#c2a25a" width={3} label="b"/>}
+        {step >= 2 && <Arrow x1={aTip[0]} y1={aTip[1]} x2={bTipFromA[0]} y2={bTipFromA[1]} color="#c2a25a" width={3} dashed={step===2} label={step >= 3 ? "b" : null}/>}
+        {step >= 3 && <Arrow x1={ORIGIN[0]} y1={ORIGIN[1]} x2={cTip[0]} y2={cTip[1]} color="#7c3aed" width={3.5} label="c"/>}
+        {step >= 4 && <Arrow x1={bTipFromO[0]} y1={bTipFromO[1]} x2={aTipFromB[0]} y2={aTipFromB[1]} color="#2F5496" width={3} dashed label="a"/>}
+        {step >= 4 && <line x1={ORIGIN[0]} y1={ORIGIN[1]} x2={bTipFromO[0]} y2={bTipFromO[1]} stroke="#c2a25a" strokeWidth="3"/>}
+      </svg>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button className="btn purple" onClick={() => {
+          if (step >= STAGES.length - 1) setStep(0);
+          setPlaying(p => !p);
+        }}>{playing ? '⏸ Pause' : '▶ Play'}</button>
+        <button className="btn secondary" onClick={() => setStep(s => Math.max(0, s-1))} disabled={step === 0}>← Back</button>
+        <button className="btn secondary" onClick={() => setStep(s => Math.min(STAGES.length-1, s+1))} disabled={step >= STAGES.length-1}>Next →</button>
+        <button className="btn secondary" onClick={() => { setStep(0); setPlaying(false); }}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────── 4. Projection picker ─────────────────── */
+function ProjectionPicker() {
+  const CHOICES = [
+    { label: 'θ = 30° (acute)',         theta: 30,  sign: '+' },
+    { label: 'θ = 60° (acute)',         theta: 60,  sign: '+' },
+    { label: 'θ = 90° (right)',         theta: 90,  sign: '0' },
+    { label: 'θ = 120° (obtuse)',       theta: 120, sign: '−' },
+    { label: 'θ = 180° (anti-parallel)', theta: 180, sign: '−' }
+  ];
+  const [idx, setIdx] = useState(0);
+  const [theta, setTheta] = useState(30);
+
+  function pick(i) { setIdx(i); setTheta(CHOICES[i].theta); }
+  function nudge(d) {
+    const t = Math.max(0, Math.min(180, theta + d));
+    setTheta(t);
+    const closest = CHOICES.reduce((best, c, i) => Math.abs(c.theta-t) < Math.abs(CHOICES[best].theta-t) ? i : best, 0);
+    setIdx(closest);
+  }
+
+  const cx = 220, cy = 170, L = 110;
+  const aL = L * 1.0; // |a|
+  const aTipX = cx + aL, aTipY = cy;
+  const tRad = theta * Math.PI / 180;
+  const bTipX = cx + L * Math.cos(tRad);
+  const bTipY = cy - L * Math.sin(tRad);
+  const projScalar = aL * Math.cos(tRad);
+  const bUx = Math.cos(tRad), bUy = -Math.sin(tRad);
+  const footX = cx + projScalar * bUx;
+  const footY = cy + projScalar * bUy;
+  const projColor = projScalar > 0.5 ? '#16a34a' : projScalar < -0.5 ? '#dc2626' : '#94a3b8';
+  const signLabel = projScalar > 0.5 ? '+' : projScalar < -0.5 ? '−' : '0';
+  const projValue = (projScalar / L).toFixed(2);
+
+  return (
+    <div>
+      <div style={{ marginBottom: 10 }}>
+        {CHOICES.map((c, i) => (
+          <button key={i} className={'preset-pill' + (i === idx ? ' is-on' : '')}
+                  onClick={() => pick(i)}>{c.label}</button>
+        ))}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+        <button className="btn secondary" onClick={() => nudge(-5)}>− 5°</button>
+        <input type="range" min="0" max="180" step="1" value={theta}
+               onChange={e => { const t = +e.target.value; setTheta(t);
+                 const closest = CHOICES.reduce((best, c, i) => Math.abs(c.theta-t) < Math.abs(CHOICES[best].theta-t) ? i : best, 0);
+                 setIdx(closest); }}
+               style={{ flex: 1 }}/>
+        <button className="btn secondary" onClick={() => nudge(5)}>+ 5°</button>
+        <span style={{ fontFamily: 'var(--mono)', minWidth: 48, textAlign: 'right' }}>θ = {theta}°</span>
+      </div>
+      <svg width="100%" viewBox="0 0 440 300" style={{ background: '#fbfaf5', borderRadius: 8, border: '1px solid #e6e1d3', display: 'block' }}>
+        {/* axes */}
+        <line x1={20} y1={cy} x2={420} y2={cy} stroke="#cbd5e1" strokeWidth="1"/>
+        <line x1={cx} y1={20} x2={cx} y2={290} stroke="#cbd5e1" strokeWidth="1"/>
+        {/* the line of b extended faintly */}
+        <line x1={cx - 200*bUx} y1={cy - 200*bUy} x2={cx + 200*bUx} y2={cy + 200*bUy}
+              stroke="#c2a25a" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.5"/>
+        {/* projection on b: thick segment from origin to foot */}
+        <line x1={cx} y1={cy} x2={footX} y2={footY} stroke={projColor} strokeWidth="8" strokeLinecap="round" opacity="0.7"/>
+        {/* perpendicular drop */}
+        <line x1={aTipX} y1={aTipY} x2={footX} y2={footY} stroke="#7c3aed" strokeWidth="1.5" strokeDasharray="4 3"/>
+        {/* tiny right-angle box at the foot */}
+        {Math.abs(projScalar) > 4 && (() => {
+          const sz = 8;
+          const px = -bUy, py = bUx;
+          const sx = projScalar > 0 ? -1 : 1;
+          const dirAlongB = [bUx*sx*sz, bUy*sx*sz];
+          const dirPerp = [px*sz*Math.sign(aTipY < cy ? 1 : -1), py*sz*Math.sign(aTipY < cy ? 1 : -1)];
+          // simpler: just a small square at foot
+          const corners = [
+            [footX, footY],
+            [footX + dirAlongB[0], footY + dirAlongB[1]],
+            [footX + dirAlongB[0] + dirPerp[0], footY + dirAlongB[1] + dirPerp[1]],
+            [footX + dirPerp[0], footY + dirPerp[1]]
+          ];
+          return <polygon points={corners.map(p => p.join(',')).join(' ')} fill="none" stroke="#7c3aed" strokeWidth="1"/>;
+        })()}
+        {/* a along x */}
+        <Arrow x1={cx} y1={cy} x2={aTipX} y2={aTipY} color="#2F5496" width={3} label="a"/>
+        {/* b at angle theta */}
+        <Arrow x1={cx} y1={cy} x2={bTipX} y2={bTipY} color="#c2a25a" width={3} label="b"/>
+        {/* angle arc */}
+        <path d={`M ${cx + 30} ${cy} A 30 30 0 0 ${theta > 180 ? 1 : 0} ${cx + 30*Math.cos(tRad)} ${cy - 30*Math.sin(tRad)}`}
+              fill="none" stroke="#7c3aed" strokeWidth="1.5"/>
+        <text x={cx + 38*Math.cos(tRad/2)} y={cy - 38*Math.sin(tRad/2) + 4}
+              fontSize="13" fontFamily="Georgia" fontStyle="italic" fill="#7c3aed" fontWeight="700"
+              textAnchor="middle">θ</text>
+        {/* foot label */}
+        <circle cx={footX} cy={footY} r="3.5" fill={projColor}/>
+      </svg>
+      <div style={{ marginTop: 12, padding: '12px 14px', background: '#f7f5ee', borderRadius: 8, fontSize: '1rem', textAlign: 'center', fontFamily: 'Georgia, serif' }}>
+        Proj<sub>b</sub> a = a · cos({theta}°) ={' '}
+        <span style={{ color: projColor, fontWeight: 700, fontSize: '1.15rem' }}>
+          {signLabel} {Math.abs(projValue)} · |a|
+        </span>
+      </div>
+      <div className="callout" style={{
+          borderColor: projColor, background: projScalar > 0.5 ? '#ecfdf5' : projScalar < -0.5 ? '#fef2f2' : '#f1f5f9',
+          color: projColor === '#94a3b8' ? '#475569' : projColor, marginTop: 8 }}>
+        <strong>{signLabel === '+' ? 'Acute angle.' : signLabel === '−' ? 'Obtuse / anti-parallel.' : 'Right angle.'}</strong>
+        {signLabel === '+' && ' The shadow points the same way as b — projection is positive.'}
+        {signLabel === '−' && " The shadow points the opposite way to b — projection is negative."}
+        {signLabel === '0' && ' Perpendicular vectors cast no shadow on each other.'}
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────── 5. Unit-vector builder ─────────────────── */
+function UnitVectorBuilder() {
+  const PRESETS = [
+    { a: [3, 4, 0], label: '|a| = 5 (clean)' },
+    { a: [1, 2, 2], label: '|a| = 3' },
+    { a: [3, -2, 4], label: 'a = P₁P₂ from HW 2' }
+  ];
+  const [pIdx, setPIdx] = useState(0);
+  const [u, setU] = useState(['','','']);
+  const P = PRESETS[pIdx];
+  const mag = Math.sqrt(P.a.reduce((s, x) => s + x*x, 0));
+  const target = P.a.map(x => x / mag);
+
+  const status = u.map((s, i) => {
+    if (s === '' || s === '-') return 'empty';
+    const n = Number(s);
+    if (Number.isNaN(n)) return 'bad';
+    return Math.abs(n - target[i]) < 0.05 ? 'good' : 'bad';
+  });
+  const allDone = status.every(s => s === 'good');
+
+  function setCoord(i, v) { const next = [...u]; next[i] = v; setU(next); }
+  function changePreset(i) { setPIdx(i); setU(['','','']); }
+  function reveal() { setU(target.map(t => t.toFixed(3))); }
+
+  // SVG: a and u from origin
+  const cx = 200, cy = 130, scale = 30;
+  const pt = ([x,y]) => [cx + x*scale, cy - y*scale];
+  const aT = pt([P.a[0], P.a[1]]);
+  const uT = pt([target[0], target[1]]);
+
+  return (
+    <div>
+      <PresetPills presets={PRESETS} idx={pIdx} onPick={changePreset} />
+      <div style={{ background: '#f7f5ee', padding: '12px 14px', borderRadius: 8, fontSize: '0.92rem', marginBottom: 10 }}>
+        Given <span className="vec-display">a = {'{' + P.a.join(', ') + '}'}</span>,{' '}
+        |a| = √({P.a.map(x => `${x}²`).join(' + ')}) = √{P.a.reduce((s,x)=>s+x*x,0)} = <strong>{mag.toFixed(3)}</strong>.
+        Build the unit vector u = a / |a|.
+      </div>
+      <table style={{ borderCollapse: 'collapse', margin: '6px 0' }}>
+        <tbody>
+          {[0,1,2].map(i => (
+            <tr key={i}>
+              <td style={{ padding: '6px 12px 6px 0', fontFamily: 'var(--mono)', fontSize: '0.92rem', color: '#4b515c' }}>
+                u<sub>{i+1}</sub> = {P.a[i]} / {mag.toFixed(3)} ≈
+              </td>
+              <td>
+                <input className={'coord-input ' + (status[i] === 'good' ? 'is-good' : status[i] === 'bad' ? 'is-bad' : '')}
+                       style={{ width: 90 }}
+                       value={u[i]}
+                       onChange={e => setCoord(i, e.target.value)}
+                       placeholder="?" />
+              </td>
+              <td style={{ paddingLeft: 10, fontSize: '1.15rem' }}>
+                {status[i] === 'good' ? <span style={{ color: '#16a34a' }}>✓</span> :
+                 status[i] === 'bad'  ? <span style={{ color: '#dc2626' }}>✗</span> :
+                 <span style={{ color: '#cbd5e1' }}>·</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div style={{ fontSize: '0.85rem', color: '#4b515c', marginTop: 6 }}>Tolerance: ±0.05</div>
+      <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+        <button className="btn secondary" onClick={() => setU(['','',''])}>↺ Clear</button>
+        <button className="btn purple" onClick={reveal} disabled={allDone}>👁 Reveal</button>
+      </div>
+      {allDone && (
+        <>
+          <div className="callout green" style={{ marginTop: 14 }}>
+            <strong>✓ Unit vector built.</strong> u = {'{' + target.map(t => t.toFixed(3)).join(', ') + '}'}, |u| = {Math.sqrt(target.reduce((s,x)=>s+x*x,0)).toFixed(3)}. Same direction as a, length 1.
+          </div>
+          <svg width="400" height="260" style={{ display: 'block', margin: '12px auto', background: '#fbfaf5', borderRadius: 8, border: '1px solid #e6e1d3' }}>
+            <line x1={20} y1={cy} x2={380} y2={cy} stroke="#cbd5e1" strokeWidth="1"/>
+            <line x1={cx} y1={20} x2={cx} y2={240} stroke="#cbd5e1" strokeWidth="1"/>
+            <circle cx={cx} cy={cy} r={scale} fill="none" stroke="#7c3aed" strokeWidth="1" strokeDasharray="3 3" opacity="0.5"/>
+            <Arrow x1={cx} y1={cy} x2={aT[0]} y2={aT[1]} color="#2F5496" width={3} label="a"/>
+            <Arrow x1={cx} y1={cy} x2={uT[0]} y2={uT[1]} color="#7c3aed" width={3} label="u"/>
+            <text x={cx + scale + 5} y={cy - 8} fontSize="11" fill="#7c3aed" fontStyle="italic">|u|=1</text>
+          </svg>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────── 6. Basis derive ─────────────────── */
+function BasisDerive() {
+  const TARGETS = [
+    { vec: [2, 0, 0],  result: '2 i' },
+    { vec: [0, -3, 0], result: '−3 j' },
+    { vec: [2, -1, 3], result: '2 i − j + 3 k' },
+    { vec: [4, 0, -5], result: '4 i − 5 k' }
+  ];
+  const [tIdx, setTIdx] = useState(2);
+  const [step, setStep] = useState(0);
+  const T = TARGETS[tIdx];
+  const [ax, ay, az] = T.vec;
+
+  const fmt = (n) => n === 1 ? '' : n === -1 ? '−' : (n < 0 ? '−' + Math.abs(n) : String(n));
+  const nz = (n) => n !== 0;
+  const renderFinal = () => {
+    const parts = [];
+    if (nz(ax)) parts.push((parts.length === 0 ? (ax < 0 ? '−' : '') : (ax < 0 ? ' − ' : ' + ')) + (Math.abs(ax) === 1 ? '' : Math.abs(ax)) + 'i');
+    if (nz(ay)) parts.push((parts.length === 0 ? (ay < 0 ? '−' : '') : (ay < 0 ? ' − ' : ' + ')) + (Math.abs(ay) === 1 ? '' : Math.abs(ay)) + 'j');
+    if (nz(az)) parts.push((parts.length === 0 ? (az < 0 ? '−' : '') : (az < 0 ? ' − ' : ' + ')) + (Math.abs(az) === 1 ? '' : Math.abs(az)) + 'k');
+    return parts.join('');
+  };
+
+  const stages = [
+    { rule: 'identity',
+      expr: <span><span className="tok tok-nt">a</span><span style={{ marginLeft: 8 }}>= {`{${ax}, ${ay}, ${az}}`}</span></span>,
+      hint: 'Click to expand a into its three coordinates along the axes.' },
+    { rule: 'split',
+      expr: <span>
+        <span className="tok tok-term">{`{${ax}, 0, 0}`}</span> +{' '}
+        <span className="tok tok-term">{`{0, ${ay}, 0}`}</span> +{' '}
+        <span className="tok tok-term">{`{0, 0, ${az}}`}</span>
+      </span>,
+      hint: 'Each axis-aligned triplet is a scalar multiple of a basis vector. Pull them out.' },
+    { rule: 'pull-i',
+      expr: <span>
+        <span className="tok tok-num">{ax}</span>·<span className="tok tok-id">i</span> +{' '}
+        <span className="tok tok-term">{`{0, ${ay}, 0}`}</span> +{' '}
+        <span className="tok tok-term">{`{0, 0, ${az}}`}</span>
+      </span>,
+      hint: 'Now do the same for j: {0, a_y, 0} = a_y · j.' },
+    { rule: 'pull-j',
+      expr: <span>
+        <span className="tok tok-num">{ax}</span>·<span className="tok tok-id">i</span> +{' '}
+        <span className="tok tok-num">{ay}</span>·<span className="tok tok-id">j</span> +{' '}
+        <span className="tok tok-term">{`{0, 0, ${az}}`}</span>
+      </span>,
+      hint: 'And k: {0, 0, a_z} = a_z · k.' },
+    { rule: 'pull-k',
+      expr: <span>
+        <span className="tok tok-num">{ax}</span>·<span className="tok tok-id">i</span> +{' '}
+        <span className="tok tok-num">{ay}</span>·<span className="tok tok-id">j</span> +{' '}
+        <span className="tok tok-num">{az}</span>·<span className="tok tok-id">k</span>
+      </span>,
+      hint: 'Simplify zero terms and collect: this is the rectangular decomposition.' },
+    { rule: 'simplify',
+      expr: <span style={{ fontSize: '1.15rem', fontWeight: 700, color: '#16a34a' }}>a = {renderFinal()}</span>,
+      hint: '✓ Done — you derived the rectangular decomposition.' }
+  ];
+
+  function changeTarget(i) { setTIdx(i); setStep(0); }
+
+  return (
+    <div>
+      <div style={{ marginBottom: 10 }}>
+        {TARGETS.map((t, i) => (
+          <button key={i} className={'preset-pill' + (i === tIdx ? ' is-on' : '')}
+                  onClick={() => changeTarget(i)}>
+            a = {`{${t.vec.join(', ')}}`}
+          </button>
+        ))}
+      </div>
+      <div style={{ background: '#f7f5ee', padding: '12px 14px', borderRadius: 8, marginBottom: 12 }}>
+        <div style={{ fontSize: '0.82rem', color: '#7c3aed', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>
+          Production rules
+        </div>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: '0.83rem', lineHeight: 1.7, color: '#4b515c' }}>
+          a → {'{a_x, a_y, a_z}'}<br/>
+          {'{a_x, a_y, a_z}'} → {'{a_x,0,0}'} + {'{0,a_y,0}'} + {'{0,0,a_z}'}<br/>
+          {'{a_x,0,0}'} = a_x · <span className="tok tok-id">i</span>,&nbsp;&nbsp;
+          {'{0,a_y,0}'} = a_y · <span className="tok tok-id">j</span>,&nbsp;&nbsp;
+          {'{0,0,a_z}'} = a_z · <span className="tok tok-id">k</span>
+        </div>
+      </div>
+      {stages.map((s, i) => (
+        <div key={i} className={'deriv-step ' + (i === step ? 'is-current' : i > step ? 'is-pending' : 'is-done')}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+            <span style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#7c3aed', fontWeight: 700 }}>step {i+1}</span>
+            <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{s.rule}</span>
+          </div>
+          <div>{s.expr}</div>
+          {i === step && i < stages.length - 1 && (
+            <div style={{ marginTop: 8, fontSize: '0.85rem', color: '#5b21b6', fontStyle: 'italic' }}>{s.hint}</div>
+          )}
+        </div>
+      ))}
+      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+        <button className="btn purple" onClick={() => setStep(s => Math.min(stages.length-1, s+1))}
+                disabled={step >= stages.length - 1}>
+          Apply next rule →
+        </button>
+        <button className="btn secondary" onClick={() => setStep(s => Math.max(0, s-1))} disabled={step === 0}>← Undo</button>
+        <button className="btn secondary" onClick={() => setStep(0)}>↺ Reset</button>
+      </div>
+      {step >= stages.length - 1 && (
+        <div className="callout green" style={{ marginTop: 12 }}>
+          <strong>✓ Derived.</strong> a = {renderFinal()}. Every 3-D vector decomposes this way — that is what it means for {'{i, j, k}'} to be a basis.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────── 7. Properties MCQ ─────────────────── */
+function PropertiesMcq() {
+  const Qs = [
+    {
+      q: 'Step: (a + b) + c  =  a + (b + c). Which law?',
+      options: [
+        'Commutative law for addition',
+        'Associative law for addition',
+        'Distributive law over scalar addition',
+        'Distributive law over vector addition'
+      ],
+      correct: 1,
+      explain: 'Re-grouping the parentheses without changing the order is the associative law.'
+    },
+    {
+      q: 'Step: 3(a + b)  =  3a + 3b. Which law?',
+      options: [
+        'Distributive law: scalar over vector sum',
+        'Distributive law: scalar sum over vector',
+        'Commutative law',
+        'Associative law'
+      ],
+      correct: 0,
+      explain: 'A single scalar is being distributed across a vector sum: λ(a+b) = λa + λb.'
+    },
+    {
+      q: 'Step: (3 + 2)·a  =  3a + 2a. Which law?',
+      options: [
+        'Distributive law: scalar over vector sum',
+        'Distributive law: scalar sum over vector',
+        'Associative law',
+        'Commutative law'
+      ],
+      correct: 1,
+      explain: 'A sum of scalars is distributing across a single vector: (λ+μ)a = λa + μa.'
+    },
+    {
+      q: 'Step: a + b  =  b + a. Which law?',
+      options: [
+        'Commutative law for addition',
+        'Associative law for addition',
+        'Distributive law: scalar over vector sum',
+        'Distributive law: scalar sum over vector'
+      ],
+      correct: 0,
+      explain: 'Swapping the order of two summands is the commutative law.'
+    }
+  ];
+  const [picked, setPicked] = useState({});
+  const score = Object.entries(picked).filter(([i,p]) => p === Qs[i].correct).length;
+
+  return (
+    <div>
+      {Qs.map((Q, i) => {
+        const p = picked[i];
+        const isAnswered = p !== undefined;
+        return (
+          <div key={i} className="mcq-q">
+            <div className="mcq-q-prompt">Q{i+1}. {Q.q}</div>
+            {Q.options.map((opt, j) => {
+              let cls = 'mcq-opt';
+              if (isAnswered) {
+                if (j === p && j === Q.correct) cls += ' is-correct';
+                else if (j === p) cls += ' is-wrong';
+                else if (j === Q.correct) cls += ' is-reveal';
+              }
+              return (
+                <button key={j} className={cls} disabled={isAnswered}
+                        onClick={() => setPicked(prev => ({ ...prev, [i]: j }))}>
+                  <strong>{String.fromCharCode(65+j)}.</strong> {opt}
+                </button>
+              );
+            })}
+            {isAnswered && (
+              <div className={'mcq-explain ' + (p === Q.correct ? 'ok' : 'bad')}>
+                <strong>{p === Q.correct ? '✓ Correct.' : '✗ Not quite.'}</strong> {Q.explain}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 8 }}>
+        <button className="btn secondary" onClick={() => setPicked({})}>↺ Reset</button>
+        <span style={{ fontSize: '0.88rem', color: '#4b515c' }}>
+          {Object.keys(picked).length === 0 ? 'Name the law for each step.' :
+           Object.keys(picked).length < Qs.length ? `${Object.keys(picked).length}/${Qs.length} answered · ${score} correct so far` :
+           `Done — ${score}/${Qs.length} correct`}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────── mounts ─────────────────── */
+const mounts = [
+  ['triplet-vs-vector-mcq', TripletMcq],
+  ['componentwise-builder', ComponentwiseBuilder],
+  ['tip-to-tail-animator', TipToTail],
+  ['projection-picker', ProjectionPicker],
+  ['unit-vector-builder', UnitVectorBuilder],
+  ['basis-derive', BasisDerive],
+  ['properties-mcq', PropertiesMcq]
+];
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+/* ── Side-ToC active-section highlighter ── */
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<!-- ═══════════════════════════ TSI Buddy ═══════════════════════════ -->
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are **TSI Buddy** — a warm, patient, lecturer-voiced study companion for the bibliosense Vector Algebra course (lecturer: bibliosense).",
+    "You are co-reading Lecture 05 with the student: *Vectors — definitions, geometry & linear operations*.",
+    "",
+    "## YOUR JOB ON THIS PAGE",
+    "- Help the student build INTUITION for what makes a triplet a real vector — the rotation-rule definition versus 'any old triplet of numbers'.",
+    "- Translate fluently between the algebraic view (componentwise {a₁,a₂,a₃}) and the geometric view (directed segment, tail/head, free under parallel translation).",
+    "- Explain projections as *signed shadows* — and reinforce that the sign tracks acute (+) vs obtuse (−).",
+    "- Reinforce the linear-operation laws (commutative / associative / distributive) by inviting verification componentwise — that *is* the proof.",
+    "- Always nudge them back to the live widgets above (the MCQ on triplets, the componentwise builder, the tip-to-tail animator, the projection picker, the unit-vector builder, the basis derive) before giving away an answer.",
+    "",
+    "## PEDAGOGY GUARDS",
+    "- NEVER reveal a quiz answer outright — scaffold via Socratic questions and point them at the widget that lets them check.",
+    "- NEVER spell out a homework derivation; give the *first move* and a check, no more.",
+    "- Anchor every reply in a specific term, equation, or callout from this lecture (e.g. 'in §5 we said cos θ < 0 when θ is obtuse...').",
+    "- If the student is stuck, name the relevant widget by name ('try the projection picker — pick θ = 120° and watch the sign flip').",
+    "",
+    "## LANGUAGE",
+    "Default to English. Switch only on a clearly non-English message; non-English replies append a one-line *EN summary:* gloss.",
+    "",
+    "## REPLY LENGTH & STYLE",
+    "60–180 words, plain language, anchored in this lecture's own terms. Math via KaTeX is fine ($\\mathbf{a}\\cdot\\mathbf{b}$ etc.). At most three short bullets per reply — no bullet-spam.",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "## THE FORMULAS / KEY DEFINITIONS",
+    "- Vector as ordered triplet: **a** = {a₁, a₂, a₃}, equal iff coordinates are respectively equal (one vector equation = three scalar equations).",
+    "- Scalar multiple: λ**a** = {λa₁, λa₂, λa₃}.  Sum: **a**+**b** = {a₁+b₁, a₂+b₂, a₃+b₃}.  Difference: **a**−**b** = **a**+(−**b**).",
+    "- Directed segment: P₁→P₂ has coordinates {x₂−x₁, y₂−y₁, z₂−z₁}; magnitude a = |**a**|; unit vector **u** = **a**/a (a ≠ 0).",
+    "- Projection: Proj_**b** **a** = a cos θ, where θ is the angle between **a** and **b**. Sign tracks acute (+) vs obtuse (−).",
+    "- Basis (1-D so far): **i** = {1,0,0}, and any vector along x is aₓ**i**.",
+    "",
+    "## WHY (the intuition)",
+    "A vector is one object with two faces: a list of numbers in a chosen frame, and an arrow in space. The arrow is what's 'real'; the numbers are how the chosen frame names it.",
+    "That is why the rotation rule sits in the definition — under a rotation of axes, the *same* arrow picks up *new* coordinates, and they must transform the same way a point's coordinates do. If a triplet doesn't transform that way, it is just three numbers, not a vector.",
+    "Componentwise algebra works because the basis arrows are rigid: scaling a vector scales each coordinate; sliding tail-to-head adds coordinates one axis at a time.",
+    "",
+    "## THE GOTCHA (most common misconception)",
+    "'A vector is just a triplet of numbers.' No — a triplet that fails the rotation rule is not a vector. {mass, temperature, volume} is a perfectly fine triplet and a perfectly bad vector.",
+    "Closely related: treating a vector as *bound* to a starting point. Equal vectors are the ones that coincide after parallel translation; the tail you draw is a convenience, not part of the identity of the object.",
+    "",
+    "## BOUNDARY CASES",
+    "- Zero vector **0** = {0,0,0}: has no defined direction; **u** = **a**/a is undefined when a = 0.",
+    "- λ = 0 collapses any vector to **0**; λ < 0 flips orientation while |λ| sets the new length.",
+    "- Projection at θ = 90° is zero (perpendicular vectors cast no shadow); at θ = 0 it equals a; at θ = 180° it equals −a.",
+    "- Same point twice: P₁ = P₂ ⇒ P₁→P₂ = **0**, length 0.",
+    "",
+    "## EXPLAIN-IT-LIKE-THIS",
+    "Think of a vector as an instruction: 'walk 3 m east, 4 m north, 0 m up.' The instruction doesn't care *where* you start — start in the kitchen or the car park, you trace a parallel arrow of the same length. Adding two instructions is following one then the other (tip-to-tail). Scaling by 2 means 'do it twice as far'; scaling by −1 means 'do it backwards.' A projection is the shadow that instruction casts on a chosen direction — and shadows can be negative when you walk *against* that direction.",
+    "",
+    "## CURRICULUM CONTEXT",
+    "Prior: rectangular coordinates of points in 3-D, distances between points, real-number arithmetic and its commutative/associative/distributive laws.",
+    "Next: extending the 1-D basis to the full rectangular orthogonal basis **i**, **j**, **k**, and writing any vector as **a** = aₓ**i** + a_y**j** + a_z**k**. After that, products of vectors (dot, cross) build on projection and decomposition introduced today. Do NOT preview dot or cross product mechanics here — only foreshadow.",
+    "",
+    "## COMMON STUDENT QUESTIONS",
+    "Q: Is a vector the same as a point? — A: No. A point has only a position; a vector has a magnitude and a direction and is free to slide by parallel translation.",
+    "Q: Why does the projection come out negative sometimes? — A: Because cos θ is negative for obtuse θ — the 'shadow' points the opposite way to the chosen direction, and the sign records that.",
+    "Q: If two arrows look the same, are they the same vector? — A: If parallel translation makes them coincide (same length, same direction), yes — even if they were drawn from different tails.",
+    "Q: Do I prove the commutative/associative/distributive laws or just use them? — A: You can prove each in one line by writing both sides componentwise — the laws are inherited straight from the real numbers.",
+    "Q: What goes wrong if I divide the zero vector by its length to get a unit vector? — A: You divide by zero and the direction is undefined — the construction **u** = **a**/a only makes sense for **a** ≠ **0**.",
+    "",
+    "## PRO-INSIGHT WRAP-UP",
+    "Today's signed projection a cos θ is the seed of the dot product **a**·**b** = ab cos θ that arrives next lecture, and the rectangular basis we just opened with **i** is what lets that product collapse to a clean componentwise sum."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Vector Algebra · Lecture 05',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>
