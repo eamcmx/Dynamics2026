@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy-Based Approach to Robot Dynamics | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 30px; height: 30px; background: var(--brand); color: white; border-radius: 7px;
+    display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.92rem;
+    box-shadow: 0 1px 2px rgba(47,84,150,0.20);
+  }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .tok { display:inline-block; padding:4px 10px; border-radius:100px; font-family: var(--mono); font-size:0.85rem; font-weight:600; margin:2px 3px; border:1px solid; vertical-align:middle; }
+  .tok-id    { background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; }
+  .tok-num   { background:#d1fae5; border-color:#10b981; color:#065f46; }
+  .tok-op    { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+  .tok-kw    { background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+  .tok-paren { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .tok-nt    { background:#ede9fe; border-color:#8b5cf6; color:#5b21b6; }
+  .tok-term  { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .quiz-card { background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%); border:1px solid #6a1b9a; border-radius:10px; padding:30px 32px; margin:22px 0; scroll-margin-top: 90px; }
+  .quiz-card h2 { font-family: var(--serif); color: #6a1b9a; font-weight: 600; font-size: 1.55rem; margin: 0 0 0.5rem; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { font-size: 0.78rem; color: var(--brand); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 8px; display: block; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+
+  /* widget-specific */
+  .stage-pill { display:inline-block; padding:4px 10px; border-radius:6px; font-family: var(--mono); font-size:0.82rem; margin:2px 4px; border:1px solid #cbd5e1; background:#f8fafc; color:#475569; transition: all 0.3s; }
+  .stage-pill.is-active { background:#7c3aed; color:white; border-color:#6d28d9; transform: scale(1.05); box-shadow: 0 4px 10px -3px rgba(124,58,237,0.4); }
+  .stage-pill.done { background:#dbeafe; color:#1e3a8a; border-color:#3b82f6; }
+  .slot-box { display:inline-block; min-width:120px; padding:8px 12px; border:2px dashed #cbd5e1; border-radius:6px; background:#f8fafc; font-family: var(--mono); text-align:center; transition: all 0.2s; }
+  .slot-box.filled { border-style:solid; border-color:#3b82f6; background:#dbeafe; color:#1e3a8a; }
+  .slot-box.correct { border-color:#16a34a; background:#dcfce7; color:#14532d; }
+  .slot-box.wrong { border-color:#dc2626; background:#fee2e2; color:#7f1d1d; }
+  .term-chip { display:inline-block; padding:6px 12px; margin:3px; background:white; border:1px solid #cbd5e1; border-radius:6px; cursor:pointer; font-family: var(--mono); font-size:0.85rem; transition: all 0.15s; user-select:none; }
+  .term-chip:hover { background:#dbeafe; border-color:#3b82f6; transform: translateY(-1px); }
+  .term-chip.used { opacity:0.4; cursor:default; }
+  .mcq-opt { display:block; width:100%; text-align:left; padding:10px 14px; margin:6px 0; border:1px solid #cbd5e1; background:white; border-radius:6px; cursor:pointer; transition: all 0.15s; font-size:0.93rem; }
+  .mcq-opt:hover { background:#f8fafc; border-color:#3b82f6; }
+  .mcq-opt.correct { background:#dcfce7; border-color:#16a34a; color:#14532d; font-weight:600; }
+  .mcq-opt.wrong { background:#fee2e2; border-color:#dc2626; color:#7f1d1d; }
+  .mcq-opt.disabled { cursor:default; }
+  .joint-pill { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; border:1px solid #cbd5e1; background:white; cursor:pointer; font-family: var(--mono); font-size:0.85rem; margin:2px; transition: all 0.15s; }
+  .joint-pill.on { background:#dcfce7; border-color:#16a34a; color:#14532d; font-weight:600; }
+  .joint-pill .dot { width:8px; height:8px; border-radius:50%; background:#cbd5e1; }
+  .joint-pill.on .dot { background:#16a34a; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5 V19 C4 19 7 18 12 18 C17 18 20 19 20 19 V5 C20 5 17 4 12 4 C7 4 4 5 4 5 Z"/>
+        <path d="M12 4 V18"/>
+      </svg>
+    </span>
+    <span>Robot Manipulator Dynamics<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 02 · Module 2 · Robot Manipulator Dynamics</div>
+  <h1 class="lecture-title">Energy-Based Approach to Robot Dynamics</h1>
+  <p class="lecture-subtitle">Lagrangian mechanics: from kinetic and potential energy to a systematic dynamic model.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 02</span>
+  </div>
+</header>
+
+<div class="voice">Force methods get you through a pendulum, but they collapse the moment you stack three links and a few constraint forces on top of each other. So we switch tools. In this module we build the dynamics out of energy — kinetic and potential — and let the Lagrangian and the Euler–Lagrange equations do the bookkeeping. By the end you'll have the standard manipulator equation $\mathbf{D}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) + \mathbf{c}(\mathbf{q}) = \boldsymbol{\tau}$ and, more importantly, you'll understand where every term comes from.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span> What this lecture covers</h2>
+  <p>This module reframes robot dynamics around <strong>energy</strong> instead of forces. We start with the practical question — <em>why bother with Lagrangian mechanics when Newton–Euler already works?</em> — and then build up the machinery: kinetic and potential energy in multi-link systems, generalized coordinates, the Lagrangian $L = T - V$, and the Euler–Lagrange equations. From there we walk the systematic derivation that produces the standard manipulator equation $\mathbf{D}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) + \mathbf{c}(\mathbf{q}) = \boldsymbol{\tau}$, and we close with a 2-DOF self-assessment that you'll carry into Module 3.</p>
+  <div class="voice">If Module 1 taught you to <em>see</em> forces on a single body, Module 2 teaches you to <em>count</em> energy across a chain of them — and let the calculus of variations handle the constraints for free.</div>
+  <div class="callout green"><strong>Learning objectives.</strong> Master kinetic/potential energy in multi-link systems, the Lagrangian framework, generalized coordinates, the Euler–Lagrange equations, and how all of this systematically produces the manipulator equation.</div>
+</section>
+
+<section class="card" id="why-energy">
+  <h2><span class="badge">1</span> Why energy methods beat force methods</h2>
+  <p>Force-based and energy-based dynamics are mathematically equivalent — they yield the same equations of motion. The difference is the <em>path</em> to those equations. For a single pendulum, drawing a free-body diagram and applying $\mathbf{F} = m\mathbf{a}$ is the most intuitive thing in the world. For a 6-DOF arm with revolute joints, that approach turns into a forest of constraint forces, vector transformations, and coupling terms that are very easy to get wrong.</p>
+  <p>The central advantage of the energy approach is that it operates on <strong>scalar quantities</strong>. Kinetic energy $T$ and potential energy $V$ are scalars; they don't care about coordinate frames in the way force vectors do. Constraint forces — the reaction loads at every joint — automatically drop out of the final equations because they do no work along the allowed motion. What remains is a systematic, almost mechanical procedure that scales gracefully with degrees of freedom.</p>
+  <div class="voice">Newton–Euler is a scalpel; Lagrangian mechanics is a CNC mill. For a single cut, the scalpel wins. For an arm full of joints, you want the mill.</div>
+  <div class="callout blue"><strong>Force-based (Newton–Euler).</strong> Free-body diagram per link, force/moment balance, explicit constraint forces, careful frame transformations. Powerful but error-prone as DOF grows.</div>
+  <div class="callout green"><strong>Energy-based (Lagrangian).</strong> Compute scalar $T$ and $V$, form $L = T - V$, apply the Euler–Lagrange equations. Constraint forces vanish. The procedure is the same for any robot.</div>
+  <div class="callout amber"><strong>3-DOF arm — side by side.</strong> Force method: 3 free-body diagrams, 6 balance equations, constraint elimination. Energy method: 3 KE expressions + 3 PE expressions → form $L$ → apply Euler–Lagrange. Same answer; far less ceremony.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Force vs. energy · pick the path for a given arm</h3>
+      <span class="widget-tag tag-warm">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="force-vs-energy-picker"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="kinetic-energy">
+  <h2><span class="badge">2</span> Kinetic energy in multi-link systems</h2>
+  <p>Kinetic energy in robotics is more involved than the textbook $\tfrac{1}{2}mv^2$. Every link has both a <strong>translational</strong> component (motion of its center of mass) and a <strong>rotational</strong> component (rotation about the COM), and the velocities of every link are coupled through the kinematic chain. When joint 1 moves, <em>every</em> downstream link moves — each with a velocity that depends on the motion of all preceding joints.</p>
+  <p>For a robot with $n$ links, the total kinetic energy is</p>
+  <p>$$T = \frac{1}{2} \sum_{i=1}^{n} \left[ m_i \mathbf{v}_i^T \mathbf{v}_i + \boldsymbol{\omega}_i^T \mathbf{I}_i \boldsymbol{\omega}_i \right]$$</p>
+  <p>where $m_i$ is the mass of link $i$, $\mathbf{v}_i$ is the velocity of its center of mass, $\boldsymbol{\omega}_i$ is its angular velocity, and $\mathbf{I}_i$ is its inertia tensor about the COM. The crucial point: both $\mathbf{v}_i$ and $\boldsymbol{\omega}_i$ depend on the joint velocities of <em>every</em> joint between the base and link $i$ — that's where the coupling terms come from.</p>
+  <div class="voice">The translational and rotational pieces are the easy part. The hard part is that each $\mathbf{v}_i$ is a chain-rule cascade of every joint upstream of it.</div>
+  <div class="callout blue"><strong>Translation vs. rotation.</strong> Each link generally contributes both a translational COM term and a rotational term about the COM. Both must appear in $T$.</div>
+  <div class="callout purple"><strong>Velocity coupling.</strong> The velocity of any point on link $i$ depends on $\dot{q}_1, \ldots, \dot{q}_i$. This dependency is what makes robot dynamics nonlinear and coupled.</div>
+</section>
+
+<section class="card" id="potential-energy">
+  <h2><span class="badge">3</span> Potential energy and configuration</h2>
+  <p>Potential energy in robotics is almost always <strong>gravitational</strong>, and unlike kinetic energy it depends only on configuration — not velocity. For a robot in a uniform gravitational field,</p>
+  <p>$$V = \sum_{i=1}^{n} m_i \mathbf{g}^T \mathbf{r}_i$$</p>
+  <p>where $\mathbf{g}$ is the gravity vector (typically $[0, 0, -9.81]^T$ m/s$^2$) and $\mathbf{r}_i$ is the position of the COM of link $i$.</p>
+  <p>The consequence: $V$ changes dramatically with posture. A horizontally-extended arm sits at much higher $V$ than the same arm folded vertically — and the difference shows up in the joint torques as the <strong>gravity loading</strong> the actuators must hold against. Choose a sensible reference height and the algebra cleans up; choose a bad one and you'll carry constants you don't need.</p>
+  <div class="voice">PE is the easy half of the Lagrangian — it's just heights. The trick is picking the reference frame that makes the heights cheap to write down.</div>
+  <div class="callout green"><strong>Reference frame matters.</strong> PE only ever appears through derivatives, so the absolute reference is arbitrary — but a clever choice removes constant terms and simplifies the algebra.</div>
+  <div class="callout teal"><strong>Configuration dependence.</strong> $V(\mathbf{q})$ is what produces the gravitational torque vector $\mathbf{c}(\mathbf{q})$ in the final manipulator equation.</div>
+</section>
+
+<section class="card" id="lagrangian-framework">
+  <h2><span class="badge">4</span> The Lagrangian and generalized coordinates</h2>
+  <p>Lagrangian mechanics — Joseph-Louis Lagrange, 18th century — is the framework that lets us derive equations of motion directly from energy. Two ideas drive it: <strong>generalized coordinates</strong> and the <strong>Lagrangian function</strong>.</p>
+  <p>Generalized coordinates are any independent set of parameters that fully specifies the configuration. For robots the natural choice is the joint variables themselves: revolute angles and prismatic displacements. A robot with $n$ joints has $n$ DOF, and the joint vector $\mathbf{q} \in \mathbb{R}^n$ gives a <em>minimal</em> description — kinematic constraints are satisfied automatically by the choice of coordinates, and each $q_i$ corresponds directly to an actuator.</p>
+  <p>The Lagrangian itself is</p>
+  <p>$$L(\mathbf{q}, \dot{\mathbf{q}}, t) = T(\mathbf{q}, \dot{\mathbf{q}}) - V(\mathbf{q})$$</p>
+  <p>It's a single scalar — the <em>excess</em> of kinetic over potential energy. The principle of stationary action says physical trajectories are exactly those that extremize the time integral $\int L\,dt$. That's where the equations of motion come from.</p>
+  <div class="voice">You spend most of the work building $T$ and $V$. Once you have $L$, the rest is a recipe.</div>
+  <div class="callout purple"><strong>Why joint variables are perfect.</strong> They're minimal (no redundant coordinates), they automatically respect kinematic constraints, and they map one-to-one to physical actuators — joint $i$'s torque drives joint $i$'s coordinate.</div>
+  <div class="code-block">
+    <div class="code-label">The Lagrangian</div>
+    <pre><code>L(q, q̇, t) = T(q, q̇) - V(q)
+
+  q  : generalized coordinates  (joint variables)
+  q̇  : generalized velocities
+  T  : total kinetic energy
+  V  : total potential energy</code></pre>
+  </div>
+</section>
+
+<section class="card" id="euler-lagrange">
+  <h2><span class="badge">5</span> The Euler–Lagrange equations</h2>
+  <p>The Euler–Lagrange equations are the systematic procedure for turning $L$ into equations of motion. For a system with $n$ DOF,</p>
+  <p>$$\frac{d}{dt}\!\left(\frac{\partial L}{\partial \dot{q}_i}\right) - \frac{\partial L}{\partial q_i} = \tau_i, \qquad i = 1, 2, \ldots, n$$</p>
+  <p>where $\tau_i$ is the generalized force conjugate to coordinate $q_i$ — for revolute joints, that's a torque; for prismatic joints, a linear force. The derivation comes out of calculus of variations, but you don't need to redo that work each time. The recipe is fixed:</p>
+  <ol>
+    <li>Express $T$ and $V$ in terms of $\mathbf{q}$ and $\dot{\mathbf{q}}$.</li>
+    <li>Form $L = T - V$.</li>
+    <li>Compute the partial derivatives.</li>
+    <li>Substitute into the Euler–Lagrange equation for each $i$.</li>
+    <li>Simplify.</li>
+  </ol>
+  <p>That's it. The same five steps work for a 1-DOF pendulum and a 7-DOF redundant arm.</p>
+  <div class="voice">Once you trust the recipe, the Euler–Lagrange equations stop feeling like math and start feeling like an algorithm — one you can hand to a symbolic solver.</div>
+  <div class="callout green"><strong>Generalized force $\tau_i$.</strong> For revolute joints this is the joint torque; for prismatic joints, the joint force. Constraint forces never appear — they were eliminated by the choice of generalized coordinates.</div>
+  <div class="callout blue"><strong>Worked walk-through: 2-DOF planar arm.</strong> Coordinates $q_1 = \theta_1$, $q_2 = \theta_2$. Link 1 has simple rotation about the base; link 2 couples to link 1 through both position and angular velocity. Even this minimal example produces coupled, nonlinear equations with inertial coupling, Coriolis/centrifugal terms, and gravitational loading — exactly the structure we'll see in the general manipulator equation.</div>
+  <div class="code-block">
+    <div class="code-label">Euler–Lagrange equations</div>
+    <pre><code>d/dt ( ∂L/∂q̇ᵢ ) - ∂L/∂qᵢ = τᵢ      for i = 1, …, n
+
+Recipe:
+  1. Write T(q, q̇) and V(q).
+  2. L = T - V.
+  3. Compute ∂L/∂q̇ᵢ  and  ∂L/∂qᵢ.
+  4. Take d/dt of ∂L/∂q̇ᵢ.
+  5. Substitute and simplify.</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Derive the 1-DOF pendulum equation of motion</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="lagrangian-derive"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="velocity-kinematics">
+  <h2><span class="badge">6</span> Velocity kinematics for energy calculations</h2>
+  <p>The hardest practical step in applying Lagrangian mechanics to robots is getting the velocities right. Link velocities are <em>not</em> independent — they're coupled through the kinematic chain — and the kinetic energy expression is only as accurate as those velocities.</p>
+  <p><strong>Linear velocity.</strong> If the COM of link $i$ sits at $\mathbf{r}_i(\mathbf{q})$, then by the chain rule</p>
+  <p>$$\mathbf{v}_i = \frac{\partial \mathbf{r}_i}{\partial q_1}\dot{q}_1 + \cdots + \frac{\partial \mathbf{r}_i}{\partial q_i}\dot{q}_i = \mathbf{J}_{vi}(\mathbf{q})\,\dot{\mathbf{q}}$$</p>
+  <p>where $\mathbf{J}_{vi}$ is the linear-velocity Jacobian for the COM of link $i$.</p>
+  <p><strong>Angular velocity.</strong> For revolute joints, each upstream joint contributes its joint rate to the angular velocity of every link beyond it. For prismatic joints, no angular contribution. So in a planar 3-revolute chain, $\boldsymbol{\omega}_1 = \dot{q}_1$, $\boldsymbol{\omega}_2 = \dot{q}_1 + \dot{q}_2$, $\boldsymbol{\omega}_3 = \dot{q}_1 + \dot{q}_2 + \dot{q}_3$ — the deeper into the chain you go, the more joints you depend on, and the more coupling terms appear in $T$.</p>
+  <div class="voice">Almost every mistake in a Lagrangian derivation traces back to a velocity. Get the Jacobians right and the rest is bookkeeping.</div>
+  <div class="callout blue"><strong>Planar 3-revolute example.</strong> $\boldsymbol{\omega}_1 = \dot{q}_1$; $\boldsymbol{\omega}_2 = \dot{q}_1 + \dot{q}_2$; $\boldsymbol{\omega}_3 = \dot{q}_1 + \dot{q}_2 + \dot{q}_3$. Each subsequent link is touched by more joints — that's the source of the coupling in $T$.</div>
+  <div class="callout teal"><strong>Compact form.</strong> $\mathbf{v}_i = \mathbf{J}_{vi}(\mathbf{q})\,\dot{\mathbf{q}}$ — the COM velocity is linear in joint rates, with a configuration-dependent Jacobian.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Velocity chain · watch joint rates propagate down the arm</h3>
+      <span class="widget-tag tag-violet">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="velocity-chain-animator"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="inertia-matrix">
+  <h2><span class="badge">7</span> Kinetic energy in matrix form: the inertia matrix</h2>
+  <p>Once velocities are written in terms of joint rates, $T$ becomes a <strong>quadratic form</strong> in $\dot{\mathbf{q}}$:</p>
+  <p>$$T = \frac{1}{2}\,\dot{\mathbf{q}}^T \mathbf{D}(\mathbf{q})\,\dot{\mathbf{q}}$$</p>
+  <p>where the inertia matrix $\mathbf{D}(\mathbf{q})$ has elements</p>
+  <p>$$D_{ij}(\mathbf{q}) = \sum_{k=1}^{n}\left[m_k\!\left(\frac{\partial \mathbf{r}_k}{\partial q_i}\right)^{\!T}\!\!\left(\frac{\partial \mathbf{r}_k}{\partial q_j}\right) + \left(\frac{\partial \boldsymbol{\omega}_k}{\partial q_i}\right)^{\!T}\!\!\mathbf{I}_k\!\left(\frac{\partial \boldsymbol{\omega}_k}{\partial q_j}\right)\right]$$</p>
+  <p>The diagonal entries $D_{ii}$ are the <strong>effective inertia</strong> seen by joint $i$ when only joint $i$ moves. The off-diagonal entries $D_{ij}$ encode <strong>inertial coupling</strong> — moving joint $j$ accelerates joint $i$ even with $\tau_i = 0$. And $\mathbf{D}(\mathbf{q})$ is configuration-dependent, which is what makes the dynamics genuinely nonlinear.</p>
+  <p>Two properties matter for everything that follows: $\mathbf{D}(\mathbf{q})$ is always <strong>symmetric</strong> and <strong>positive definite</strong>. Symmetry comes from the structure of the kinetic energy; positive definiteness reflects the fact that nonzero motion must cost positive kinetic energy. Together they guarantee the dynamics are physically consistent and mathematically well-posed.</p>
+  <div class="voice">The inertia matrix is where the geometry of the arm gets compiled into the dynamics. Once you have $\mathbf{D}(\mathbf{q})$, the rest of the manipulator equation falls out of derivatives.</div>
+  <div class="callout green"><strong>$D_{ii}$ — diagonal.</strong> Effective inertia at joint $i$ when only joint $i$ moves. Always strictly positive.</div>
+  <div class="callout amber"><strong>$D_{ij}$ — off-diagonal.</strong> Inertial coupling between joints $i$ and $j$. Vanishes only in special configurations or for decoupled designs.</div>
+  <div class="callout purple"><strong>Symmetric and positive-definite.</strong> $\mathbf{D}(\mathbf{q}) = \mathbf{D}(\mathbf{q})^T \succ 0$ for all reachable $\mathbf{q}$. This is what guarantees the dynamics are well-posed.</div>
+  <div class="code-block">
+    <div class="code-label">Kinetic energy as a quadratic form</div>
+    <pre><code>T(q, q̇) = ½ q̇ᵀ D(q) q̇
+
+  D(q)  : n×n inertia matrix  (symmetric, positive-definite)
+  Dᵢᵢ  : effective inertia of joint i
+  Dᵢⱼ  : inertial coupling between joints i and j</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build $\mathbf{D}(\mathbf{q})$ for a 2-DOF planar arm</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="inertia-matrix-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="manipulator-equation">
+  <h2><span class="badge">8</span> From Lagrangian to the manipulator equation</h2>
+  <p>Now we run the recipe end-to-end. Starting from $T = \tfrac{1}{2}\dot{\mathbf{q}}^T\mathbf{D}(\mathbf{q})\dot{\mathbf{q}}$ and $V(\mathbf{q})$, the Euler–Lagrange equations produce the <strong>standard manipulator equation</strong>:</p>
+  <p>$$\mathbf{D}(\mathbf{q})\,\ddot{\mathbf{q}} + \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) + \mathbf{c}(\mathbf{q}) = \boldsymbol{\tau}$$</p>
+  <p>Three physically meaningful pieces fall out cleanly:</p>
+  <ul>
+    <li><strong>Inertia $\mathbf{D}(\mathbf{q})$</strong> — straight from $T$. Symmetric, positive definite, configuration-dependent.</li>
+    <li><strong>Coriolis/centrifugal $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$</strong> — velocity-dependent forces from the time derivative of $\mathbf{D}$. Component-wise, $h_i = \sum_{j,k} h_{ijk}\,\dot{q}_j\dot{q}_k$ with the <strong>Christoffel symbols</strong> $h_{ijk} = \tfrac{1}{2}\!\left(\partial D_{ij}/\partial q_k + \partial D_{ik}/\partial q_j - \partial D_{jk}/\partial q_i\right)$.</li>
+    <li><strong>Gravity $\mathbf{c}(\mathbf{q})$</strong> — straight from $V$, with $c_i = \partial V/\partial q_i$.</li>
+  </ul>
+  <p>That's the entire structure of robot dynamics. Same procedure, every robot. The same form is what real-time controllers evaluate at $\geq 1$ kHz inside production manipulators.</p>
+  <div class="voice">Three terms, three physical meanings. Once you've seen this decomposition, every manipulator equation in the textbook stops looking like a wall of symbols.</div>
+  <div class="callout blue"><strong>$\mathbf{D}(\mathbf{q})$ — inertia.</strong> From $T$. Symmetric, positive-definite. Captures effective inertia and inertial coupling.</div>
+  <div class="callout red"><strong>$\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$ — Coriolis &amp; centrifugal.</strong> From $\dot{\mathbf{D}}$. Velocity-quadratic, captures motion-coupling effects. Built from the Christoffel symbols of $\mathbf{D}$.</div>
+  <div class="callout green"><strong>$\mathbf{c}(\mathbf{q})$ — gravity.</strong> From $V$. $c_i = \partial V/\partial q_i$. The torques the actuators must supply just to hold the arm still.</div>
+  <div class="code-block">
+    <div class="code-label">Step 1 — kinetic-energy derivatives</div>
+    <pre><code>∂T/∂q̇ᵢ = Σⱼ Dᵢⱼ(q) q̇ⱼ
+
+d/dt ( ∂T/∂q̇ᵢ ) = Σⱼ Dᵢⱼ(q) q̈ⱼ
+                 + Σⱼ Σₖ (∂Dᵢⱼ/∂qₖ) q̇ₖ q̇ⱼ</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Step 2 — position derivatives</div>
+    <pre><code>∂T/∂qᵢ = ½ Σⱼ Σₖ (∂Dⱼₖ/∂qᵢ) q̇ⱼ q̇ₖ
+∂V/∂qᵢ = gravitational term for joint i</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Step 3 — Euler–Lagrange substitution</div>
+    <pre><code>d/dt(∂L/∂q̇ᵢ) - ∂L/∂qᵢ = τᵢ
+  ⇒  Σⱼ Dᵢⱼ(q) q̈ⱼ + hᵢ(q, q̇) + cᵢ(q) = τᵢ</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Step 4 — manipulator equation</div>
+    <pre><code>D(q) q̈ + h(q, q̇) + c(q) = τ
+
+  D(q)      : inertia matrix
+  h(q, q̇)  : Coriolis / centrifugal
+  c(q)      : gravity</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Christoffel symbols of the first kind</div>
+    <pre><code>hᵢⱼₖ = ½ ( ∂Dᵢⱼ/∂qₖ + ∂Dᵢₖ/∂qⱼ - ∂Dⱼₖ/∂qᵢ )
+
+hᵢ(q, q̇) = Σⱼ Σₖ hᵢⱼₖ q̇ⱼ q̇ₖ</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · reading the manipulator equation</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="manipulator-equation-mcq"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="why-this-wins">
+  <h2><span class="badge">9</span> Why the energy-based approach wins in practice</h2>
+  <p>Stepping back: what did Lagrangian mechanics actually buy us? Five things, and they compound.</p>
+  <ul>
+    <li><strong>Systematic procedure.</strong> The same five steps generate the equations for any robot — 1-DOF or 7-DOF, planar or spatial, revolute or prismatic.</li>
+    <li><strong>Physical insight.</strong> Each term in the manipulator equation has a clear meaning: $\mathbf{D}$ is inertia, $\mathbf{h}$ is Coriolis/centrifugal, $\mathbf{c}$ is gravity. You can read off what each does to the arm.</li>
+    <li><strong>Computational structure.</strong> The matrix form $\mathbf{D}\ddot{\mathbf{q}} + \mathbf{h} + \mathbf{c} = \boldsymbol{\tau}$ is what real-time controllers evaluate at high rate.</li>
+    <li><strong>Error reduction.</strong> No constraint forces, no sign errors from frame transforms, no missing coupling terms.</li>
+    <li><strong>Automation.</strong> The whole procedure can be — and routinely is — implemented in symbolic computation packages like Maple, Mathematica, or sympy.</li>
+  </ul>
+  <p>In industrial practice this is more than a derivation choice. Modern controllers compute $\mathbf{D}(\mathbf{q})$, $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$, and $\mathbf{c}(\mathbf{q})$ at $\geq 1$ kHz to drive trajectory tracking, optimize energy use, support collision detection, and predict mechanical wear. Robots running model-based controllers built on this framework typically hit sub-millimeter accuracy at high speed, with significant cycle-time and energy improvements over plain PID control.</p>
+  <div class="voice">Newton–Euler will get you the dynamics. Lagrangian mechanics will get you the dynamics <em>and</em> a structure you can build a controller on top of.</div>
+  <div class="callout amber"><strong>Industry footprint.</strong> Embedded robot controllers evaluate $\mathbf{D}$, $\mathbf{h}$, $\mathbf{c}$ at 1 kHz or faster — for trajectory optimization, energy management, collision detection, and predictive maintenance.</div>
+  <div class="callout purple"><strong>What Module 3 will do with this.</strong> We'll fully unfold the derivation: building $\mathbf{D}(\mathbf{q})$ explicitly from velocity Jacobians, computing $\mathbf{h}$ via the Christoffel symbols, deriving $\mathbf{c}$ from $V$, and applying the whole framework to concrete arms.</div>
+</section>
+
+<section class="homework" id="homework">
+  <h2>Homework · 2-DOF planar arm self-assessment</h2>
+  <p class="hw-intro">Bring the worked sheet to Module 3 — we'll plug your $L = T - V$ straight into the Euler–Lagrange equations and unfold the manipulator equation by hand.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Position kinematics — 2-DOF planar arm</h4>
+      <p>For the 2-link planar arm with point masses $m_1$ at the tip of link 1 and $m_2$ at the tip of link 2, write the Cartesian positions of $m_1$ and $m_2$ in terms of $L_1, L_2, \theta_1, \theta_2$.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>2 · Velocities</h4>
+      <p>Differentiate the position expressions to get $\dot{\mathbf{r}}_1$ and $\dot{\mathbf{r}}_2$ as linear combinations of $\dot{\theta}_1$ and $\dot{\theta}_2$. Identify the velocity Jacobians.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Kinetic and potential energy</h4>
+      <p>Write the total kinetic energy $T$ and gravitational potential energy $V$ in terms of $L_1, L_2, m_1, m_2, \theta_1, \theta_2, \dot{\theta}_1, \dot{\theta}_2$ (assume gravity acts in $-y$). No need to fully expand $T$ — leave it in compact form.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>4 · Form the Lagrangian</h4>
+      <p>Build $L = T - V$ and bring it to Module 3 ready to plug into the Euler–Lagrange equations. Sketch the schematic with all points, velocities, and angles labeled.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#why-energy">1 · Why energy methods beat force methods</a></li>
+      <li><a href="#kinetic-energy">2 · Kinetic energy in multi-link systems</a></li>
+      <li><a href="#potential-energy">3 · Potential energy and configuration</a></li>
+      <li><a href="#lagrangian-framework">4 · The Lagrangian and generalized coordinates</a></li>
+      <li><a href="#euler-lagrange">5 · The Euler–Lagrange equations</a></li>
+      <li><a href="#velocity-kinematics">6 · Velocity kinematics for energy calculations</a></li>
+      <li><a href="#inertia-matrix">7 · Kinetic energy in matrix form: the inertia matrix</a></li>
+      <li><a href="#manipulator-equation">8 · From Lagrangian to the manipulator equation</a></li>
+      <li><a href="#why-this-wins">9 · Why the energy-based approach wins in practice</a></li>
+      <li><a href="#homework">Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Robot Manipulator Dynamics · Lecture 02 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+function ForceVsEnergyPickerWidget() {
+  const SYSTEMS = [
+    {
+      name: '1-DOF pendulum',
+      recommended: 'Newton–Euler',
+      newton: { FBDs: 1, balanceEqs: 2, constraint: 1 },
+      lagrangian: { scalarTerms: 2, steps: 5 },
+      why: 'Single body, no coupling — drawing the FBD and writing F = ma is faster than computing T and V from scratch.'
+    },
+    {
+      name: '2-DOF planar arm',
+      recommended: 'either',
+      newton: { FBDs: 2, balanceEqs: 4, constraint: 2 },
+      lagrangian: { scalarTerms: 4, steps: 5 },
+      why: 'Both methods are about the same effort. Many textbooks use this case to compare them side by side.'
+    },
+    {
+      name: '3-DOF planar arm',
+      recommended: 'Lagrangian',
+      newton: { FBDs: 3, balanceEqs: 6, constraint: 3 },
+      lagrangian: { scalarTerms: 6, steps: 5 },
+      why: 'Three FBDs with constraint elimination starts to bite. The energy recipe is still 5 steps.'
+    },
+    {
+      name: '6-DOF spatial arm',
+      recommended: 'Lagrangian',
+      newton: { FBDs: 6, balanceEqs: 36, constraint: 6, frames: 6 },
+      lagrangian: { scalarTerms: 12, steps: 5 },
+      why: 'Newton–Euler explodes — 36 balance equations and 6 frame transforms. Lagrangian stays at 5 steps.'
+    }
+  ];
+  const [sysIdx, setSysIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const sys = SYSTEMS[sysIdx];
+  const correct = pick && (sys.recommended === 'either' || pick === sys.recommended);
+
+  return (
+    <div>
+      <div style={{ marginBottom: 8, fontSize: '0.9rem', color: '#4b515c' }}>
+        <strong>Step 1.</strong> Pick a system.
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
+        {SYSTEMS.map((s, i) => (
+          <button key={i}
+            className={i === sysIdx ? 'btn' : 'btn secondary'}
+            onClick={() => { setSysIdx(i); setPick(null); }}>
+            {s.name}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ marginBottom: 8, fontSize: '0.9rem', color: '#4b515c' }}>
+        <strong>Step 2.</strong> Which method would you reach for?
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <button className={pick === 'Newton–Euler' ? 'btn purple' : 'btn secondary'}
+                onClick={() => setPick('Newton–Euler')}>Newton–Euler</button>
+        <button className={pick === 'Lagrangian' ? 'btn purple' : 'btn secondary'}
+                onClick={() => setPick('Lagrangian')}>Lagrangian</button>
+      </div>
+
+      {pick && (
+        <div className={'callout ' + (correct ? 'green' : 'amber')}>
+          <strong>{correct ? '✓ Reasonable choice' : 'Possible — but consider…'}</strong>
+          {sys.recommended === 'either'
+            ? 'For ' + sys.name + ', either method is defensible. '
+            : 'For ' + sys.name + ', most engineers reach for ' + sys.recommended + '. '}
+          {sys.why}
+        </div>
+      )}
+
+      <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div style={{ background: '#fff5f5', border: '1px solid #fecaca', borderRadius: 8, padding: '12px 14px' }}>
+          <div style={{ fontWeight: 700, color: '#7f1d1d', marginBottom: 6, fontSize: '0.92rem' }}>Newton–Euler bookkeeping</div>
+          <div style={{ fontSize: '0.88rem', lineHeight: 1.7 }}>
+            FBDs: <strong>{sys.newton.FBDs}</strong><br/>
+            Force/moment balance eqs: <strong>{sys.newton.balanceEqs}</strong><br/>
+            Constraint forces to track: <strong>{sys.newton.constraint}</strong>
+            {sys.newton.frames ? <span><br/>Frame transforms: <strong>{sys.newton.frames}</strong></span> : null}
+          </div>
+        </div>
+        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '12px 14px' }}>
+          <div style={{ fontWeight: 700, color: '#14532d', marginBottom: 6, fontSize: '0.92rem' }}>Lagrangian bookkeeping</div>
+          <div style={{ fontSize: '0.88rem', lineHeight: 1.7 }}>
+            Scalar T + V terms: <strong>{sys.lagrangian.scalarTerms}</strong><br/>
+            Recipe steps: <strong>{sys.lagrangian.steps}</strong> (always)<br/>
+            Constraint forces: <strong>0</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 14, fontSize: '0.85rem', color: '#4b515c', fontStyle: 'italic' }}>
+        The Lagrangian column stays flat at 5 steps as the arm grows — that's the whole pitch in one chart.
+      </div>
+    </div>
+  );
+}
+
+function VelocityChainAnimatorWidget() {
+  const PRESETS = {
+    'only-1':  [true, false, false],
+    'one-two': [true, true, false],
+    'all':     [true, true, true]
+  };
+  const [joints, setJoints] = useState([true, true, true]);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+
+  const STAGES = [
+    { label: 'Rest pose · all joint rates zero', active: -1, omegaShown: 0 },
+    { label: 'Joint 1 starts spinning at $\\dot{q}_1$', active: 0, omegaShown: 1 },
+    { label: 'Joint 2 picks up $\\dot{q}_2$ — link 2 inherits link 1\'s rate', active: 1, omegaShown: 2 },
+    { label: 'Joint 3 picks up $\\dot{q}_3$ — link 3 inherits both upstream', active: 2, omegaShown: 3 },
+    { label: 'Final $\\boldsymbol{\\omega}_i$ sums — read off the coupling', active: -1, omegaShown: 3 }
+  ];
+
+  useEffect(() => {
+    if (!playing) return;
+    const t = setTimeout(() => {
+      setStep(s => {
+        if (s >= STAGES.length - 1) { setPlaying(false); return s; }
+        return s + 1;
+      });
+    }, 1600);
+    return () => clearTimeout(t);
+  }, [playing, step]);
+
+  const stage = STAGES[step];
+
+  // angles for the three links
+  const baseAngle = -25 + step * 6;
+  const a1 = baseAngle * Math.PI / 180;
+  const a2 = (baseAngle + 35) * Math.PI / 180;
+  const a3 = (baseAngle + 75) * Math.PI / 180;
+  const L = 70;
+  const x0 = 60, y0 = 130;
+  const x1 = x0 + L * Math.cos(a1), y1 = y0 - L * Math.sin(a1);
+  const x2 = x1 + L * Math.cos(a2), y2 = y1 - L * Math.sin(a2);
+  const x3 = x2 + L * Math.cos(a3), y3 = y2 - L * Math.sin(a3);
+
+  const omegaParts = (linkIdx) => {
+    const parts = [];
+    for (let j = 0; j <= linkIdx; j++) {
+      if (joints[j] && stage.omegaShown > j) parts.push('q̇' + (j + 1));
+    }
+    return parts.length ? parts.join(' + ') : '0';
+  };
+
+  const linkColor = (i) => {
+    if (stage.active === i) return '#7c3aed';
+    if (stage.active >= 0 && i < stage.active) return '#3b82f6';
+    if (stage.active === -1 && step === STAGES.length - 1) return '#16a34a';
+    return '#94a3b8';
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12, alignItems: 'center' }}>
+        <span style={{ fontSize: '0.85rem', color: '#4b515c', marginRight: 4 }}>Joint rates active:</span>
+        {[0, 1, 2].map(i => (
+          <button key={i}
+            className={'joint-pill ' + (joints[i] ? 'on' : '')}
+            onClick={() => setJoints(js => js.map((v, k) => k === i ? !v : v))}>
+            <span className="dot"></span>q̇<sub>{i + 1}</sub>
+          </button>
+        ))}
+        <span style={{ marginLeft: 12, fontSize: '0.82rem', color: '#4b515c' }}>presets:</span>
+        <button className="btn secondary" style={{ padding: '4px 10px', fontSize: '0.8rem' }}
+          onClick={() => setJoints(PRESETS['only-1'])}>only 1</button>
+        <button className="btn secondary" style={{ padding: '4px 10px', fontSize: '0.8rem' }}
+          onClick={() => setJoints(PRESETS['one-two'])}>1 + 2</button>
+        <button className="btn secondary" style={{ padding: '4px 10px', fontSize: '0.8rem' }}
+          onClick={() => setJoints(PRESETS['all'])}>all three</button>
+      </div>
+
+      <svg viewBox="0 0 400 200" style={{ width: '100%', maxWidth: 600, background: '#fbfaf5', borderRadius: 8, border: '1px solid #e6e1d3' }}>
+        <line x1="20" y1={y0} x2="380" y2={y0} stroke="#cbd5e1" strokeDasharray="3 3" />
+        {/* base */}
+        <rect x={x0 - 10} y={y0} width="20" height="14" fill="#475569"/>
+        <line x1={x0 - 12} y1={y0 + 14} x2={x0 + 12} y2={y0 + 14} stroke="#475569" strokeWidth="2"/>
+        {/* link 1 */}
+        <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={linkColor(0)} strokeWidth="6" strokeLinecap="round" style={{ transition: 'stroke 0.4s' }}/>
+        <circle cx={x0} cy={y0} r="6" fill={joints[0] ? '#16a34a' : '#cbd5e1'} stroke="#1e293b" strokeWidth="1.5"/>
+        <text x={x0 - 4} y={y0 + 28} fontSize="11" fill="#475569" fontFamily="ui-monospace, monospace">q₁</text>
+        {/* link 2 */}
+        <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={linkColor(1)} strokeWidth="6" strokeLinecap="round" style={{ transition: 'stroke 0.4s' }}/>
+        <circle cx={x1} cy={y1} r="5" fill={joints[1] ? '#16a34a' : '#cbd5e1'} stroke="#1e293b" strokeWidth="1.5"/>
+        <text x={x1 + 6} y={y1 - 6} fontSize="11" fill="#475569" fontFamily="ui-monospace, monospace">q₂</text>
+        {/* link 3 */}
+        <line x1={x2} y1={y2} x2={x3} y2={y3} stroke={linkColor(2)} strokeWidth="6" strokeLinecap="round" style={{ transition: 'stroke 0.4s' }}/>
+        <circle cx={x2} cy={y2} r="5" fill={joints[2] ? '#16a34a' : '#cbd5e1'} stroke="#1e293b" strokeWidth="1.5"/>
+        <text x={x2 + 6} y={y2 - 6} fontSize="11" fill="#475569" fontFamily="ui-monospace, monospace">q₃</text>
+        <circle cx={x3} cy={y3} r="4" fill="#1e293b"/>
+
+        {/* spin indicators on active joint */}
+        {stage.active >= 0 && joints[stage.active] && (() => {
+          const cx = stage.active === 0 ? x0 : stage.active === 1 ? x1 : x2;
+          const cy = stage.active === 0 ? y0 : stage.active === 1 ? y1 : y2;
+          return <circle cx={cx} cy={cy} r="14" fill="none" stroke="#7c3aed" strokeWidth="2" strokeDasharray="4 3" opacity="0.8">
+            <animateTransform attributeName="transform" type="rotate" from={'0 ' + cx + ' ' + cy} to={'360 ' + cx + ' ' + cy} dur="1.2s" repeatCount="indefinite"/>
+          </circle>;
+        })()}
+      </svg>
+
+      <div style={{ marginTop: 12, padding: '10px 14px', background: '#f3e8ff', borderRadius: 6, color: '#581c87', fontSize: '0.93rem' }}>
+        <strong>Stage {step + 1} / {STAGES.length}:</strong> <span dangerouslySetInnerHTML={{ __html: stage.label.replace(/\$([^$]+)\$/g, (_, m) => '<code>' + m + '</code>') }}/>
+      </div>
+
+      <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+        {[0, 1, 2].map(i => (
+          <div key={i} style={{
+            padding: '10px 12px',
+            background: stage.active === i ? '#ede9fe' : 'white',
+            border: '1px solid ' + (stage.active === i ? '#7c3aed' : '#e2e8f0'),
+            borderRadius: 6,
+            transition: 'all 0.3s'
+          }}>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: 3 }}>Link {i + 1}</div>
+            <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: '0.95rem', color: '#1e293b' }}>
+              ω<sub>{i + 1}</sub> = {omegaParts(i)}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+        <button className="btn purple" onClick={() => setPlaying(p => !p)}>
+          {playing ? '⏸ Pause' : '▶ Play'}
+        </button>
+        <button className="btn secondary" onClick={() => setStep(s => Math.min(s + 1, STAGES.length - 1))}>
+          Step ▶
+        </button>
+        <button className="btn secondary" onClick={() => { setStep(0); setPlaying(false); }}>
+          ↺ Reset
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function LagrangianDeriveWidget() {
+  const STEPS = [
+    {
+      prompt: 'Step 1 — write the kinetic energy $T$.',
+      options: [
+        { txt: 'T = ½ m l² θ̇²', ok: true,  why: 'A point mass m at distance l from the pivot has speed v = l θ̇, so T = ½ m v² = ½ m l² θ̇².' },
+        { txt: 'T = ½ m θ̇²',   ok: false, why: 'Missing the lever arm — the speed of the bob is l θ̇, not θ̇.' },
+        { txt: 'T = ½ m l θ̇²', ok: false, why: 'Dimensionally wrong; you need l² to convert angular speed to linear speed squared.' }
+      ],
+      reveal: '$T = \\tfrac{1}{2} m l^2 \\dot{\\theta}^2$'
+    },
+    {
+      prompt: 'Step 2 — write the potential energy $V$ (zero at the pivot).',
+      options: [
+        { txt: 'V = -m g l cos θ', ok: true,  why: 'Height below the pivot is -l cos θ, so V = m g · height = -m g l cos θ.' },
+        { txt: 'V = m g l sin θ',  ok: false, why: 'sin θ is the horizontal offset, not the height.' },
+        { txt: 'V = m g l',         ok: false, why: 'V must depend on θ for a swinging pendulum.' }
+      ],
+      reveal: '$V = -m g l \\cos\\theta$'
+    },
+    {
+      prompt: 'Step 3 — form the Lagrangian.',
+      options: [
+        { txt: 'L = T - V = ½ m l² θ̇² + m g l cos θ', ok: true,  why: 'L = T − V. Subtracting the negative V flips the sign on the gravity term.' },
+        { txt: 'L = T + V = ½ m l² θ̇² - m g l cos θ', ok: false, why: 'Common slip — but the Lagrangian is T − V, not T + V.' },
+        { txt: 'L = T·V',                              ok: false, why: 'L is a difference, not a product.' }
+      ],
+      reveal: '$L = \\tfrac{1}{2} m l^2 \\dot{\\theta}^2 + m g l \\cos\\theta$'
+    },
+    {
+      prompt: 'Step 4 — compute $\\partial L / \\partial \\dot\\theta$ and $\\partial L / \\partial \\theta$.',
+      options: [
+        { txt: '∂L/∂θ̇ = m l² θ̇   ;   ∂L/∂θ = -m g l sin θ', ok: true,  why: 'Differentiate L term-by-term. Only the kinetic term depends on θ̇; only the V term on θ.' },
+        { txt: '∂L/∂θ̇ = m l θ̇   ;   ∂L/∂θ = m g l sin θ',   ok: false, why: 'Lost an l in the kinetic derivative and a sign in the gravity one.' },
+        { txt: '∂L/∂θ̇ = m l² θ̇² ;   ∂L/∂θ = -m g l cos θ',  ok: false, why: 'You differentiated wrong — it\'s d/dx(x²)/2 = x, and d/dθ(cos θ) = -sin θ.' }
+      ],
+      reveal: '$\\partial L / \\partial \\dot\\theta = m l^2 \\dot\\theta,\\quad \\partial L / \\partial \\theta = -m g l \\sin\\theta$'
+    },
+    {
+      prompt: 'Step 5 — take $d/dt$ of $\\partial L / \\partial \\dot\\theta$.',
+      options: [
+        { txt: 'd/dt(m l² θ̇) = m l² θ̈', ok: true,  why: 'm and l are constants; the time derivative of θ̇ is θ̈.' },
+        { txt: 'd/dt(m l² θ̇) = m l² θ̇²', ok: false, why: 'You squared instead of differentiating in time.' },
+        { txt: 'd/dt(m l² θ̇) = 0',         ok: false, why: 'θ̇ is a function of time, so its derivative is generally nonzero.' }
+      ],
+      reveal: '$\\frac{d}{dt}\\!\\left(\\frac{\\partial L}{\\partial \\dot\\theta}\\right) = m l^2 \\ddot\\theta$'
+    },
+    {
+      prompt: 'Step 6 — substitute into Euler–Lagrange and simplify.',
+      options: [
+        { txt: 'm l² θ̈ + m g l sin θ = τ', ok: true,  why: 'd/dt(∂L/∂θ̇) − ∂L/∂θ = m l² θ̈ − (−m g l sin θ) = m l² θ̈ + m g l sin θ = τ.' },
+        { txt: 'm l² θ̈ - m g l sin θ = τ', ok: false, why: 'Sign error — subtracting (−m g l sin θ) gives +m g l sin θ.' },
+        { txt: 'm l θ̈ + g sin θ = τ',       ok: false, why: 'You divided by something prematurely; keep the m l² in front of θ̈.' }
+      ],
+      reveal: '$m l^2 \\ddot\\theta + m g l \\sin\\theta = \\tau$'
+    }
+  ];
+  const [stepIdx, setStepIdx] = useState(0);
+  const [picks, setPicks] = useState([]);     // index into options for each step
+  const [done, setDone] = useState(false);
+
+  const cur = STEPS[stepIdx];
+  const curPick = picks[stepIdx];
+
+  const choose = (i) => {
+    const next = [...picks];
+    next[stepIdx] = i;
+    setPicks(next);
+  };
+
+  const advance = () => {
+    if (stepIdx < STEPS.length - 1) {
+      setStepIdx(stepIdx + 1);
+    } else {
+      setDone(true);
+    }
+  };
+
+  const reset = () => {
+    setStepIdx(0);
+    setPicks([]);
+    setDone(false);
+  };
+
+  const builtSoFar = STEPS.slice(0, stepIdx + (curPick != null && cur.options[curPick].ok ? 1 : 0))
+    .map(s => s.reveal);
+
+  return (
+    <div>
+      <div style={{ marginBottom: 12, padding: '10px 14px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6 }}>
+        <div style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: 4, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Recipe progress</div>
+        {builtSoFar.length === 0 ? (
+          <div style={{ color: '#94a3b8', fontStyle: 'italic', fontSize: '0.9rem' }}>nothing derived yet — pick step 1 below</div>
+        ) : (
+          builtSoFar.map((r, i) => (
+            <div key={i} style={{ padding: '4px 0', fontSize: '0.92rem' }} dangerouslySetInnerHTML={{ __html: '<strong style=\"color:#16a34a\">' + (i + 1) + '.</strong> ' + r.replace(/\$([^$]+)\$/g, (_, m) => '<code style=\"background:#dbeafe;padding:1px 6px;border-radius:3px;color:#1e3a8a\">' + m + '</code>') }}/>
+          ))
+        )}
+      </div>
+
+      {!done && (
+        <div>
+          <div style={{ marginBottom: 10, fontSize: '0.95rem' }}
+               dangerouslySetInnerHTML={{ __html: cur.prompt.replace(/\$([^$]+)\$/g, (_, m) => '<code style=\"background:#f3e8ff;padding:1px 6px;border-radius:3px;color:#581c87\">' + m + '</code>') }}/>
+          {cur.options.map((opt, i) => {
+            const picked = curPick === i;
+            const cls = picked ? (opt.ok ? 'correct' : 'wrong') : '';
+            return (
+              <button key={i} className={'mcq-opt ' + cls} onClick={() => choose(i)}
+                      style={{ fontFamily: 'ui-monospace, monospace' }}>
+                {opt.txt}
+              </button>
+            );
+          })}
+          {curPick != null && (
+            <div className={'callout ' + (cur.options[curPick].ok ? 'green' : 'amber')} style={{ marginTop: 10 }}>
+              <strong>{cur.options[curPick].ok ? '✓ ' : '✗ '}</strong>
+              {cur.options[curPick].why}
+            </div>
+          )}
+          {curPick != null && cur.options[curPick].ok && (
+            <button className="btn purple" style={{ marginTop: 10 }} onClick={advance}>
+              {stepIdx < STEPS.length - 1 ? 'Next step ▶' : 'Finish derivation ✓'}
+            </button>
+          )}
+        </div>
+      )}
+
+      {done && (
+        <div className="callout green">
+          <strong>✓ Pendulum equation derived.</strong>
+          You ran the full Euler–Lagrange recipe end-to-end: $m l^2 \ddot\theta + m g l \sin\theta = \tau$. Same five steps will work on the 2-DOF arm in your homework.
+          <div style={{ marginTop: 10 }}>
+            <button className="btn secondary" onClick={reset}>↺ Run again</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InertiaMatrixBuilderWidget() {
+  // available terms (symbolic strings)
+  const TERMS = [
+    'm₁L₁²',
+    'm₂L₁²',
+    'm₂L₂²',
+    '2m₂L₁L₂cos θ₂',
+    'm₂L₁L₂cos θ₂',
+    '0'
+  ];
+  // each slot expects a SET of terms whose sum equals the target
+  const SLOTS = [
+    { name: 'D₁₁', need: ['m₁L₁²', 'm₂L₁²', 'm₂L₂²', '2m₂L₁L₂cos θ₂'], target: 'm₁L₁² + m₂(L₁² + L₂² + 2L₁L₂cos θ₂)' },
+    { name: 'D₁₂', need: ['m₂L₂²', 'm₂L₁L₂cos θ₂'], target: 'm₂(L₂² + L₁L₂cos θ₂)' },
+    { name: 'D₂₁', need: ['m₂L₂²', 'm₂L₁L₂cos θ₂'], target: 'D₁₂ by symmetry' },
+    { name: 'D₂₂', need: ['m₂L₂²'], target: 'm₂L₂²' }
+  ];
+  const [active, setActive] = useState(0);
+  const [filled, setFilled] = useState([[], [], [], []]);
+  const [theta2, setTheta2] = useState(0); // for live D₁₁ sweep
+
+  const tryAdd = (term) => {
+    const cur = filled[active];
+    if (cur.includes(term)) return;
+    const next = [...filled];
+    next[active] = [...cur, term];
+    setFilled(next);
+  };
+
+  const undo = () => {
+    const next = [...filled];
+    next[active] = next[active].slice(0, -1);
+    setFilled(next);
+  };
+
+  const resetSlot = () => {
+    const next = [...filled];
+    next[active] = [];
+    setFilled(next);
+  };
+
+  const slotStatus = (i) => {
+    const got = filled[i];
+    const need = SLOTS[i].need;
+    if (got.length === 0) return 'empty';
+    const sortedGot = [...got].sort().join('|');
+    const sortedNeed = [...need].sort().join('|');
+    if (sortedGot === sortedNeed) return 'correct';
+    if (got.some(g => !need.includes(g))) return 'wrong';
+    return 'partial';
+  };
+
+  const allCorrect = SLOTS.every((_, i) => slotStatus(i) === 'correct');
+  const symmetric = slotStatus(1) === 'correct' && slotStatus(2) === 'correct';
+
+  // Numerical D₁₁ for the slider sweep (use m1=m2=1, L1=L2=1)
+  const D11num = 1 + 1 * (1 + 1 + 2 * Math.cos(theta2 * Math.PI / 180));
+  const D11pct = Math.max(0, Math.min(100, ((D11num - 1) / 5) * 100));
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+        <div>
+          <div style={{ fontSize: '0.84rem', color: '#64748b', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Inertia matrix · pick a slot</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {SLOTS.map((s, i) => {
+              const st = slotStatus(i);
+              const cls = st === 'correct' ? 'correct' : st === 'wrong' ? 'wrong' : st === 'partial' ? 'filled' : '';
+              return (
+                <div key={i} onClick={() => setActive(i)}
+                     className={'slot-box ' + cls}
+                     style={{
+                       cursor: 'pointer',
+                       outline: active === i ? '2px solid #7c3aed' : 'none',
+                       outlineOffset: 2,
+                       textAlign: 'left',
+                       padding: '10px 12px'
+                     }}>
+                  <div style={{ fontFamily: 'ui-monospace, monospace', fontWeight: 700, fontSize: '0.88rem', marginBottom: 4 }}>{s.name}</div>
+                  <div style={{ fontSize: '0.78rem', minHeight: '1.2em' }}>
+                    {filled[i].length === 0 ? <span style={{ color: '#94a3b8' }}>empty</span> :
+                     filled[i].join(' + ')}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: '0.84rem', color: '#64748b', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Building: {SLOTS[active].name}</div>
+          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6, padding: '12px 14px', minHeight: 100 }}>
+            <div style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: 4 }}>target:</div>
+            <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: '0.88rem', color: '#1e293b', marginBottom: 10 }}>{SLOTS[active].target}</div>
+            <div style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: 4 }}>your build:</div>
+            <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: '0.92rem', color: slotStatus(active) === 'correct' ? '#14532d' : slotStatus(active) === 'wrong' ? '#7f1d1d' : '#1e293b' }}>
+              {filled[active].length === 0 ? <span style={{ color: '#94a3b8' }}>(click terms below to add)</span> : filled[active].join(' + ')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: 10, fontSize: '0.84rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Available terms</div>
+      <div style={{ marginBottom: 12 }}>
+        {TERMS.map(t => {
+          const used = filled[active].includes(t);
+          return (
+            <span key={t} className={'term-chip ' + (used ? 'used' : '')}
+                  onClick={() => !used && tryAdd(t)}>
+              {t}
+            </span>
+          );
+        })}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+        <button className="btn secondary" onClick={undo}>↶ Undo last term</button>
+        <button className="btn secondary" onClick={resetSlot}>↺ Clear slot</button>
+        <button className="btn secondary" onClick={() => setFilled([[], [], [], []])}>↺ Reset all</button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+        <div style={{ padding: '10px 12px', background: symmetric ? '#dcfce7' : '#fef3c7', border: '1px solid ' + (symmetric ? '#16a34a' : '#f59e0b'), borderRadius: 6, fontSize: '0.88rem' }}>
+          <strong>{symmetric ? '✓ ' : '… '}</strong>symmetric? D₁₂ = D₂₁
+        </div>
+        <div style={{ padding: '10px 12px', background: allCorrect ? '#dcfce7' : '#fef3c7', border: '1px solid ' + (allCorrect ? '#16a34a' : '#f59e0b'), borderRadius: 6, fontSize: '0.88rem' }}>
+          <strong>{allCorrect ? '✓ ' : '… '}</strong>positive-definite? det &gt; 0 and D₁₁ &gt; 0
+        </div>
+      </div>
+
+      <div style={{ padding: '12px 14px', background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 6, marginBottom: 14 }}>
+        <div style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Configuration sweep · scrub θ₂</div>
+        <input type="range" min="-180" max="180" value={theta2}
+               onChange={e => setTheta2(parseInt(e.target.value, 10))}
+               style={{ width: '100%' }}/>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#475569', marginTop: 4 }}>
+          <span>θ₂ = {theta2}°</span>
+          <span>D₁₁ ≈ <strong>{D11num.toFixed(3)}</strong> (m₁=m₂=L₁=L₂=1)</span>
+        </div>
+        <div style={{ height: 8, background: '#e2e8f0', borderRadius: 4, marginTop: 6, overflow: 'hidden' }}>
+          <div style={{ height: '100%', width: D11pct + '%', background: 'linear-gradient(90deg, #7c3aed, #3b82f6)', transition: 'width 0.1s' }}/>
+        </div>
+        <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: 6, fontStyle: 'italic' }}>
+          D₁₁ swings as θ₂ changes — the geometry of the arm gets compiled into the inertia.
+        </div>
+      </div>
+
+      {allCorrect && (
+        <div className="callout green">
+          <strong>✓ Inertia matrix complete.</strong>
+          $\mathbf{D}(\mathbf{q}) = \begin{bmatrix} m_1 L_1^2 + m_2(L_1^2 + L_2^2 + 2 L_1 L_2 \cos\theta_2) &amp; m_2(L_2^2 + L_1 L_2 \cos\theta_2) \\ m_2(L_2^2 + L_1 L_2 \cos\theta_2) &amp; m_2 L_2^2 \end{bmatrix}$ — symmetric, positive-definite, configuration-dependent. This is the object Module 3 will differentiate to get $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$.
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ManipulatorEquationMCQWidget() {
+  const QUESTIONS = [
+    {
+      q: 'Which term in $\\mathbf{D}(\\mathbf{q})\\ddot{\\mathbf{q}} + \\mathbf{h}(\\mathbf{q},\\dot{\\mathbf{q}}) + \\mathbf{c}(\\mathbf{q}) = \\boldsymbol{\\tau}$ comes from the time derivative of the inertia matrix?',
+      options: [
+        '$\\mathbf{D}(\\mathbf{q})\\ddot{\\mathbf{q}}$',
+        '$\\mathbf{h}(\\mathbf{q},\\dot{\\mathbf{q}})$',
+        '$\\mathbf{c}(\\mathbf{q})$',
+        '$\\boldsymbol{\\tau}$'
+      ],
+      correct: 1,
+      explain: '$\\mathbf{h}$ is the Coriolis/centrifugal vector, built from $\\dot{\\mathbf{D}}$ via the Christoffel symbols $h_{ijk} = \\tfrac{1}{2}(\\partial D_{ij}/\\partial q_k + \\partial D_{ik}/\\partial q_j - \\partial D_{jk}/\\partial q_i)$. It\'s quadratic in joint rates.'
+    },
+    {
+      q: 'Why must $\\mathbf{D}(\\mathbf{q})$ be positive-definite for every reachable $\\mathbf{q}$?',
+      options: [
+        'So that the manipulator equation can be inverted for $\\ddot{\\mathbf{q}}$ given $\\boldsymbol{\\tau}$',
+        'Because the kinetic energy $T = \\tfrac{1}{2}\\dot{\\mathbf{q}}^T\\mathbf{D}\\dot{\\mathbf{q}}$ must be strictly positive for any nonzero motion',
+        'Both of the above',
+        'Neither — it only needs to be symmetric'
+      ],
+      correct: 2,
+      explain: 'Both. Positive-definiteness comes from physics (nonzero motion costs positive KE) and is exactly what guarantees $\\mathbf{D}$ is invertible, so we can solve $\\ddot{\\mathbf{q}} = \\mathbf{D}^{-1}(\\boldsymbol{\\tau} - \\mathbf{h} - \\mathbf{c})$.'
+    },
+    {
+      q: 'In the Euler–Lagrange equations $\\frac{d}{dt}(\\partial L/\\partial \\dot{q}_i) - \\partial L/\\partial q_i = \\tau_i$, where do the joint constraint forces appear?',
+      options: [
+        'In $\\tau_i$ on the right-hand side',
+        'Hidden inside $\\partial L/\\partial q_i$',
+        'They don\'t appear at all',
+        'In a separate Lagrange-multiplier term'
+      ],
+      correct: 2,
+      explain: 'They don\'t appear. That\'s the whole point of choosing joint variables as generalized coordinates — kinematic constraints are satisfied automatically, and the constraint forces drop out because they do no work along the allowed motion.'
+    },
+    {
+      q: 'A robot is held perfectly still ($\\dot{\\mathbf{q}} = \\ddot{\\mathbf{q}} = \\mathbf{0}$) in some posture. What torque must the actuators supply?',
+      options: [
+        'Zero — nothing is moving',
+        '$\\mathbf{c}(\\mathbf{q})$ — the gravity term',
+        '$\\mathbf{h}(\\mathbf{q},\\mathbf{0})$ — the Coriolis term',
+        '$\\mathbf{D}(\\mathbf{q})\\mathbf{g}$ — the inertia times gravity'
+      ],
+      correct: 1,
+      explain: 'With $\\dot{\\mathbf{q}} = \\ddot{\\mathbf{q}} = \\mathbf{0}$, both $\\mathbf{D}\\ddot{\\mathbf{q}}$ and $\\mathbf{h}(\\mathbf{q},\\dot{\\mathbf{q}})$ vanish, leaving $\\boldsymbol{\\tau} = \\mathbf{c}(\\mathbf{q})$. That\'s the gravity loading the actuators must hold against — exactly what makes a heavy horizontal arm a torque hog.'
+    }
+  ];
+  const [picks, setPicks] = useState({});
+
+  const renderTex = (s) => s.replace(/\$([^$]+)\$/g, (_, m) => '<span class="katex-inline">$' + m + '$</span>');
+
+  // KaTeX render after each pick
+  const containerRef = useRef(null);
+  useEffect(() => {
+    if (window.renderMathInElement && containerRef.current) {
+      window.renderMathInElement(containerRef.current, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }, [picks]);
+
+  const score = Object.keys(picks).reduce((acc, k) => acc + (picks[k] === QUESTIONS[k].correct ? 1 : 0), 0);
+  const answered = Object.keys(picks).length;
+
+  return (
+    <div ref={containerRef}>
+      {QUESTIONS.map((Q, qi) => {
+        const pick = picks[qi];
+        return (
+          <div key={qi} style={{ marginBottom: 18, paddingBottom: 14, borderBottom: qi < QUESTIONS.length - 1 ? '1px solid #e6e1d3' : 'none' }}>
+            <div style={{ fontWeight: 600, marginBottom: 8, fontSize: '0.95rem' }}>
+              <span style={{ color: '#7c3aed', marginRight: 6 }}>Q{qi + 1}.</span>
+              <span dangerouslySetInnerHTML={{ __html: Q.q }}/>
+            </div>
+            {Q.options.map((opt, oi) => {
+              let cls = '';
+              if (pick != null) {
+                if (oi === Q.correct) cls = 'correct';
+                else if (oi === pick) cls = 'wrong';
+                cls += ' disabled';
+              }
+              return (
+                <button key={oi} className={'mcq-opt ' + cls}
+                        disabled={pick != null}
+                        onClick={() => setPicks(p => ({ ...p, [qi]: oi }))}>
+                  <span dangerouslySetInnerHTML={{ __html: opt }}/>
+                </button>
+              );
+            })}
+            {pick != null && (
+              <div className={'callout ' + (pick === Q.correct ? 'green' : 'amber')} style={{ marginTop: 8 }}>
+                <strong>{pick === Q.correct ? '✓ Correct' : '✗ Not quite'}</strong>
+                <span dangerouslySetInnerHTML={{ __html: Q.explain }}/>
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <div style={{ padding: '10px 14px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6, fontSize: '0.92rem' }}>
+        <strong>Progress:</strong> {answered} / {QUESTIONS.length} answered · {score} correct
+        {answered === QUESTIONS.length && (
+          <span style={{ marginLeft: 10, color: score === QUESTIONS.length ? '#16a34a' : '#d97706', fontWeight: 600 }}>
+            {score === QUESTIONS.length ? '— ready for Module 3.' : '— review the section, then retry.'}
+          </span>
+        )}
+        <button className="btn secondary" style={{ marginLeft: 12, padding: '4px 10px', fontSize: '0.82rem' }}
+                onClick={() => setPicks({})}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+const mounts = [
+  ['force-vs-energy-picker',  ForceVsEnergyPickerWidget],
+  ['velocity-chain-animator', VelocityChainAnimatorWidget],
+  ['lagrangian-derive',       LagrangianDeriveWidget],
+  ['inertia-matrix-builder',  InertiaMatrixBuilderWidget],
+  ['manipulator-equation-mcq', ManipulatorEquationMCQWidget]
+];
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are TSI Buddy for the Robot Manipulator Dynamics course at TSI, lecturer bibliosense.",
+    "You are reading Lecture 02 — Energy-Based Approach to Robot Dynamics — alongside the student.",
+    "",
+    "Your job for this lecture:",
+    "- Help the student see *why* energy methods beat force methods as DOF grows, by anchoring every answer to the live widgets and worked example on the page.",
+    "- Build intuition for T, V, the Lagrangian L = T - V, generalized coordinates, and the Euler–Lagrange recipe — make it feel like an algorithm, not a mystery.",
+    "- Make the manipulator equation D(q)q̈ + h(q,q̇) + c(q) = τ stop feeling like a wall of symbols and start reading as three physically meaningful pieces: inertia, Coriolis/centrifugal, gravity.",
+    "- Trace student errors back to the velocity step (linear and angular Jacobians), since most Lagrangian mistakes start there.",
+    "- Encourage the student to test their understanding by RUNNING the activities — the picker, the velocity animator, the derive widget, the inertia-matrix builder, the MCQ — rather than taking your word for any answer.",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "THE FORMULAS / KEY DEFINITIONS",
+    "Lagrangian: L(q, q̇) = T(q, q̇) - V(q).",
+    "Euler–Lagrange: d/dt(∂L/∂q̇_i) - ∂L/∂q_i = τ_i  for i = 1, …, n.",
+    "Kinetic energy as a quadratic form: T = ½ q̇ᵀ D(q) q̇, with D symmetric and positive-definite.",
+    "Manipulator equation: D(q) q̈ + h(q, q̇) + c(q) = τ, where",
+    "  c_i = ∂V/∂q_i,",
+    "  h_i = Σ_{j,k} h_{ijk} q̇_j q̇_k  with Christoffel symbols",
+    "  h_{ijk} = ½ ( ∂D_{ij}/∂q_k + ∂D_{ik}/∂q_j - ∂D_{jk}/∂q_i ).",
+    "",
+    "WHY (the intuition)",
+    "Forces are vectors that demand frames, free-body diagrams, and explicit constraint reactions for every joint. Energy is a scalar — it doesn't care about frames, and constraint forces do no work along allowed motion, so they vanish from the final equations.",
+    "Choosing joint variables as generalized coordinates means the kinematic constraints are baked into the coordinates themselves, so the Euler–Lagrange machinery only ever sees the n truly independent DOFs and produces n clean equations of motion — one per actuator.",
+    "",
+    "THE GOTCHA (most common student misconception)",
+    "Almost every wrong Lagrangian derivation comes from a wrong velocity, not a wrong derivative. Two patterns dominate:",
+    "  1. Treating link i's velocity as if it depends only on q̇_i. It depends on EVERY upstream joint rate q̇_1, …, q̇_i via the chain rule.",
+    "  2. Forgetting the rotational kinetic term ½ ωᵢᵀ Iᵢ ωᵢ when a link has nonzero inertia about its COM. ½ m v² alone is only complete for a point mass.",
+    "A third recurring slip: differentiating T with respect to q_i as if D were constant — it isn't, which is precisely why h(q,q̇) exists.",
+    "",
+    "BOUNDARY CASES",
+    "At rest (q̇ = 0): h = 0 and the equation collapses to c(q) = τ — pure gravity loading.",
+    "Constant configuration D (e.g. a single 1-DOF rotor, or a Cartesian gantry): ∂D/∂q = 0, so h vanishes and the dynamics become linear in q̈.",
+    "Zero-gravity / horizontal-plane motion: c(q) = 0, but D and h remain — coupling and Coriolis effects don't need gravity.",
+    "Prismatic-only chain: revolute angular-velocity contributions vanish, and the rotational KE term drops out for those joints.",
+    "",
+    "EXPLAIN-IT-LIKE-THIS",
+    "Newton–Euler is bookkeeping in cash: every force, every reaction, every frame transform is a separate transaction you have to track. Lagrangian mechanics is bookkeeping by net worth: you tally one scalar — kinetic minus potential — and the accounting identity (Euler–Lagrange) tells you what had to be true at every joint to produce that ledger. Internal cash flows between joints (constraint forces) cancel automatically because they never changed the net worth.",
+    "",
+    "CURRICULUM CONTEXT",
+    "Module 1 used force methods (Newton–Euler) on single bodies — that's the scalpel the student already trusts. This lecture introduces the energy alternative: T, V, L, generalized coordinates, the Euler–Lagrange equations, the inertia matrix D(q), and how the three pieces D, h, c assemble into the standard manipulator equation. Module 3 will do the full symbolic derivation: building D from velocity Jacobians, computing h via the Christoffel symbols, and applying the framework to concrete arms.",
+    "",
+    "COMMON STUDENT QUESTIONS",
+    "Q: If Newton–Euler and Lagrangian give the same answer, why bother learning two methods?",
+    "A: Because the *path* differs sharply with DOF. For one body, force methods are faster and more intuitive. For a 6-DOF arm, the Lagrangian recipe is shorter, more systematic, and far less error-prone — and it produces the structured form D q̈ + h + c = τ that controllers are built on.",
+    "",
+    "Q: Why do constraint forces just disappear?",
+    "A: They act perpendicular to the directions the joint actually allows motion in, so they do no work along any motion expressed in generalized coordinates. The Euler–Lagrange equations only see work-doing terms, so reactions never enter.",
+    "",
+    "Q: Is L = T - V minus or plus? I keep second-guessing.",
+    "A: It's T - V. The minus sign is what makes the Euler–Lagrange machinery reproduce m ẍ = -∂V/∂x for a falling mass. Write T + V and you get the wrong sign on gravity.",
+    "",
+    "Q: Why is D a function of q, not just a constant matrix?",
+    "A: Because the geometry seen by each joint changes with posture. A horizontally extended arm presents a much larger effective inertia at the shoulder than the same arm folded vertically.",
+    "",
+    "Q: Where do Coriolis and centrifugal terms come from physically?",
+    "A: From D(q) changing as the arm moves. The d/dt(∂T/∂q̇_i) term picks up Ḋ, which is quadratic in joint rates — that's the Christoffel-symbol structure of Module 3.",
+    "",
+    "PRO-INSIGHT WRAP-UP",
+    "The structure D(q) q̈ + h(q,q̇) + c(q) = τ that the student earns by hand here is exactly the object Module 3 will build symbolically from velocity Jacobians and Christoffel symbols, and that later weeks will INVERT — using a known D, h, c to compute the torques needed to drive a desired trajectory.",
+    "",
+    "# PEDAGOGY GUARDS",
+    "- NEVER reveal the answer to the four self-check MCQs in section 8. Scaffold instead: ask the student which term in the equation depends on what; ask what happens at q̇ = 0.",
+    "- NEVER spell out a derivation end-to-end — walk the student through the recipe step by step, asking them to predict each next move. The derive widget on the page does this and you should mirror its style.",
+    "- Push the student onto the live widgets: the picker for Newton–Euler vs Lagrangian cost, the animator for ω propagation, the derive widget for the pendulum, the builder for D, the MCQ for self-assessment.",
+    "- Anchor every claim to a specific section ID on this page (overview, why-energy, kinetic-energy, potential-energy, lagrangian-framework, euler-lagrange, velocity-kinematics, inertia-matrix, manipulator-equation, why-this-wins, homework). When you cite the lecture, quote a short phrase, don't paraphrase entire paragraphs.",
+    "- Do not introduce content the student hasn't seen yet. Module 3 builds the explicit D and h via Christoffel symbols; you may say *that's coming in Module 3* but don't pre-derive it for them.",
+    "",
+    "# LANGUAGE",
+    "Default to English. Switch to another language only on a clearly non-English signal (whole sentence, not just a single foreign noun). For non-English replies, append a short *EN summary:* line at the end so the lecturer can skim.",
+    "",
+    "# REPLY STYLE",
+    "60–180 words per reply. Plain language, lecturer-warm. Use short anchored quotes from the lecture rather than long block citations. End with one specific next move — usually a button to click on a widget, a homework step to attempt, or a question to predict — never with *let me know if you have more questions*."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Robot Manipulator Dynamics · Lecture 02',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>
