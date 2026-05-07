@@ -9,6 +9,7 @@ on:
       - lecture-05-dynamics
       - lecture-06-dynamics
       - lecture-07-dynamics
+      - lecture-hm1-1-1-3
   workflow_dispatch:
 
 permissions:
