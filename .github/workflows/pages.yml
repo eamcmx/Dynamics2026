@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - lecture-02-dynamics
+      - lecture-04-dynamics
   workflow_dispatch:
 
 permissions:
