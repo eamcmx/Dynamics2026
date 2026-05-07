@@ -12,6 +12,7 @@ on:
       - lecture-hm1-1-1-3
       - lecture-hm1-1-1-2
       - lecture-hm1-1-1-1-1
+      - lecture-03-dynamics
   workflow_dispatch:
 
 permissions:
