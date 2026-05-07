@@ -1,0 +1,984 @@
+.contrib}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{marginTop:12, padding:'10px 14px', background:'#e8eef8', borderRadius:6, border:'1px solid #2F5496'}}>
+            <span style={{fontSize:'0.85rem', color:'#1e3a73'}}>det A = </span>
+            <strong style={{fontFamily:'ui-monospace, monospace', fontSize:'1.1rem', color:'#1e3a73'}}>{total}</strong>
+            <div style={{marginTop:4, fontSize:'0.78rem', color:'#4b515c'}}>(same number whichever row or column you pick — Property 1)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReductionPlayground() {
+  const presets = {
+    A: [[2,4,-1],[3,2,5],[1,2,3]],
+    B: [[1,5,-2,0],[3,1,6,1],[7,0,1,3],[4,5,-2,1]]
+  };
+  const [presetKey, setPresetKey] = useState('A');
+  const [M, setM] = useState(presets.A.map(r => r.slice()));
+  const [factor, setFactor] = useState(1);
+  const [log, setLog] = useState([]);
+  const [op, setOp] = useState('add');
+  const [i1, setI1] = useState(1);
+  const [i2, setI2] = useState(0);
+  const [lam, setLam] = useState(-1);
+
+  const n = M.length;
+
+  const detTriangular = m => {
+    let p = 1;
+    for (let i = 0; i < m.length; i++) p *= m[i][i];
+    return p;
+  };
+
+  const isUpperTriangular = m => {
+    for (let i = 0; i < m.length; i++)
+      for (let j = 0; j < i; j++)
+        if (Math.abs(m[i][j]) > 1e-9) return false;
+    return true;
+  };
+
+  const apply = () => {
+    if (i1 < 0 || i1 >= n || i2 < 0 || i2 >= n) return;
+    const nm = M.map(r => r.slice());
+    let descr = '', factEff = 1;
+    if (op === 'swap') {
+      if (i1 === i2) return;
+      [nm[i1], nm[i2]] = [nm[i2], nm[i1]];
+      descr = 'r' + (i1+1) + ' ↔ r' + (i2+1) + ' (det → −det)';
+      factEff = -1;
+    } else if (op === 'scale') {
+      if (lam === 0) return;
+      nm[i1] = nm[i1].map(v => v * lam);
+      descr = 'r' + (i1+1) + ' → ' + lam + '·r' + (i1+1) + ' (det → ' + lam + '·det)';
+      factEff = lam;
+    } else if (op === 'add') {
+      if (i1 === i2) return;
+      nm[i1] = nm[i1].map((v, k) => v + lam * nm[i2][k]);
+      descr = 'r' + (i1+1) + ' → r' + (i1+1) + ' + ' + lam + '·r' + (i2+1) + ' (det unchanged)';
+      factEff = 1;
+    }
+    setM(nm);
+    setFactor(f => f * factEff);
+    setLog(l => [...l, descr]);
+  };
+
+  const reset = () => {
+    const fresh = presets[presetKey].map(r => r.slice());
+    setM(fresh); setFactor(1); setLog([]);
+  };
+
+  const switchPreset = k => {
+    setPresetKey(k);
+    setM(presets[k].map(r => r.slice()));
+    setFactor(1); setLog([]);
+  };
+
+  const triDone = isUpperTriangular(M);
+  const triDet = detTriangular(M);
+  const origDet = triDone && factor !== 0 ? triDet / factor : null;
+  const targets = { A: -72, B: 105 };
+
+  return (
+    <div>
+      <div style={{display:'flex', gap:6, marginBottom:14, flexWrap:'wrap'}}>
+        <button className={'btn ' + (presetKey==='A' ? '' : 'secondary')} style={{fontSize:'0.78rem', padding:'4px 10px'}}
+                onClick={() => switchPreset('A')}>Example A (3×3, target −72)</button>
+        <button className={'btn ' + (presetKey==='B' ? '' : 'secondary')} style={{fontSize:'0.78rem', padding:'4px 10px'}}
+                onClick={() => switchPreset('B')}>Example B (4×4, target 105)</button>
+      </div>
+
+      <div style={{display:'inline-grid', gridTemplateColumns:'repeat(' + n + ', 60px)', gap:4, padding:'10px 14px', border:'2px solid #2F5496', borderRadius:6}}>
+        {M.map((row, i) => row.map((v, j) => (
+          <div key={i + ',' + j}
+               style={{height:42, display:'flex', alignItems:'center', justifyContent:'center',
+                       fontFamily:'ui-monospace, monospace', fontWeight:600, fontSize:'0.85rem',
+                       background: i === j ? '#e8eef8' : (j < i && Math.abs(v) < 1e-9 ? '#d1fae5' : '#fbfaf5'),
+                       borderRadius:4, transition:'all 0.4s'}}>
+            {Math.round(v * 1000) / 1000}
+          </div>
+        )))}
+      </div>
+
+      <div style={{marginTop:14, padding:'12px 14px', background:'#fbfaf5', borderRadius:8, border:'1px solid #e6e1d3'}}>
+        <div style={{display:'flex', gap:6, alignItems:'center', flexWrap:'wrap', fontSize:'0.85rem', marginBottom:8}}>
+          <span>op:</span>
+          <select value={op} onChange={e => setOp(e.target.value)} className="input-mono" style={{padding:'3px 6px', width:'auto'}}>
+            <option value="swap">swap rᵢ ↔ rⱼ (sign flip)</option>
+            <option value="scale">scale rᵢ by λ</option>
+            <option value="add">rᵢ → rᵢ + λ·rⱼ (no change)</option>
+          </select>
+          <span>i =</span>
+          <input type="number" value={i1+1} min={1} max={n} onChange={e => setI1((+e.target.value || 1) - 1)}
+                 className="input-mono" style={{width:52, padding:'3px 6px'}} />
+          {op !== 'scale' && (<>
+            <span>j =</span>
+            <input type="number" value={i2+1} min={1} max={n} onChange={e => setI2((+e.target.value || 1) - 1)}
+                   className="input-mono" style={{width:52, padding:'3px 6px'}} />
+          </>)}
+          {op !== 'swap' && (<>
+            <span>λ =</span>
+            <input type="number" value={lam} step="any" onChange={e => setLam(parseFloat(e.target.value) || 0)}
+                   className="input-mono" style={{width:72, padding:'3px 6px'}} />
+          </>)}
+        </div>
+        <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
+          <button className="btn purple" onClick={apply}>Apply</button>
+          <button className="btn secondary" onClick={reset}>↺ Reset</button>
+        </div>
+      </div>
+
+      <div style={{marginTop:14, padding:'12px 14px', background:'#e8eef8', borderRadius:8, border:'1px solid #2F5496', fontSize:'0.88rem', fontFamily:'ui-monospace, monospace'}}>
+        running factor = <strong>{Math.round(factor * 1000) / 1000}</strong>
+        {triDone ? (
+          <div style={{marginTop:6, color:'#1e3a73'}}>
+            ▲ matrix is upper triangular · diagonal product = <strong>{Math.round(triDet * 1000) / 1000}</strong>
+            <br/>
+            ⇒ det A = (diag) / factor = <strong style={{color: Math.abs(origDet - targets[presetKey]) < 1e-6 ? '#065f46' : '#7f1d1d'}}>
+              {Math.round(origDet * 1000) / 1000}
+            </strong>
+            {Math.abs(origDet - targets[presetKey]) < 1e-6
+              ? <span style={{color:'#065f46', marginLeft:8}}>✓ matches target {targets[presetKey]}</span>
+              : <span style={{color:'#7f1d1d', marginLeft:8}}>(target: {targets[presetKey]})</span>}
+          </div>
+        ) : (
+          <div style={{marginTop:6, color:'#4b515c'}}>not yet triangular — clear the entries below the diagonal</div>
+        )}
+      </div>
+
+      {log.length > 0 && (
+        <div style={{marginTop:14}}>
+          <div style={{fontSize:'0.78rem', color:'#4b515c', marginBottom:6, fontWeight:600, letterSpacing:'0.05em', textTransform:'uppercase'}}>Op log</div>
+          <div style={{maxHeight:130, overflowY:'auto', border:'1px solid #e6e1d3', borderRadius:6, fontFamily:'ui-monospace, monospace', fontSize:'0.82rem'}}>
+            {log.map((l, idx) => (
+              <div key={idx} style={{padding:'5px 10px', borderBottom: idx === log.length - 1 ? 'none' : '1px solid #f0ede2'}}>
+                {idx + 1}. {l}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DeterminantsMCQ() {
+  const Q = [
+    {q:'For a 3×3 matrix A with det A = 5, what is det(2A)?',
+     opts:['10','30','40','160'], correct:2,
+     explain:'det(λA) = λⁿ · det A. With n=3, det(2A) = 2³·5 = 40 — every row picks up the factor.'},
+    {q:'A 4×4 matrix has rows r₃ = 2·r₁. What is det A?',
+     opts:['0','2','2·det(remaining 3×3)','Cannot determine without more info'], correct:0,
+     explain:'Proportional rows ⇒ det A = 0 (Property 6). Pull the factor 2 out of r₃ to get two equal rows, which always gives 0.'},
+    {q:'If det A = 1 and det B = 7, what is det(A^1000 · B²)?',
+     opts:['7','49','7000','1000·49'], correct:1,
+     explain:'det(A^1000·B²) = (det A)^1000·(det B)² = 1·49 = 49 by multiplicativity.'},
+    {q:'Which condition is equivalent to A being invertible?',
+     opts:['A is square','det A = 0','det A ≠ 0','A has at least one nonzero row'], correct:2,
+     explain:'A⁻¹ exists iff det A ≠ 0. Squareness is necessary but not sufficient; det A = 0 means singular.'}
+  ];
+  const [picks, setPicks] = useState({});
+
+  return (
+    <div>
+      {Q.map((q, qi) => {
+        const picked = picks[qi];
+        return (
+          <div key={qi} style={{marginBottom: qi < Q.length - 1 ? 18 : 0, paddingBottom: qi < Q.length - 1 ? 14 : 0, borderBottom: qi < Q.length - 1 ? '1px solid #e6e1d3' : 'none'}}>
+            <div style={{fontWeight:600, marginBottom:8}}>Q{qi+1}. {q.q}</div>
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:6}}>
+              {q.opts.map((opt, oi) => {
+                const isPicked = picked === oi;
+                const isCorrect = picked != null && oi === q.correct;
+                let bg = 'white', col = '#1a1d24', bd = '#cbd5e1';
+                if (picked != null) {
+                  if (isCorrect) { bg = '#d1fae5'; col = '#065f46'; bd = '#10b981'; }
+                  else if (isPicked) { bg = '#fee2e2'; col = '#7f1d1d'; bd = '#ef4444'; }
+                  else { bg = '#fbfaf5'; }
+                }
+                return (
+                  <button key={oi}
+                          disabled={picked != null}
+                          onClick={() => setPicks(p => ({...p, [qi]: oi}))}
+                          style={{
+                            padding:'8px 12px',
+                            background: bg,
+                            color: col,
+                            border:'1px solid', borderColor: bd,
+                            borderRadius:6,
+                            textAlign:'left',
+                            fontSize:'0.88rem',
+                            cursor: picked != null ? 'default' : 'pointer',
+                            transition:'all 0.2s'
+                          }}>
+                    {String.fromCharCode(65 + oi)}. {opt}
+                  </button>
+                );
+              })}
+            </div>
+            {picked != null && (
+              <div style={{marginTop:8, padding:'10px 12px', background:'#fbfaf5', border:'1px solid #e6e1d3', borderRadius:6, fontSize:'0.85rem', color:'#4b515c'}}>
+                <strong style={{color: picked === q.correct ? '#065f46' : '#7f1d1d'}}>
+                  {picked === q.correct ? '✓ Correct.' : '✗ Not quite.'}
+                </strong> {q.explain}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const mounts = [
+  ['inversion-counter', InversionCounter],
+  ['transposition-flip', TranspositionFlip],
+  ['sarrus-builder', SarrusBuilder],
+  ['property-picker', PropertyPicker],
+  ['cofactor-expand', CofactorExpand],
+  ['reduction-playground', ReductionPlayground],
+  ['determinants-mcq', DeterminantsMCQ]
+];
+
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are TSI Buddy, a warm and patient lecturer for the Linear Algebra course at Transport and Telecommunication Institute. You're sitting alongside the student as they work through Lecture 02 — Determinants.",
+    "",
+    "# YOUR JOB FOR THIS LECTURE",
+    "- Help the student see that det A is one number that tells you whether A is invertible — not an array.",
+    "- Build intuition for inversion parity and why it determines the sign of every term in the signed-sum definition.",
+    "- Coach them through the property bookkeeping (transpose, swap, scale, row-add, multiplicativity) so they don't drop a sign or a factor during reduction.",
+    "- Steer them toward the row or column with the most zeros before cofactor-expanding.",
+    "- Make the row-reduce-to-triangular workflow concrete by pointing them at the sandbox widget when they're stuck on a calculation.",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "## Formula / Key Definitions",
+    "det A = sum over all permutations {k₁,…,k_n} of (-1)^P · a_{1,k₁}·a_{2,k₂}·…·a_{n,k_n}, where P is the inversion parity (even = +, odd = −).",
+    "Inversion: a pair (i_j, i_k) with j<k but i_j>i_k. Parity = parity of total inversion count.",
+    "Cofactor: A_{i,j} = (-1)^{i+j} · M_{i,j}, where M_{i,j} is the minor (det of the (n−1)×(n−1) block left after deleting row i and column j).",
+    "Laplace expansion: det A = Σ_j a_{i,j}·A_{i,j} (any row) = Σ_i a_{i,j}·A_{i,j} (any column).",
+    "Triangular shortcut: det of a triangular matrix = product of diagonal entries.",
+    "",
+    "## Why (the intuition)",
+    "Each term picks one entry from every row and every column — exactly the structure that survives matrix multiplication and row operations. The sign attached via inversion parity is what makes swapping two rows flip the determinant, which forces det = 0 whenever two rows agree. So det A = 0 is precisely the algebraic fingerprint of 'rows are linearly dependent' — i.e. A is not invertible.",
+    "",
+    "## The Gotcha (most common student misconception)",
+    "Confusing the matrix with its determinant. A is an array of n² numbers; det A is one scalar. The other big trap: thinking det(λA) = λ·det A. It is λⁿ·det A, because every one of the n rows picks up the factor. And during row reduction students often forget that scaling a row by λ multiplies the determinant by λ.",
+    "",
+    "## Boundary Cases",
+    "Order 1: det|a| = a (no permutations to sum, just the entry). Zero row or column ⇒ det = 0. Two equal or proportional rows ⇒ det = 0. Identity matrix: det I = 1. Triangular A: only the identity permutation survives.",
+    "",
+    "## Explain-It-Like-This",
+    "Think of det A as the signed n-dimensional volume of the box whose edges are A's rows. Swap two edges → mirror image, so the signed volume flips sign. Squash one edge onto another (proportional rows) → the box collapses flat, volume zero. Stretch one edge by λ → volume scales by λ. That's properties 2, 3, 5, 6 in one picture, and it's why 'det A = 0' means 'the rows don't span enough dimensions to be invertible.'",
+    "",
+    "## Curriculum Context",
+    "Came before: matrix indexing a_{i,j}, square matrices of order n, the abstract idea of a permutation. Coming next (still in this module): using det to characterise invertibility and to build A⁻¹ via the cofactor (adjugate) formula, and Cramer's rule for solving Ax = b. The properties proved here — especially row-add invariance and the triangular shortcut — are the same moves used to invert a matrix and solve linear systems.",
+    "",
+    "## Common Student Questions",
+    "Q: Why does swapping two rows flip the sign? — Because every term in the signed sum is indexed by a permutation, and Theorem 1 says any single transposition flips the parity of every permutation, so every term changes sign together.",
+    "Q: Sarrus works for 3×3 — does it extend to 4×4? — No. The diagonal trick is a coincidence of n=3. For n≥4, use cofactor expansion or row-reduce to triangular.",
+    "Q: If I scale a row by 1/2 to clean up arithmetic, what happens to det? — The new matrix has half the original determinant. So multiply the final number by 2 to recover det A.",
+    "Q: Two rows look 'kind of similar' — how do I check det = 0 without computing the whole thing? — Test for proportionality, or do a couple of 'row i ← row i − k·row j' moves (which don't change det) and see if a zero row appears.",
+    "Q: Does det(A+B) = det A + det B? — No — that's the most popular wrong formula. Linearity holds only in one row at a time (property 7), not across the whole matrix. The clean rule is multiplicativity: det(AB) = det A · det B.",
+    "",
+    "## Pro-Insight Wrap-Up",
+    "The single number det A is doing double duty — it's the invertibility test and the volume scale factor — and once eigenvalues come up later in the module, you'll see det(A − λI) = 0 is exactly the equation that pins down those scalars.",
+    "",
+    "# PEDAGOGY GUARDS",
+    "- Never reveal MCQ answers or full numerical results from the homework. Scaffold one step at a time and ask the student what they think the next move is.",
+    "- Point students at the live widgets when applicable. Examples: 'try the inversion counter at the top of §1', 'use the property picker in §5 to see the sign flip yourself', 'the reduction sandbox in §9 will track the running factor for you so you can focus on which operation to choose'.",
+    "- For derivations (e.g. the Theorem 1 proof, the Laplace regrouping argument), give the structure of the argument and ask the student to fill in a step. Don't write the whole proof out unprompted.",
+    "- For homework problems, give the starting strategy or one analogous worked example. Never the final number unless they've shown work.",
+    "- If a student gets a number wrong, ask them to walk you through their last step rather than handing them the right answer.",
+    "",
+    "# LANGUAGE",
+    "- Default to English. If the student writes in clearly non-English (Russian, Latvian, etc.), reply in their language and append a short *EN summary:* line at the end. Do not switch language on a single foreign word inside otherwise English text.",
+    "",
+    "# REPLY SHAPE",
+    "- 60–180 words. Plain language. Anchor explanations to specific matrices and numbers from the lecture (the 3×3 in §6, the reductions in §10, the cofactor example in §8) when it helps. No unprompted lists; prose is fine. Quote a short phrase from the lecture only when it sharpens the point — don't pad answers with citations."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Linear Algebra · Lecture 02',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+
+<section class="card" id="interactive-widgets">
+  <h2>Interactive widgets</h2>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Inversion counter · watch the out-of-order pairs light up</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body"><div id="inversion-counter"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Transposition theorem · every swap flips parity</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body"><div id="transposition-flip"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build the 3×3 determinant · drag six signed triangles</h3>
+      <span class="widget-tag">activity</span>
+    </div>
+    <div class="widget-body"><div id="sarrus-builder"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Property picker · which row trick changes the determinant?</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body"><div id="property-picker"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Cofactor expansion · pick a row or column and watch it unfold</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body"><div id="cofactor-expand"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Triangular reduction sandbox · row-reduce and read the diagonal</h3>
+      <span class="widget-tag">activity</span>
+    </div>
+    <div class="widget-body"><div id="reduction-playground"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · the four most common det-traps</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body"><div id="determinants-mcq"></div></div>
+  </div>
+</section>
+</body>
+</html>
