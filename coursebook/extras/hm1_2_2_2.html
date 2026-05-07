@@ -1,0 +1,956 @@
+ unknowns. Whether a non-trivial solution exists is now a determinant check — that's exactly what §6 unlocks.
+        </div>
+      )}
+    </div>
+  );
+}
+
+function IsItABasisWidget() {
+  const C = [
+    { label: '{i, j, k}', triple: [[1,0,0],[0,1,0],[0,0,1]], verdict: 'basis', det: 1, reason: 'orthogonal — the canonical basis.' },
+    { label: '{1,1,0},{0,1,1},{1,0,1}', triple: [[1,1,0],[0,1,1],[1,0,1]], verdict: 'basis', det: 2, reason: 'non-coplanar; non-orthogonal but valid.' },
+    { label: '{1,2,3},{2,4,6},{0,1,0}', triple: [[1,2,3],[2,4,6],[0,1,0]], verdict: 'dependent · collinear pair', det: 0, reason: 'v₂ = 2·v₁ — the first two share a line.' },
+    { label: '{1,0,0},{0,1,0},{1,1,0}', triple: [[1,0,0],[0,1,0],[1,1,0]], verdict: 'dependent · coplanar', det: 0, reason: 'all three live in the xy-plane; v₃ = v₁ + v₂.' },
+    { label: '{-3,0,5},{1,-1,8},{7,2,0}', triple: [[-3,0,5],[1,-1,8],[7,2,0]], verdict: 'basis', det: -89, reason: 'non-zero determinant — exactly the basis from §8.' },
+    { label: '{1,1,1},{2,2,2},{0,0,3}', triple: [[1,1,1],[2,2,2],[0,0,3]], verdict: 'dependent · collinear pair', det: 0, reason: "first two are collinear; can't be a basis." }
+  ];
+  const [pi, setPi] = useState(0);
+  const cur = C[pi];
+  const ok = cur.det !== 0;
+
+  const W = 320, H = 240, cx = W/2 - 10, cy = H/2 + 20, sx = 22;
+  function proj(x, y, z) { return { x: cx + sx*(x*1.0 - y*0.55), y: cy + sx*(x*0.32 + y*0.50 - z*1.05) }; }
+  const O = proj(0,0,0);
+  const Pts = cur.triple.map(v => proj(v[0], v[1], v[2]));
+  const colors = ['#dc2626', '#16a34a', '#2F5496'];
+  const Xa = proj(4, 0, 0), Ya = proj(0, 4, 0), Za = proj(0, 0, 4);
+
+  return (
+    <div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+        {C.map((c, i) => (
+          <button key={i} className={i === pi ? 'btn' : 'btn secondary'} onClick={() => setPi(i)} style={{ fontSize: '0.74rem', fontFamily: 'monospace' }}>{c.label}</button>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 14 }}>
+        <svg width="100%" viewBox={'0 0 ' + W + ' ' + H} style={{ background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 8 }}>
+          <line x1={O.x} y1={O.y} x2={Xa.x} y2={Xa.y} stroke="#cbd5e1" strokeWidth="0.8" />
+          <line x1={O.x} y1={O.y} x2={Ya.x} y2={Ya.y} stroke="#cbd5e1" strokeWidth="0.8" />
+          <line x1={O.x} y1={O.y} x2={Za.x} y2={Za.y} stroke="#cbd5e1" strokeWidth="0.8" />
+          <text x={Xa.x + 4} y={Xa.y + 12} fontSize="10" fill="#9ca3af">x</text>
+          <text x={Ya.x - 12} y={Ya.y + 12} fontSize="10" fill="#9ca3af">y</text>
+          <text x={Za.x + 4} y={Za.y - 4} fontSize="10" fill="#9ca3af">z</text>
+          {!ok && cur.verdict.includes('coplanar') && (
+            <polygon points={`${O.x},${O.y} ${Pts[0].x},${Pts[0].y} ${Pts[1].x},${Pts[1].y} ${Pts[2].x},${Pts[2].y}`} fill="#fef3c7" opacity="0.55" stroke="#d97706" strokeWidth="0.6" strokeDasharray="3,3" />
+          )}
+          {!ok && cur.verdict.includes('collinear') && (
+            <line x1={Pts[0].x - (Pts[1].x - Pts[0].x)*0.3} y1={Pts[0].y - (Pts[1].y - Pts[0].y)*0.3} x2={Pts[1].x + (Pts[1].x - Pts[0].x)*0.3} y2={Pts[1].y + (Pts[1].y - Pts[0].y)*0.3} stroke="#d97706" strokeWidth="0.8" strokeDasharray="3,3" opacity="0.7"/>
+          )}
+          {Pts.map((p, i) => (
+            <g key={i}>
+              <line x1={O.x} y1={O.y} x2={p.x} y2={p.y} stroke={colors[i]} strokeWidth="2.6" />
+              <circle cx={p.x} cy={p.y} r="3.5" fill={colors[i]} />
+              <text x={p.x + 6} y={p.y - 4} fontSize="11" fill={colors[i]} fontWeight="700">v{i+1}</text>
+            </g>
+          ))}
+          <circle cx={O.x} cy={O.y} r="3" fill="#1a1d24" />
+        </svg>
+        <div>
+          <div className={'callout ' + (ok ? 'green' : 'red')}>
+            <strong>{ok ? '✓ basis' : '✗ ' + cur.verdict}</strong>
+            {cur.reason}
+          </div>
+          <div style={{ background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 6, padding: '10px 12px', fontFamily: 'monospace', fontSize: '0.86rem', marginTop: 8 }}>
+            <div style={{ color: '#4b515c', fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4, fontWeight: 700 }}>determinant of [v₁ v₂ v₃]</div>
+            <div style={{ fontSize: '1.2rem', color: ok ? '#065f46' : '#7f1d1d', fontWeight: 700 }}>det = {cur.det}</div>
+            <div style={{ fontSize: '0.78rem', color: '#4b515c', marginTop: 4 }}>{ok ? 'non-zero ⇒ independent ⇒ a basis' : 'zero ⇒ dependent ⇒ not a basis'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BasisChangePlaygroundWidget() {
+  const PRESETS = [
+    { label: 'textbook §8', d: [4,7,1], B: [[-3,0,5],[1,-1,8],[7,2,0]] },
+    { label: 'orthonormal sanity', d: [3,-2,4], B: [[1,0,0],[0,1,0],[0,0,1]] },
+    { label: 'degenerate (coplanar) — should fail', d: [1,1,1], B: [[1,0,0],[0,1,0],[1,1,0]] },
+    { label: 'try your own (homework #3 shape)', d: [3,1,2], B: [[1,1,0],[0,1,1],[1,0,1]] }
+  ];
+  const [pi, setPi] = useState(0);
+  const [d, setD] = useState(PRESETS[0].d);
+  const [B, setB] = useState(PRESETS[0].B);
+
+  useEffect(() => { setD(PRESETS[pi].d); setB(PRESETS[pi].B); }, [pi]);
+
+  function det3(m) {
+    return m[0][0]*(m[1][1]*m[2][2] - m[1][2]*m[2][1])
+         - m[0][1]*(m[1][0]*m[2][2] - m[1][2]*m[2][0])
+         + m[0][2]*(m[1][0]*m[2][1] - m[1][1]*m[2][0]);
+  }
+  const M = [[B[0][0],B[1][0],B[2][0]],[B[0][1],B[1][1],B[2][1]],[B[0][2],B[1][2],B[2][2]]];
+  const dM = det3(M);
+  let solution = null;
+  let recon = null;
+  if (Math.abs(dM) > 1e-9) {
+    const sol = [0,0,0];
+    for (let i = 0; i < 3; i++) {
+      const Mi = M.map(row => row.slice());
+      for (let j = 0; j < 3; j++) Mi[j][i] = d[j];
+      sol[i] = det3(Mi) / dM;
+    }
+    solution = sol;
+    recon = [0,0,0];
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) recon[j] += sol[i] * B[i][j];
+  }
+
+  const setBcell = (i, j, val) => {
+    const nB = B.map(row => row.slice());
+    nB[i][j] = val;
+    setB(nB);
+  };
+  const setDcell = (j, val) => {
+    const nD = d.slice(); nD[j] = val; setD(nD);
+  };
+
+  function fmtNum(x) { return Math.abs(x - Math.round(x)) < 1e-6 ? Math.round(x).toString() : x.toFixed(3).replace(/\.?0+$/, ''); }
+  function termStr(c, varName, leading) {
+    if (leading) {
+      if (c === 1) return varName;
+      if (c === -1) return '−' + varName;
+      return c + '·' + varName;
+    } else {
+      if (c >= 0) return ' + ' + (c === 1 ? varName : c + '·' + varName);
+      return ' − ' + (c === -1 ? varName : Math.abs(c) + '·' + varName);
+    }
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+        {PRESETS.map((p, i) => (
+          <button key={i} className={i === pi ? 'btn' : 'btn secondary'} onClick={() => setPi(i)} style={{ fontSize: '0.78rem' }}>{p.label}</button>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 14 }}>
+        <div>
+          <h4 style={{ margin: '0 0 6px', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4b515c', fontWeight: 700 }}>vector d in {'{i,j,k}'}</h4>
+          <div style={{ display: 'flex', gap: 6, marginBottom: 10, alignItems: 'center' }}>
+            <span style={{ fontFamily: 'monospace', color: '#4b515c' }}>{'{'}</span>
+            {[0,1,2].map(j => (
+              <input key={j} type="number" value={d[j]} step="1"
+                onChange={(e) => setDcell(j, parseFloat(e.target.value || '0'))}
+                className="input-mono" style={{ width: 56, textAlign: 'center', padding: '0.35rem' }} />
+            ))}
+            <span style={{ fontFamily: 'monospace', color: '#4b515c' }}>{'}'}</span>
+          </div>
+          <h4 style={{ margin: '0 0 6px', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4b515c', fontWeight: 700 }}>new basis ã₁, ã₂, ã₃</h4>
+          {[0,1,2].map(i => (
+            <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 6, alignItems: 'center' }}>
+              <span style={{ width: 24, fontFamily: 'monospace', fontSize: '0.86rem', color: '#7c3aed', fontWeight: 700 }}>ã{i+1}</span>
+              <span style={{ fontFamily: 'monospace', color: '#4b515c' }}>{'{'}</span>
+              {[0,1,2].map(j => (
+                <input key={j} type="number" value={B[i][j]} step="1"
+                  onChange={(e) => setBcell(i, j, parseFloat(e.target.value || '0'))}
+                  className="input-mono" style={{ width: 52, textAlign: 'center', padding: '0.35rem' }} />
+              ))}
+              <span style={{ fontFamily: 'monospace', color: '#4b515c' }}>{'}'}</span>
+            </div>
+          ))}
+          <div style={{ marginTop: 10, padding: '8px 12px', background: Math.abs(dM) > 1e-9 ? '#d1fae5' : '#fee2e2', border: '1px solid ' + (Math.abs(dM) > 1e-9 ? '#10b981' : '#ef4444'), borderRadius: 6, fontFamily: 'monospace', fontSize: '0.88rem' }}>
+            <span style={{ color: Math.abs(dM) > 1e-9 ? '#065f46' : '#7f1d1d', fontWeight: 700 }}>det(M) = {fmtNum(dM)}</span> · {Math.abs(dM) > 1e-9 ? '✓ non-zero — basis valid' : '✗ zero — coplanar / not a basis'}
+          </div>
+        </div>
+        <div>
+          <h4 style={{ margin: '0 0 6px', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4b515c', fontWeight: 700 }}>resulting 3×3 system</h4>
+          <div style={{ background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 6, padding: '10px 12px', fontFamily: 'monospace', fontSize: '0.85rem', lineHeight: 1.85 }}>
+            {[0,1,2].map(j => (
+              <div key={j}>
+                {termStr(B[0][j], 'd̃₁', true)}{termStr(B[1][j], 'd̃₂', false)}{termStr(B[2][j], 'd̃₃', false)} = <strong style={{ color: '#2F5496' }}>{d[j]}</strong>
+              </div>
+            ))}
+          </div>
+          {solution !== null ? (
+            <div style={{ marginTop: 10 }}>
+              <div className="callout green">
+                <strong>solution (Cramer's rule)</strong>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.95rem', marginTop: 4 }}>
+                  d̃₁ = <strong>{fmtNum(solution[0])}</strong> · d̃₂ = <strong>{fmtNum(solution[1])}</strong> · d̃₃ = <strong>{fmtNum(solution[2])}</strong>
+                </div>
+              </div>
+              <div className="callout teal" style={{ marginTop: 8 }}>
+                <strong>verify by reconstruction</strong>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.82rem', marginTop: 4 }}>
+                  d̃₁ã₁ + d̃₂ã₂ + d̃₃ã₃ = {'{' + recon.map(v => fmtNum(v)).join(', ') + '}'}
+                </div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}>
+                  original d = {'{' + d.join(', ') + '}'} {recon.every((v, j) => Math.abs(v - d[j]) < 0.01) ? '· ✓ same arrow, two languages' : '· ✗ mismatch'}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="callout red" style={{ marginTop: 10 }}>
+              <strong>no unique solution</strong>
+              det(M) = 0, so these three vectors are coplanar (or worse). They aren't a basis — try perturbing one entry until det ≠ 0.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const mounts = [
+  ['law-spotter', LawSpotterWidget],
+  ['ijk-resolver', IJKResolverWidget],
+  ['linear-combo-builder', LinearComboBuilderWidget],
+  ['dependence-quiz', DependenceQuizWidget],
+  ['vector-eq-derivation', VectorEqDerivationWidget],
+  ['is-it-a-basis', IsItABasisWidget],
+  ['basis-change-playground', BasisChangePlaygroundWidget]
+];
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are TSI Buddy, an in-page tutor for **Linear Algebra & Analytic Geometry — Lecture 05b: Vector bases & linear (in)dependence**, taught by bibliosense.",
+    "",
+    "## YOUR JOB FOR THIS LECTURE",
+    "- Build intuition for vector bases, decomposition over {i, j, k}, and linear (in)dependence.",
+    "- Help students read the dependence theorem geometrically: collinear ⇒ dependent (2), coplanar ⇒ dependent (3), four-in-3D ⇒ always dependent.",
+    "- Scaffold the change-of-basis worked example and homework #3 *without solving them*.",
+    "- Reinforce the homogeneous-system reading of dependence: count equations vs. unknowns.",
+    "- Steer students to the live widgets — the ijk-resolver, linear-combo-builder, derivation stepper, is-it-a-basis check, and the change-of-basis sandbox — when they're stuck.",
+    "- Use lecturer-warm tone: bright collaborator, never schoolmastery.",
+    "",
+    "## PEDAGOGY GUARDS",
+    "- NEVER reveal quiz answers. Ask probing questions; walk back to a definition; point at the widget.",
+    "- NEVER hand over the d̃₁, d̃₂, d̃₃ for the worked example or any homework problem. Help the student assemble the 3×3 system themselves.",
+    "- NEVER spell out a derivation end-to-end. Reveal at most one step at a time and ask the student to predict the next.",
+    "- Use the 'spot the redundancy' framing: dependence ≡ a missing dimension.",
+    "- If unsure, say so and direct the student to the lecture text.",
+    "",
+    "## LANGUAGE",
+    "- Default to English. Switch only on a clearly non-English signal from the student.",
+    "- If you reply in a non-English language, append a one-line `*EN summary:*` in English at the end.",
+    "",
+    "## REPLY STYLE",
+    "- 60–180 words. Plain language. Quote short anchors from the lecture when useful (\"§5 — three equations in four unknowns…\", \"§8 — det of [ã₁ ã₂ ã₃] is non-zero…\").",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "## Key formulas / definitions",
+    "- Resolution over {i, j, k}: a = a_x i + a_y j + a_z k.",
+    "- Linear combination: λ₁a₁ + λ₂a₂ + … + λₙaₙ.",
+    "- Linear (in)dependence: the set is dependent iff λ₁a₁ + … + λₙaₙ = 0 has a non-trivial solution; otherwise independent.",
+    "- Basis: any n linearly independent vectors in an n-dimensional space.",
+    "- Change of basis: if ã_i = Σ_j a_{ij} a_j, then d_j = Σ_i a_{ij} d̃_i (transformation formulas (4)–(5) in §7).",
+    "",
+    "## Why (intuition)",
+    "A basis is a minimal address system for vectors — one number per independent direction. Linear dependence means at least one of your vectors is redundant: it already lives in the span of the others, so it adds no new direction. The dimension of the space is exactly the number of directions you need before redundancy kicks in. Change-of-basis is just relabelling the same arrow with a different address system; the arrow itself never moves.",
+    "",
+    "## The gotcha (most common student misconception)",
+    "Students confuse \"the vectors equal zero\" with \"the coefficients equal zero.\" Independence is a statement about the *coefficients* in λ₁a₁ + … + λₙaₙ = 0 — the only solution must be all λᵢ = 0. The vectors themselves are non-zero; that's the whole point. A close second: thinking a basis must be orthogonal. It only has to be independent.",
+    "",
+    "## Boundary cases",
+    "- Any set containing the zero vector is automatically dependent.",
+    "- Two parallel non-zero vectors: dependent (collinear), even pointing opposite ways.",
+    "- Three vectors that lie in one plane through the origin: dependent (coplanar), regardless of lengths.",
+    "- Four or more vectors in ℝ³: always dependent — three equations, four+ unknowns.",
+    "- In ℝⁿ, any n+1 vectors are dependent; the four-in-3D rule is the n=3 instance.",
+    "",
+    "## Analogy",
+    "A basis is a set of street directions. In Manhattan, \"3 blocks east, 4 blocks north\" pins down a corner — two independent directions, 2D. Add \"and 5 floors up\" and you've got 3D. A fourth direction like \"2 blocks northeast\" is not new information — you can already get there using east and north. That redundancy is what linear dependence means. A non-orthogonal basis is just giving directions along diagonal avenues instead of E/N: the building doesn't move; only the instructions change.",
+    "",
+    "## Curriculum context",
+    "Before: §5.2 vector arithmetic in {i, j, k}. The three properties at the start of this lecture follow straight from those definitions. Next: §5.7 specialises change-of-basis to *rotations* (orthogonal-to-orthogonal). Dot and cross products will give us geometric tests for collinearity (a × b = 0) and coplanarity (scalar triple product = 0) that match the dependence theorem.",
+    "",
+    "## FAQ anchors",
+    "- \"Linearly dependent\" ≠ \"vectors are equal\" — it means one is a scalar combination of the others.",
+    "- Three-vector coplanarity check: set up λ₁a₁ + λ₂a₂ + λ₃a₃ = 0 as a 3×3 linear system and look for a non-zero solution. (Later: use the determinant or scalar triple product as a shortcut.)",
+    "- A basis can have non-unit vectors. Independence is the only requirement — unit length and orthogonality are bonuses {i, j, k} happens to have.",
+    "- The §8 worked example has a unique answer because the three ã_i are non-coplanar, so the 3×3 system has a non-zero determinant — exactly one solution.",
+    "- Coordinates are not the vector. The arrow is the geometric object; coordinates are its address in a chosen basis. Change the basis, the coordinates change, the arrow doesn't.",
+    "",
+    "## Pro-insight wrap-up",
+    "Today's transformation formulas are a system of linear equations in disguise — once we package them as a matrix in §5.7, change-of-basis becomes one matrix multiplication, and rotations fall out as the special case where that matrix is orthogonal."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Linear Algebra & Analytic Geometry · Lecture 05b',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+
+<section class="card" id="interactive-widgets">
+  <h2>Interactive widgets</h2>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Spot the law · which property justifies this step?</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body"><div id="law-spotter"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Animated resolution · watching $\mathbf{a}=a_x\mathbf{i}+a_y\mathbf{j}+a_z\mathbf{k}$ assemble itself</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body"><div id="ijk-resolver"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build a linear combination · drag scalars, see the resulting vector</h3>
+      <span class="widget-tag">activity</span>
+    </div>
+    <div class="widget-body"><div id="linear-combo-builder"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · two, three, or four vectors?</h3>
+      <span class="widget-tag">practice</span>
+    </div>
+    <div class="widget-body"><div id="dependence-quiz"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Derive the linear system · expand a vector equation production-by-production</h3>
+      <span class="widget-tag">activity</span>
+    </div>
+    <div class="widget-body"><div id="vector-eq-derivation"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Is this a basis? · pick three vectors and see if they span</h3>
+      <span class="widget-tag">activity</span>
+    </div>
+    <div class="widget-body"><div id="is-it-a-basis"></div></div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Change-of-basis sandbox · solve $\mathbf{d}=\tilde{d}_1\tilde{\mathbf{a}}_1+\tilde{d}_2\tilde{\mathbf{a}}_2+\tilde{d}_3\tilde{\mathbf{a}}_3$</h3>
+      <span class="widget-tag">activity</span>
+    </div>
+    <div class="widget-body"><div id="basis-change-playground"></div></div>
+  </div>
+</section>
+</body>
+</html>
