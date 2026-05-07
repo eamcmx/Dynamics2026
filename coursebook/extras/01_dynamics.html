@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From kinematics to dynamics | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,91,255,0.25);
+  }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .tok { display:inline-block; padding:4px 10px; border-radius:100px; font-family: var(--mono); font-size:0.85rem; font-weight:600; margin:2px 3px; border:1px solid; vertical-align:middle; }
+  .tok-id    { background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; }
+  .tok-num   { background:#d1fae5; border-color:#10b981; color:#065f46; }
+  .tok-op    { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+  .tok-kw    { background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+  .tok-paren { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .tok-nt    { background:#ede9fe; border-color:#8b5cf6; color:#5b21b6; }
+  .tok-term  { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .quiz-card { background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%); border:1px solid #6a1b9a; border-radius:10px; padding:30px 32px; margin:22px 0; scroll-margin-top: 90px; }
+  .quiz-card h2 { font-family: var(--serif); color: #6a1b9a; font-weight: 600; font-size: 1.55rem; margin: 0 0 0.5rem; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { font-size: 0.78rem; color: var(--brand); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 8px; display: block; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+
+  /* Widget-specific helpers */
+  .pill { display:inline-block; padding:3px 10px; border-radius:999px; font-family:var(--mono); font-size:0.78rem; font-weight:600; }
+  .pill.kin { background:#dbeafe; color:#1e3a8a; border:1px solid #3b82f6; }
+  .pill.dyn { background:#fee2e2; color:#7f1d1d; border:1px solid #ef4444; }
+  .pill.neutral { background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; }
+  .matrix-cell { font-family:var(--mono); font-size:0.92rem; padding:8px 10px; text-align:center; border-radius:4px; transition:background 0.3s, color 0.3s; }
+  .stage-block { padding:10px 14px; border-radius:8px; border:1px solid var(--rule); font-family:var(--mono); font-size:0.88rem; transition: all 0.35s ease; }
+  .stage-block.is-active { background: linear-gradient(135deg, #2F5496 0%, #1e3a73 100%); color:white; border-color:#1e3a73; transform:scale(1.04); box-shadow: 0 6px 14px -6px rgba(47,84,150,0.55); }
+  .arrow-svg { stroke:#94a3b8; fill:none; stroke-width:2; }
+  .arrow-svg.is-active { stroke:#2F5496; }
+  .err-trace { font-family:var(--mono); font-size:0.78rem; color: var(--ink-soft); }
+  .ff-chip { display:inline-block; padding:6px 11px; margin:3px; border-radius:8px; border:1px solid var(--rule); background:white; cursor:pointer; font-family:var(--mono); font-size:0.82rem; transition: all 0.15s; user-select:none; }
+  .ff-chip:hover { background: var(--brand-soft); border-color: var(--brand); }
+  .ff-chip.is-on { background:#16a34a; color:white; border-color:#15803d; }
+  .ff-chip.is-trap { background:#fee2e2; color:#7f1d1d; border-color:#dc2626; }
+  .ff-chip.is-bad-on { background:#dc2626; color:white; border-color:#991b1b; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Robot Dynamics<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 01 · Module 1 · Robot Dynamics</div>
+  <h1 class="lecture-title">From kinematics to dynamics</h1>
+  <p class="lecture-subtitle">Why forces and torques — not just geometry — decide whether a robot actually works.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 01</span>
+  </div>
+</header>
+
+<div class="voice">Up to now you've been geometers — you can tell me where the end-effector is, how fast it's moving, and which joint angles get it there. That's the easy half. Today we cross into dynamics, which is the messy, physical question: <em>what does it actually take</em> to make that motion happen? Forces, torques, inertias, gravity fighting back. This is the lecture that turns a kinematic stick-figure into a real machine you can build, size, and control.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span> What this lecture covers</h2>
+  <p>Kinematics tells us <strong>what</strong> moves; dynamics tells us <strong>what causes the motion</strong>. In this opening module we make that transition explicit and set up the mathematical scaffolding for everything that follows.</p>
+  <p>We'll see why dynamics is non-negotiable for real robots, classify problems into <em>forward</em> and <em>inverse</em> dynamics, and meet the master equation $\boldsymbol{\tau} = \mathbf{D}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) + \mathbf{c}(\mathbf{q})$ that the rest of the course will dissect, derive, and put to work.</p>
+
+  <div class="voice">Treat this lecture as the map of the territory. Don't worry yet about <em>deriving</em> anything — just get comfortable with what each symbol means and why we care.</div>
+
+  <div class="callout blue"><strong>Learning objectives.</strong>By the end you should be able to articulate the kinematics→dynamics transition, classify forward vs. inverse problems, and recognise each term in the fundamental equation.</div>
+  <div class="callout amber"><strong>Prerequisites.</strong>Kinematics (transformations, Jacobians), matrix calculus, Newton's laws, and basic numerical computation in MATLAB or Python.</div>
+</section>
+
+<section class="card" id="kinematics-to-dynamics">
+  <h2><span class="badge">1</span> From kinematics to dynamics: the essential transition</h2>
+  <p>Kinematics gave you the geometric backbone — positions, velocities, accelerations, where the end-effector lives in space. Useful, but it only ever answers <em>what</em> and <em>how relative to what</em>. It is silent on the questions that matter the moment you build hardware: <strong>how much torque does this motor need? Why does the arm overshoot at high speed? What happens when I bolt a 5 kg payload to the wrist?</strong></p>
+  <p>Dynamics is the layer that answers <em>what forces and torques cause this motion</em>. The analogy: kinematics is the route on a map; dynamics is the fuel, the engine power, and the gradient of the hill. Both matter, but only the second one decides whether the journey is physically possible.</p>
+  <p>It is also a strict superset. Every dynamic analysis still uses positions, velocities, and accelerations — it just adds mass, inertia, friction, and the nonlinear coupling they introduce.</p>
+
+  <div class="voice">If you remember nothing else: kinematics is geometry, dynamics is physics. The robot doesn't care about your blueprints — it cares about Newton's second law.</div>
+
+  <div class="callout teal"><strong>Key insight.</strong>A change in <strong>one</strong> joint's motion produces forces at <strong>all</strong> the other joints. That coupling is the single biggest reason robot dynamics is harder than single-body mechanics.</div>
+
+  <div class="code-block">
+    <div class="code-label">Kinematics vs. dynamics at a glance</div>
+    <pre><code>Aspect              Kinematics                         Dynamics
+-----------------   --------------------------------   ----------------------------------------
+Primary variables   q, q&#775;, q&#776;                            F, &tau;, I, m  (plus all of kinematics)
+Math tools          Linear algebra, transforms         Lagrangian mechanics, ODEs
+Applications        Workspace, collision avoidance     Actuator sizing, control, energy opt.
+Control role        Provides reference trajectories    Determines required control efforts</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Kinematics or dynamics? · classify the question</h3>
+      <span class="widget-tag tag-warm">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="kin-vs-dyn-picker"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="why-dynamics-matters">
+  <h2><span class="badge">2</span> Why dynamic modelling is non-negotiable</h2>
+  <p>Dynamic modelling is not academic decoration — it is the difference between a robot that works on a benchtop and one that works on a factory floor. Without a dynamic model you cannot design controllers, you cannot pick actuators, and you cannot optimise energy or cycle time.</p>
+  <p>The physics underneath is just $\mathbf{F} = m\mathbf{a}$, but in a multi-link manipulator that simple law explodes into a system of coupled, nonlinear ODEs. Four effects are responsible:</p>
+  <ul>
+    <li><strong>Inertial coupling</strong> — accelerating joint 1 means accelerating <em>every</em> link downstream of it, and the effective inertia changes radically with posture.</li>
+    <li><strong>Gravitational loading</strong> — a horizontal link experiences maximum gravitational torque, a vertical one almost none, and this shifts continuously as the robot moves.</li>
+    <li><strong>Velocity-dependent forces</strong> — Coriolis and centrifugal terms appear only when joints move <em>together</em>, and at high speed they can demand 20–30% of total actuator capacity.</li>
+    <li><strong>Configuration dependency</strong> — the inertia <em>seen</em> by an actuator can change by an order of magnitude between an extended and a folded posture.</li>
+  </ul>
+  <p>The punchline: intuitive shortcuts — "just turn up the gains" or "add more torque" — fail spectacularly when speed and precision both rise.</p>
+
+  <div class="voice">Moving a pencil and moving a 100 kg car panel might trace the same path. The dynamics are nothing alike.</div>
+
+  <div class="callout red"><strong>Newton's second law, weaponised.</strong>$\mathbf{F}=m\mathbf{a}$ in a serial manipulator is not one equation — it is $n$ coupled, nonlinear, configuration-dependent equations. That coupling is <em>the</em> reason this course exists.</div>
+  <div class="callout purple"><strong>Where it bites in practice.</strong>Precision manufacturing (vibration, finish, payload variation) and surgical robotics (force feedback, tremor-free motion, safety) both fail outright without dynamic compensation.</div>
+</section>
+
+<section class="card" id="case-study-welding">
+  <h2><span class="badge">3</span> Case study: a 6-DOF automotive welding robot</h2>
+  <p>A 6-DOF arm welds car body panels at speeds up to <strong>1.5 m/s</strong> with a positional tolerance of <strong>±0.1 mm</strong>. Kinematics alone gets nowhere near that spec. Three dynamic effects have to be compensated:</p>
+  <p><strong>1. Inertial overshoot.</strong> Rapid acceleration develops massive inertial forces; pure position feedback can't react fast enough. Feedforward inverse dynamics computes the torques needed <em>before</em> the error appears, using the inertia matrix $\mathbf{D}(\mathbf{q})$ multiplied by the desired $\ddot{\mathbf{q}}$.</p>
+  <p><strong>2. Gravitational sag.</strong> An extended horizontal arm droops by millimetres under its own weight — far outside the ±0.1 mm budget. Real-time computation of $\mathbf{c}(\mathbf{q})$ cancels gravity continuously, making the structure appear weightless to the position loop.</p>
+  <p><strong>3. Velocity-dependent path deviation.</strong> Coriolis and centrifugal forces $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$ pull the tool off curved paths at speed. Velocity feedforward compensates them in real time.</p>
+  <p>Quantitatively, fully-modelled dynamic compensation took accuracy from ±0.5 mm to ±0.05 mm (10×), cut cycle time by 40%, dropped energy use by 25%, and reduced scrap rates by 85%. The model paid for itself inside six months.</p>
+
+  <div class="voice">This is the example to keep in your head all term. Every term we derive corresponds directly to one of these three failures.</div>
+
+  <div class="callout green"><strong>What each term buys you.</strong>$\mathbf{D}(\mathbf{q})\ddot{\mathbf{q}}$ kills overshoot. $\mathbf{c}(\mathbf{q})$ cancels sag. $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$ keeps you on the curve at speed.</div>
+
+  <div class="code-block">
+    <div class="code-label">The control law that delivers ±0.05 mm</div>
+    <pre><code>&tau; = D(q)&middot;q&#776;_desired  +  h(q, q&#775;)  +  c(q)
+     &boxur;&boxh; inertial &boxh;&boxul;    &boxur; Coriolis/   &boxur; gravity &boxul;
+                        centrifugal</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build the welding controller · cancel each failure mode</h3>
+      <span class="widget-tag tag-warm">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="welding-failure-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="forward-vs-inverse">
+  <h2><span class="badge">4</span> Forward vs. inverse dynamics</h2>
+  <p>Both problems use the same physics — they just walk through it in opposite directions.</p>
+  <ul>
+    <li><strong>Forward dynamics</strong> — <em>given</em> applied torques $\boldsymbol{\tau}(t)$, <em>find</em> the resulting accelerations $\ddot{\mathbf{q}}(t)$. Used for <strong>simulation, prediction, verification, safety monitoring</strong>. Computationally heavier (it requires inverting $\mathbf{D}$).</li>
+    <li><strong>Inverse dynamics</strong> — <em>given</em> a desired trajectory $\mathbf{q}(t),\dot{\mathbf{q}}(t),\ddot{\mathbf{q}}(t)$, <em>find</em> the torques $\boldsymbol{\tau}(t)$ that produce it. Used for <strong>real-time control, actuator sizing, feedforward compensation</strong>. Direct evaluation — no inversion needed.</li>
+  </ul>
+  <p>Think of it as prediction vs. planning. Forward asks <em>"if I push like this, what happens?"</em> Inverse asks <em>"to make this happen, how should I push?"</em> In a real robot they run side by side: inverse dynamics drives the feedforward path, forward dynamics drives the simulator and the safety monitor.</p>
+
+  <div class="voice">Memorise the direction of each arrow. Mixing them up is the single most common confusion in this whole course.</div>
+
+  <div class="callout blue"><strong>Why both, always.</strong>You verify a controller in simulation (forward dynamics) before you deploy it; you execute the controller on hardware using inverse dynamics. The same model serves both.</div>
+
+  <div class="code-block">
+    <div class="code-label">Forward vs. inverse — same equation, two directions</div>
+    <pre><code>Forward dynamics    (given &tau; &rarr; find q&#776;):
+    q&#776;  =  D&#8315;&sup1;(q) &middot; [ &tau;  &minus;  h(q, q&#775;)  &minus;  c(q) ]
+
+Inverse dynamics    (given q&#776; &rarr; find &tau;):
+    &tau;  =  D(q)&middot;q&#776;  +  h(q, q&#775;)  +  c(q)</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Surgical-robot dual usage</div>
+    <pre><code>Pre-op planning   &rarr;  inverse dynamics  &rarr;  &tau;_feedforward
+Intra-op monitor  &rarr;  forward dynamics  &rarr;  q&#776;_predicted vs. q&#776;_measured
+                                          (mismatch &rArr; contact / fault)</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Animated dynamic equation · run it forwards, then backwards</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="forward-vs-inverse-animator"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="fundamental-equation">
+  <h2><span class="badge">5</span> The fundamental equation and its three components</h2>
+  <p>Every result in this course rests on one equation:</p>
+  <p>$$\boldsymbol{\tau} = \mathbf{D}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) + \mathbf{c}(\mathbf{q})$$</p>
+  <p>Three terms, three physical effects, three things actuators have to fight against.</p>
+  <p><strong>Inertia matrix $\mathbf{D}(\mathbf{q})$</strong> — $n\times n$, symmetric, positive definite. The effective inertia each actuator sees; off-diagonal entries encode coupling between joints. <em>It changes with posture</em> — that single fact is responsible for most of the difficulty in robot control.</p>
+  <p><strong>Coriolis &amp; centrifugal vector $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$</strong> — $n\times 1$, quadratic in velocity ($\mathbf{h}(\mathbf{q},\alpha\dot{\mathbf{q}}) = \alpha^2\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$). Coriolis from joint–joint interaction, centrifugal from a joint's own motion. Negligible at low speed, dominant at high speed.</p>
+  <p><strong>Gravity vector $\mathbf{c}(\mathbf{q})$</strong> — $n\times 1$, position-dependent, velocity-independent. A conservative force derivable from the system's potential energy — which is exactly the door we'll walk through when we introduce Lagrangian mechanics.</p>
+
+  <div class="voice">Stare at this equation. By the end of the course you'll be able to derive every symbol on the right-hand side from first principles — but right now, just learn to read it.</div>
+
+  <div class="callout blue"><strong>Inertia D(q).</strong>Symmetric, positive definite, configuration-dependent. Off-diagonals = inter-joint coupling.</div>
+  <div class="callout red"><strong>Coriolis/centrifugal h(q,q̇).</strong>Quadratic in velocity. Zero at rest, savage at speed.</div>
+  <div class="callout green"><strong>Gravity c(q).</strong>Pure function of pose. The only term you can compensate without ever measuring velocity.</div>
+
+  <div class="code-block">
+    <div class="code-label">The master equation, annotated</div>
+    <pre><code>&tau;  =  D(q)&middot;q&#776;        +  h(q, q&#775;)               +  c(q)
+      &boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;         &boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;             &boxh;&boxh;&boxh;&boxh;&boxh;
+      inertial          velocity-dependent          gravity
+      n&times;n SPD matrix    n&times;1, quadratic in q&#775;        n&times;1, depends only on q</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Pose the arm · watch D(q) and c(q) breathe</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="inertia-matrix-picker"></div>
+    </div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Read the master equation · pick the term that explains each symptom</h3>
+      <span class="widget-tag tag-violet">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="derive-master-equation"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="mathematical-properties">
+  <h2><span class="badge">6</span> Mathematical properties that control engineers exploit</h2>
+  <p>The equation has structure, and that structure is gold for control design.</p>
+  <p><strong>Symmetry &amp; positive definiteness of $\mathbf{D}(\mathbf{q})$</strong> — $\mathbf{D}=\mathbf{D}^T$ and $\mathbf{x}^T\mathbf{D}(\mathbf{q})\mathbf{x}>0$ for all $\mathbf{x}\neq 0$. This guarantees energy conservation and underwrites stability proofs.</p>
+  <p><strong>Skew-symmetry property</strong> — $\dot{\mathbf{D}}(\mathbf{q}) - 2\mathbf{C}(\mathbf{q},\dot{\mathbf{q}})$ is skew-symmetric. This <em>passivity</em> identity is the single most useful fact in adaptive and energy-based robot control — Lyapunov proofs collapse around it.</p>
+  <p><strong>Boundedness</strong> — $\mathbf{D}$ is bounded above and below for all configurations; $\mathbf{h}$ is bounded by quadratic functions of velocity; $\mathbf{c}$ is bounded for all finite poses. These bounds let you certify worst-case actuator demands and design robust controllers.</p>
+  <p>We will lean on every one of these properties when we get to control design — they are the reason robot control is <em>tractable</em> despite the nonlinearity.</p>
+
+  <div class="voice">These aren't trivia — they're the reason a Lyapunov argument exists at all for a system this nonlinear.</div>
+
+  <div class="callout purple"><strong>Why passivity matters.</strong>The skew-symmetry of $\dot{\mathbf{D}} - 2\mathbf{C}$ means the manipulator is energy-conserving in a precise sense, which is what lets adaptive controllers prove stability without knowing the exact parameters.</div>
+
+  <div class="code-block">
+    <div class="code-label">The three properties in one place</div>
+    <pre><code>D(q) = D&#7488;(q),    x&#7488; D(q) x &gt; 0   &forall; x &ne; 0       (symmetric, positive definite)
+D&#775;(q) &minus; 2 C(q, q&#775;)   is skew-symmetric            (passivity)
+D bounded,  &Vert;h&Vert; &le; k&#8321;&Vert;q&#775;&Vert;&sup2;,   c bounded            (well-posedness for control)</code></pre>
+  </div>
+</section>
+
+<section class="card" id="control-integration">
+  <h2><span class="badge">7</span> How dynamics plugs into a real control loop</h2>
+  <p>A modern manipulator controller is a partnership: feedforward (driven by inverse dynamics) does the heavy lifting, feedback handles whatever is left over — disturbances, modelling error, payload uncertainty.</p>
+  <p>The canonical architecture:</p>
+  <ol>
+    <li><strong>Trajectory planner</strong> generates $\mathbf{q}_d(t),\dot{\mathbf{q}}_d(t),\ddot{\mathbf{q}}_d(t)$.</li>
+    <li><strong>Inverse dynamics (feedforward)</strong> computes $\boldsymbol{\tau}_{ff} = \mathbf{D}(\mathbf{q})\ddot{\mathbf{q}}_d + \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) + \mathbf{c}(\mathbf{q})$.</li>
+    <li><strong>Feedback</strong> adds $\boldsymbol{\tau}_{fb}$ to correct tracking error.</li>
+    <li><strong>Total command</strong> $\boldsymbol{\tau}_{total} = \boldsymbol{\tau}_{ff} + \boldsymbol{\tau}_{fb}$ goes to the actuators.</li>
+    <li><strong>Plant (forward dynamics)</strong> produces the actual motion.</li>
+  </ol>
+  <p>The better the model in step 2, the smaller the error feedback has to clean up — which directly translates into higher gains being safe, faster motions being stable, and tighter tracking being achievable. Every kilogram of accuracy in $\mathbf{D}$, $\mathbf{h}$, and $\mathbf{c}$ shows up at the tool tip.</p>
+
+  <div class="voice">Bad models force feedback to do all the work. Good models let feedback specialise in the things models can't predict.</div>
+
+  <div class="callout teal"><strong>Rule of thumb.</strong>If your robot is sluggish or oscillates, suspect the <em>model</em>, not the gains. Feedback can mask a poor model only up to a point — and that point is where high-performance robotics actually starts.</div>
+
+  <div class="code-block">
+    <div class="code-label">Computed-torque control, schematically</div>
+    <pre><code>q_d, q&#775;_d, q&#776;_d &boxh;&boxh;&boxur;
+                 &boxv;
+         &boxdr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdl;
+         &boxv; inverse dynamics&boxv; &boxh;&boxh; &tau;_ff &boxh;&boxh;&boxur;
+         &boxur;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxul;           &boxv;
+                                       &boxv;
+  q, q&#775;  &boxh;&boxh;&blacktriangleright; [feedback (PD/PID)] &boxh;&boxh; &tau;_fb &boxh;&boxh;&blacktriangleright; &Sigma; &boxh;&boxh; &tau;_total &boxh;&boxh;&blacktriangleright; robot &boxh;&boxh;&blacktriangleright; q, q&#775;</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Wire the control loop · feedforward vs. feedback</h3>
+      <span class="widget-tag tag-violet">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="control-loop-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="roadmap">
+  <h2><span class="badge">8</span> Roadmap and what to take into the next module</h2>
+  <p>The rest of the course is a guided tour of the equation we just met:</p>
+  <ul>
+    <li><strong>Module 2</strong> — energy-based formulation: kinetic and potential energy, the Lagrangian, and why this viewpoint is dramatically cleaner than Newton–Euler for serial chains.</li>
+    <li><strong>Module 3</strong> — the systematic derivation of $\mathbf{D}(\mathbf{q})$, $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$, and $\mathbf{c}(\mathbf{q})$ from first principles.</li>
+    <li><strong>Module 4</strong> — putting Lagrangian dynamics to work on full manipulators, with worked examples.</li>
+  </ul>
+  <p>Before moving on, run the self-check below. If any of the three answers feel shaky, re-read the relevant section — the rest of the course assumes this material is in your bones.</p>
+
+  <div class="voice">If you can explain the master equation to a colleague over coffee, you're ready. If not, that's fine — that's what re-reading is for.</div>
+
+  <div class="callout green"><strong>Self-check.</strong>Can you (1) explain why robot dynamics is harder than single-body dynamics, (2) say when you'd reach for forward vs. inverse dynamics, and (3) name the physical effect each term in $\boldsymbol{\tau} = \mathbf{D}\ddot{\mathbf{q}} + \mathbf{h} + \mathbf{c}$ captures?</div>
+  <div class="callout amber"><strong>Coming next.</strong>Lagrangian mechanics. Same physics, much less bookkeeping — and the door to every advanced control technique we'll meet later.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · 4 questions before Module 2</h3>
+      <span class="widget-tag tag-violet">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="self-check-mcq"></div>
+    </div>
+  </div>
+</section>
+
+<section class="homework" id="homework">
+  <h2><span class="badge">★</span> Homework</h2>
+  <p class="hw-intro">Four short pieces — designed to be done before the next session, in any order.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Identify the terms</h4>
+      <p>Pick any robotic system you've seen (industrial arm, drone, surgical robot, humanoid) and write a short paragraph identifying <em>concretely</em> what $\mathbf{D}(\mathbf{q})$, $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$, and $\mathbf{c}(\mathbf{q})$ would represent for it. Where do you expect each term to dominate?</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>2 · Forward vs. inverse, in your own words</h4>
+      <p>Write a 150-word explanation contrasting forward and inverse dynamics, including one engineering scenario where each is the natural choice. No equations required — focus on the <em>direction of reasoning</em>.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Welding-robot post-mortem</h4>
+      <p>Re-read the welding case study. For each of the three failure modes (inertial overshoot, gravitational sag, velocity-dependent path deviation), state which term of the master equation cancels it and why a pure-feedback controller would struggle to do the same job.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>4 · Prerequisite refresh</h4>
+      <p>Verify the prerequisite list (kinematics, matrix calculus, Newton's laws, MATLAB/Python). Identify any one item you feel weakest on and bring a specific question about it to the next session.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#kinematics-to-dynamics">1 · From kinematics to dynamics</a></li>
+      <li><a href="#why-dynamics-matters">2 · Why dynamic modelling matters</a></li>
+      <li><a href="#case-study-welding">3 · Case study: welding robot</a></li>
+      <li><a href="#forward-vs-inverse">4 · Forward vs. inverse dynamics</a></li>
+      <li><a href="#fundamental-equation">5 · The fundamental equation</a></li>
+      <li><a href="#mathematical-properties">6 · Mathematical properties</a></li>
+      <li><a href="#control-integration">7 · Control-loop integration</a></li>
+      <li><a href="#roadmap">8 · Roadmap</a></li>
+      <li><a href="#homework">★ · Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Robot Dynamics · Lecture 01 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============================================================
+   Widget 1 · KIN VS DYN PICKER
+   ============================================================ */
+function KinVsDynPicker() {
+  const QUESTIONS = [
+    { prompt: "Where is the end-effector when q = (30°, 45°, -20°)?",
+      options: ["Kinematics", "Dynamics"], correct: 0,
+      reveals: "Pure forward kinematics — geometry only. No mass, no force.",
+      quantities: ["q"] },
+    { prompt: "What torque does motor 2 need to lift a 5 kg payload at this pose?",
+      options: ["Kinematics", "Dynamics"], correct: 1,
+      reveals: "You need mass, gravity, and inertia — that's c(q) plus the inertial term.",
+      quantities: ["q", "m", "g", "D(q)"] },
+    { prompt: "Will the wrist collide with the workpiece along this path?",
+      options: ["Kinematics", "Dynamics"], correct: 0,
+      reveals: "Geometric workspace check — kinematics is sufficient.",
+      quantities: ["q(t)"] },
+    { prompt: "Why does the arm overshoot at high speed?",
+      options: ["Kinematics", "Dynamics"], correct: 1,
+      reveals: "Inertial forces D(q)q̈ that kinematics is silent about.",
+      quantities: ["q̈", "D(q)"] },
+    { prompt: "What joint angles place the tool at (0.4, 0.2, 0.6) m?",
+      options: ["Kinematics", "Dynamics"], correct: 0,
+      reveals: "Inverse kinematics — pure geometry.",
+      quantities: ["q", "x"] },
+    { prompt: "Can this 200 W motor complete the cycle in 0.8 s?",
+      options: ["Kinematics", "Dynamics"], correct: 1,
+      reveals: "Actuator sizing — needs τ vs. q̇, the full dynamic equation.",
+      quantities: ["τ", "q̇", "D(q)", "h", "c"] },
+  ];
+
+  const [picks, setPicks] = useState({});
+  const [active, setActive] = useState(0);
+  const score = Object.keys(picks).filter(k => picks[k] === QUESTIONS[k].correct).length;
+
+  const reset = () => { setPicks({}); setActive(0); };
+
+  return (
+    <div>
+      <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:14 }}>
+        {QUESTIONS.map((q,i) => {
+          const picked = picks[i];
+          const correct = picked !== undefined && picked === q.correct;
+          const wrong   = picked !== undefined && picked !== q.correct;
+          let bg = '#f1f5f9', col = '#475569';
+          if (correct) { bg='#dcfce7'; col='#14532d'; }
+          else if (wrong) { bg='#fee2e2'; col='#7f1d1d'; }
+          else if (i === active) { bg='var(--brand)'; col='white'; }
+          return (
+            <button key={i} onClick={() => setActive(i)}
+              style={{ background:bg, color:col, border:'1px solid '+col, padding:'5px 11px', borderRadius:999, cursor:'pointer', fontFamily:'var(--mono)', fontSize:'0.78rem', fontWeight:600 }}>
+              Q{i+1}{picked !== undefined ? (correct ? ' ✓' : ' ✗') : ''}
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:18 }}>
+        <div style={{ background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8, padding:'16px 18px' }}>
+          <div style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8 }}>
+            Question {active+1} of {QUESTIONS.length}
+          </div>
+          <div style={{ fontSize:'1.02rem', fontWeight:500, marginBottom:14, lineHeight:1.5 }}>
+            {QUESTIONS[active].prompt}
+          </div>
+          <div style={{ display:'flex', gap:10 }}>
+            {QUESTIONS[active].options.map((opt, oi) => {
+              const picked = picks[active];
+              const isPicked = picked === oi;
+              const isCorrect = QUESTIONS[active].correct === oi;
+              let cls = 'pill neutral', extra = {};
+              if (picked !== undefined) {
+                if (isPicked && isCorrect) cls = 'pill kin';
+                else if (isPicked && !isCorrect) cls = 'pill dyn';
+                else if (isCorrect) cls = 'pill kin';
+              }
+              return (
+                <button key={oi}
+                  onClick={() => setPicks({...picks, [active]: oi})}
+                  disabled={picked !== undefined}
+                  style={{
+                    background: oi === 0 ? '#dbeafe' : '#fee2e2',
+                    color: oi === 0 ? '#1e3a8a' : '#7f1d1d',
+                    border: '2px solid ' + (oi === 0 ? '#3b82f6' : '#ef4444'),
+                    padding: '10px 18px', borderRadius:8, cursor: picked === undefined ? 'pointer':'default',
+                    fontWeight: 600, fontSize: '0.95rem',
+                    opacity: picked !== undefined && !isPicked && !isCorrect ? 0.5 : 1,
+                    transform: isPicked ? 'scale(1.04)' : 'scale(1)',
+                    transition: 'all 0.2s',
+                    outline: picked !== undefined && isCorrect ? '3px solid #16a34a' : 'none',
+                  }}>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {picks[active] !== undefined && (
+            <div style={{ marginTop:14, padding:'10px 12px', background: picks[active] === QUESTIONS[active].correct ? '#dcfce7' : '#fee2e2', borderRadius:6, fontSize:'0.9rem', lineHeight:1.5 }}>
+              <strong>{picks[active] === QUESTIONS[active].correct ? '✓ Right.' : '✗ Not quite.'}</strong>{' '}
+              {QUESTIONS[active].reveals}
+            </div>
+          )}
+        </div>
+
+        <div style={{ background:'white', border:'1px solid var(--rule)', borderRadius:8, padding:'14px 16px' }}>
+          <div style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--ink-soft)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8 }}>
+            Quantities this question uses
+          </div>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:14 }}>
+            {QUESTIONS[active].quantities.map((q, qi) => {
+              const isDyn = !['q','x','q(t)'].includes(q);
+              return (
+                <span key={qi} className={isDyn ? 'pill dyn' : 'pill kin'}>{q}</span>
+              );
+            })}
+          </div>
+          <div style={{ fontSize:'0.85rem', color:'var(--ink-soft)', lineHeight:1.5 }}>
+            <strong style={{ color:'var(--ink)' }}>Rule of thumb.</strong> If any quantity involves mass, force, torque, or acceleration <em>through inertia</em>, you've crossed into dynamics.
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:14 }}>
+        <div style={{ fontFamily:'var(--mono)', fontSize:'0.85rem', color:'var(--ink-soft)' }}>
+          Score: <strong style={{ color: score === QUESTIONS.length ? '#16a34a' : 'var(--ink)' }}>{score} / {QUESTIONS.length}</strong>
+        </div>
+        <div style={{ display:'flex', gap:8 }}>
+          <button className="btn secondary" onClick={() => setActive(Math.max(0, active-1))} disabled={active===0}>← Prev</button>
+          <button className="btn secondary" onClick={() => setActive(Math.min(QUESTIONS.length-1, active+1))} disabled={active===QUESTIONS.length-1}>Next →</button>
+          <button className="btn purple" onClick={reset}>↺ Reset</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   Widget 2 · WELDING FAILURE BUILDER
+   ============================================================ */
+function WeldingFailureBuilder() {
+  const FAILURES = [
+    { id:'inertial-overshoot',    name:'Inertial overshoot at acceleration', initialError:0.40, resolvedError:0.06 },
+    { id:'gravitational-sag',     name:'Static droop of horizontal arm',     initialError:0.50, resolvedError:0.05 },
+    { id:'velocity-path-deviation', name:'Curved-path deviation at 1.5 m/s', initialError:0.35, resolvedError:0.05 },
+  ];
+  const OPS = [
+    { id:'D',  label:'D(q)·q̈_d',  pretty:'inertial feedforward', cancels:'inertial-overshoot' },
+    { id:'c',  label:'c(q)',        pretty:'gravity compensation', cancels:'gravitational-sag' },
+    { id:'h',  label:'h(q,q̇)',     pretty:'Coriolis/centrifugal', cancels:'velocity-path-deviation' },
+    { id:'pd', label:'high-gain PD', pretty:'brute-force feedback', cancels:null, trap:'Masks rather than removes the error — instability creeps in at higher speed.' },
+    { id:'sm', label:'trajectory smoothing', pretty:'gentler reference', cancels:null, trap:'Makes the path nicer but doesn\'t address the physics.' },
+  ];
+
+  const [assigned, setAssigned] = useState({}); // failureId -> opId
+  const [selectedOp, setSelectedOp] = useState(null);
+  const [trapMsg, setTrapMsg] = useState(null);
+
+  const assignTo = (failureId) => {
+    if (!selectedOp) return;
+    const op = OPS.find(o => o.id === selectedOp);
+    if (op.cancels === null) {
+      setTrapMsg({ failureId, msg: op.trap });
+      setTimeout(() => setTrapMsg(null), 2400);
+      setSelectedOp(null);
+      return;
+    }
+    setAssigned({ ...assigned, [failureId]: selectedOp });
+    setSelectedOp(null);
+  };
+
+  const reset = () => { setAssigned({}); setSelectedOp(null); setTrapMsg(null); };
+
+  const allCorrect = FAILURES.every(f => {
+    const op = OPS.find(o => o.id === assigned[f.id]);
+    return op && op.cancels === f.id;
+  });
+
+  return (
+    <div>
+      <div style={{ marginBottom:14 }}>
+        <div style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8 }}>
+          Step 1 · Pick a term from the palette
+        </div>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+          {OPS.map(op => {
+            const used = Object.values(assigned).includes(op.id);
+            const trap = op.cancels === null;
+            const cls = 'ff-chip' + (selectedOp === op.id ? ' is-on' : '') + (trap && trapMsg ? ' is-bad-on' : '');
+            return (
+              <span key={op.id} className={cls}
+                onClick={() => !used && setSelectedOp(selectedOp === op.id ? null : op.id)}
+                style={{ opacity: used ? 0.4 : 1, pointerEvents: used ? 'none':'auto' }}>
+                {op.label} <span style={{ fontSize:'0.72rem', opacity:0.75 }}>· {op.pretty}</span>
+                {trap && <span style={{ marginLeft:6, fontSize:'0.7rem' }}>⚠</span>}
+              </span>
+            );
+          })}
+        </div>
+        <div style={{ fontSize:'0.78rem', color:'var(--ink-soft)', marginTop:6 }}>
+          {selectedOp ? <span><strong>Selected:</strong> {OPS.find(o=>o.id===selectedOp).label}. Now click a failure mode below.</span>
+                      : <span>Click a chip to select it; some are traps.</span>}
+        </div>
+      </div>
+
+      <div style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8 }}>
+        Step 2 · Drop it onto the failure it cancels
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:10 }}>
+        {FAILURES.map(f => {
+          const op = OPS.find(o => o.id === assigned[f.id]);
+          const correct = op && op.cancels === f.id;
+          const err = correct ? f.resolvedError : f.initialError;
+          const errPct = (err / 0.50) * 100;
+          const trapped = trapMsg && trapMsg.failureId === f.id;
+          return (
+            <div key={f.id}
+              onClick={() => assignTo(f.id)}
+              style={{
+                background: correct ? '#dcfce7' : trapped ? '#fee2e2' : 'white',
+                border: '2px solid ' + (correct ? '#16a34a' : trapped ? '#dc2626' : 'var(--rule)'),
+                borderRadius:8, padding:'12px 14px', cursor: selectedOp ? 'pointer':'default',
+                transition:'all 0.3s'
+              }}>
+              <div style={{ fontSize:'0.85rem', fontWeight:600, marginBottom:8, lineHeight:1.4 }}>{f.name}</div>
+              <div style={{ height:6, background:'#f1f5f9', borderRadius:3, overflow:'hidden', marginBottom:6 }}>
+                <div style={{
+                  width: errPct + '%',
+                  height: '100%',
+                  background: correct ? '#16a34a' : '#dc2626',
+                  transition: 'width 0.6s, background 0.3s'
+                }}/>
+              </div>
+              <div style={{ display:'flex', justifyContent:'space-between', fontFamily:'var(--mono)', fontSize:'0.78rem' }}>
+                <span style={{ color:'var(--ink-soft)' }}>error</span>
+                <strong style={{ color: correct ? '#15803d' : '#7f1d1d' }}>±{err.toFixed(2)} mm</strong>
+              </div>
+              {op && (
+                <div style={{ marginTop:8, fontSize:'0.78rem', color: correct ? '#15803d' : '#7f1d1d' }}>
+                  {correct ? '✓ ' : '✗ '}cancelled by <strong style={{ fontFamily:'var(--mono)' }}>{op.label}</strong>
+                </div>
+              )}
+              {trapped && (
+                <div style={{ marginTop:8, fontSize:'0.76rem', color:'#7f1d1d', fontStyle:'italic' }}>
+                  {trapMsg.msg}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {allCorrect && (
+        <div style={{ marginTop:14, padding:'14px 16px', background:'linear-gradient(135deg,#dcfce7 0%, #bbf7d0 100%)', border:'2px solid #16a34a', borderRadius:8, fontSize:'0.92rem' }}>
+          <strong style={{ color:'#14532d' }}>✓ All three failures cancelled.</strong> Final law:
+          <div style={{ marginTop:8, fontFamily:'var(--mono)', fontSize:'1rem', textAlign:'center', color:'#14532d' }}>
+            τ = D(q)·q̈_d + h(q,q̇) + c(q)
+          </div>
+          <div style={{ marginTop:6, fontSize:'0.85rem', color:'#15803d' }}>
+            Tracking band tightened to ±0.05 mm — the welder's spec.
+          </div>
+        </div>
+      )}
+
+      <div style={{ display:'flex', justifyContent:'flex-end', marginTop:12 }}>
+        <button className="btn purple" onClick={reset}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   Widget 3 · FORWARD VS INVERSE ANIMATOR
+   ============================================================ */
+function ForwardVsInverseAnimator() {
+  const STAGES_FWD = [
+    { label:'τ given', detail:'Applied torque vector arrives from the actuator.' },
+    { label:'evaluate D(q), h(q,q̇), c(q)', detail:'Compute coefficients at current state.' },
+    { label:'subtract h + c from τ', detail:'Strip out velocity and gravity contributions.' },
+    { label:'multiply by D⁻¹(q)', detail:'Matrix inversion — the expensive step.' },
+    { label:'q̈ emitted', detail:'Resulting acceleration of the joints.' },
+  ];
+  const STAGES_INV = [
+    { label:'q̈_d given', detail:'Desired acceleration from the trajectory planner.' },
+    { label:'evaluate D(q), h(q,q̇), c(q)', detail:'Compute coefficients at current state.' },
+    { label:'multiply D(q)·q̈_d', detail:'Inertial torque — pure matrix-vector product.' },
+    { label:'add h(q,q̇) and c(q)', detail:'Stack on velocity and gravity contributions.' },
+    { label:'τ emitted', detail:'Torque command for the actuators.' },
+  ];
+
+  const [direction, setDirection] = useState('inverse');
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+
+  const stages = direction === 'forward' ? STAGES_FWD : STAGES_INV;
+
+  useEffect(() => {
+    if (!playing) return;
+    const t = setTimeout(() => {
+      setStep(s => {
+        if (s + 1 >= stages.length) { setPlaying(false); return s; }
+        return s + 1;
+      });
+    }, 1100);
+    return () => clearTimeout(t);
+  }, [playing, step, direction]);
+
+  const switchDir = (d) => { setDirection(d); setStep(0); setPlaying(false); };
+  const reset = () => { setStep(0); setPlaying(false); };
+
+  return (
+    <div>
+      <div style={{ display:'flex', gap:8, marginBottom:14, alignItems:'center' }}>
+        <span style={{ fontSize:'0.85rem', color:'var(--ink-soft)' }}>Direction:</span>
+        <button
+          onClick={() => switchDir('forward')}
+          style={{
+            background: direction === 'forward' ? 'var(--brand)' : 'white',
+            color: direction === 'forward' ? 'white' : 'var(--brand)',
+            border:'2px solid var(--brand)', padding:'6px 14px', borderRadius:6, cursor:'pointer',
+            fontWeight:600, fontSize:'0.85rem'
+          }}>
+          Forward · τ → q̈
+        </button>
+        <button
+          onClick={() => switchDir('inverse')}
+          style={{
+            background: direction === 'inverse' ? 'var(--brand)' : 'white',
+            color: direction === 'inverse' ? 'white' : 'var(--brand)',
+            border:'2px solid var(--brand)', padding:'6px 14px', borderRadius:6, cursor:'pointer',
+            fontWeight:600, fontSize:'0.85rem'
+          }}>
+          Inverse · q̈ → τ
+        </button>
+        <span style={{ marginLeft:'auto', fontFamily:'var(--mono)', fontSize:'0.78rem', color: direction === 'forward' ? '#dc2626' : '#16a34a', fontWeight:600 }}>
+          {direction === 'forward' ? '⚠ requires D⁻¹' : '✓ direct evaluation'}
+        </span>
+      </div>
+
+      {/* SVG flow */}
+      <svg viewBox="0 0 720 200" style={{ width:'100%', height:200, background:'#fbfaf5', borderRadius:8, border:'1px solid var(--rule)' }}>
+        {/* boxes */}
+        {stages.map((s, i) => {
+          const x = 20 + i * 138;
+          const active = i === step;
+          const passed = i < step;
+          return (
+            <g key={i}>
+              <rect x={x} y={70} width={120} height={60} rx={8}
+                fill={active ? '#2F5496' : passed ? '#dbeafe' : 'white'}
+                stroke={active ? '#1e3a73' : passed ? '#3b82f6' : '#cbd5e1'}
+                strokeWidth={active ? 2.5 : 1.5}
+                style={{ transition:'all 0.4s' }}/>
+              <text x={x + 60} y={95} textAnchor="middle"
+                fontFamily="var(--mono)" fontSize="11" fontWeight="700"
+                fill={active ? 'white' : '#1e3a73'}>
+                {s.label.length > 18 ? s.label.slice(0,17)+'…' : s.label}
+              </text>
+              <text x={x + 60} y={114} textAnchor="middle"
+                fontFamily="var(--sans)" fontSize="9.5"
+                fill={active ? '#dbeafe' : '#475569'}>
+                step {i+1}
+              </text>
+              {i < stages.length - 1 && (
+                <g>
+                  <line x1={x + 120} y1={100} x2={x + 138} y2={100}
+                    stroke={i < step ? '#2F5496' : '#cbd5e1'} strokeWidth={2}
+                    style={{ transition:'stroke 0.3s' }}/>
+                  <polygon points={`${x+138},100 ${x+132},96 ${x+132},104`}
+                    fill={i < step ? '#2F5496' : '#cbd5e1'}
+                    style={{ transition:'fill 0.3s' }}/>
+                </g>
+              )}
+            </g>
+          );
+        })}
+        {/* direction arrow at top */}
+        <text x={360} y={30} textAnchor="middle" fontFamily="var(--serif)" fontStyle="italic" fontSize="14" fill="#475569">
+          {direction === 'forward' ? 'forward dynamics — predict motion from torque' : 'inverse dynamics — compute torque from desired motion'}
+        </text>
+        <text x={360} y={48} textAnchor="middle" fontFamily="var(--mono)" fontSize="10" fill="#94a3b8">
+          flow: left → right
+        </text>
+      </svg>
+
+      {/* current step detail */}
+      <div style={{ marginTop:12, padding:'10px 14px', background:'var(--brand-soft)', borderRadius:6, fontSize:'0.9rem', minHeight:42 }}>
+        <strong>Step {step+1}:</strong> {stages[step].label}.{' '}
+        <span style={{ color:'var(--ink-soft)' }}>{stages[step].detail}</span>
+      </div>
+
+      <div style={{ display:'flex', gap:8, marginTop:12 }}>
+        <button className="btn purple" onClick={() => setPlaying(p => !p)}>
+          {playing ? '⏸ Pause' : '▶ Play'}
+        </button>
+        <button className="btn secondary" onClick={() => setStep(s => Math.max(0, s-1))}>← Step back</button>
+        <button className="btn secondary" onClick={() => setStep(s => Math.min(stages.length-1, s+1))}>Step forward →</button>
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   Widget 4 · INERTIA MATRIX PICKER (live 2-DOF arm)
+   ============================================================ */
+function InertiaMatrixPicker() {
+  const [q1, setQ1] = useState(30);   // degrees
+  const [q2, setQ2] = useState(45);
+
+  // toy 2-DOF planar arm parameters
+  const m1 = 2, m2 = 1.5, l1 = 0.4, l2 = 0.3, r1 = 0.2, r2 = 0.15, I1 = 0.05, I2 = 0.03, g = 9.81;
+
+  const q1r = q1 * Math.PI / 180;
+  const q2r = q2 * Math.PI / 180;
+
+  const D11 = m1*r1*r1 + I1 + m2*(l1*l1 + r2*r2 + 2*l1*r2*Math.cos(q2r)) + I2;
+  const D12 = m2*(r2*r2 + l1*r2*Math.cos(q2r)) + I2;
+  const D21 = D12;
+  const D22 = m2*r2*r2 + I2;
+
+  const c1 = (m1*r1 + m2*l1)*g*Math.cos(q1r) + m2*r2*g*Math.cos(q1r + q2r);
+  const c2 = m2*r2*g*Math.cos(q1r + q2r);
+
+  const D11_min = m1*r1*r1 + I1 + m2*(l1*l1 + r2*r2 + 2*l1*r2*Math.cos(Math.PI)) + I2;
+  const D11_max = m1*r1*r1 + I1 + m2*(l1*l1 + r2*r2 + 2*l1*r2) + I2;
+  const ratio = D11_max / D11_min;
+
+  // arm tip
+  const x1 = l1 * Math.cos(q1r);
+  const y1 = l1 * Math.sin(q1r);
+  const x2 = x1 + l2 * Math.cos(q1r + q2r);
+  const y2 = y1 + l2 * Math.sin(q1r + q2r);
+
+  const sx = (x) => 200 + x * 240;
+  const sy = (y) => 150 - y * 240;
+
+  const PRESETS = [
+    { label:'Extended (q₂=0°)',    q1:30,  q2:5  },
+    { label:'Folded (q₂=170°)',    q1:30,  q2:170 },
+    { label:'Mid-pose (q₂=90°)',   q1:30,  q2:90  },
+    { label:'Vertical-up',         q1:90,  q2:5   },
+  ];
+
+  // colour helper for matrix cells
+  const cellColor = (val, max) => {
+    const t = Math.min(1, Math.abs(val) / max);
+    return `rgba(47,84,150,${0.10 + t*0.55})`;
+  };
+  const Dmax = Math.max(Math.abs(D11_max), 0.001);
+
+  return (
+    <div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:18 }}>
+        {/* Arm visualization */}
+        <div style={{ background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8, padding:12 }}>
+          <div style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8 }}>
+            2-DOF planar arm
+          </div>
+          <svg viewBox="0 0 400 240" style={{ width:'100%', height:200, background:'white', borderRadius:6, border:'1px solid var(--rule)' }}>
+            {/* gravity arrow */}
+            <g opacity={0.4}>
+              <line x1={20} y1={20} x2={20} y2={50} stroke="#475569" strokeWidth={1.5}/>
+              <polygon points="20,50 16,44 24,44" fill="#475569"/>
+              <text x={28} y={38} fontFamily="var(--mono)" fontSize="10" fill="#475569">g</text>
+            </g>
+            {/* ground */}
+            <line x1={0} y1={150} x2={400} y2={150} stroke="#cbd5e1" strokeDasharray="4 4" strokeWidth={1}/>
+            {/* link 1 */}
+            <line x1={sx(0)} y1={sy(0)} x2={sx(x1)} y2={sy(y1)} stroke="#2F5496" strokeWidth={6} strokeLinecap="round"/>
+            {/* link 2 */}
+            <line x1={sx(x1)} y1={sy(y1)} x2={sx(x2)} y2={sy(y2)} stroke="#7c3aed" strokeWidth={6} strokeLinecap="round"/>
+            {/* base */}
+            <circle cx={sx(0)} cy={sy(0)} r={9} fill="#1e3a73"/>
+            {/* joint 2 */}
+            <circle cx={sx(x1)} cy={sy(y1)} r={7} fill="#5b21b6"/>
+            {/* tip */}
+            <circle cx={sx(x2)} cy={sy(y2)} r={5} fill="#dc2626"/>
+            {/* labels */}
+            <text x={sx(0)+12} y={sy(0)+14} fontFamily="var(--mono)" fontSize="10" fill="#1e3a73">q₁={q1}°</text>
+            <text x={sx(x1)+10} y={sy(y1)-8}  fontFamily="var(--mono)" fontSize="10" fill="#5b21b6">q₂={q2}°</text>
+          </svg>
+          <div style={{ marginTop:10 }}>
+            <label style={{ fontFamily:'var(--mono)', fontSize:'0.78rem', color:'var(--ink-soft)' }}>q₁ ({q1}°)</label>
+            <input type="range" min={-30} max={150} value={q1} onChange={e => setQ1(+e.target.value)} style={{ width:'100%' }}/>
+            <label style={{ fontFamily:'var(--mono)', fontSize:'0.78rem', color:'var(--ink-soft)' }}>q₂ ({q2}°)</label>
+            <input type="range" min={5} max={175} value={q2} onChange={e => setQ2(+e.target.value)} style={{ width:'100%' }}/>
+          </div>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginTop:8 }}>
+            {PRESETS.map((p,i) => (
+              <button key={i} className="btn secondary" style={{ fontSize:'0.74rem', padding:'4px 10px' }}
+                onClick={() => { setQ1(p.q1); setQ2(p.q2); }}>{p.label}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Live D and c readouts */}
+        <div>
+          <div style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8 }}>
+            Inertia matrix D(q)
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:6, marginBottom:14 }}>
+            <div className="matrix-cell" style={{ background: cellColor(D11, Dmax), color:'white' }}>{D11.toFixed(3)}</div>
+            <div className="matrix-cell" style={{ background: cellColor(D12, Dmax), color:'white' }}>{D12.toFixed(3)}</div>
+            <div className="matrix-cell" style={{ background: cellColor(D21, Dmax), color:'white' }}>{D21.toFixed(3)}</div>
+            <div className="matrix-cell" style={{ background: cellColor(D22, Dmax), color:'white' }}>{D22.toFixed(3)}</div>
+          </div>
+
+          <div style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8 }}>
+            Gravity vector c(q) [N·m]
+          </div>
+          <div style={{ display:'flex', gap:14, marginBottom:14 }}>
+            <div style={{ flex:1, padding:'8px 12px', background:'#dcfce7', border:'1px solid #16a34a', borderRadius:6, fontFamily:'var(--mono)' }}>
+              c₁ = <strong>{c1.toFixed(2)}</strong>
+            </div>
+            <div style={{ flex:1, padding:'8px 12px', background:'#dcfce7', border:'1px solid #16a34a', borderRadius:6, fontFamily:'var(--mono)' }}>
+              c₂ = <strong>{c2.toFixed(2)}</strong>
+            </div>
+          </div>
+
+          <div className="callout teal" style={{ margin:0, fontSize:'0.85rem' }}>
+            <strong>Workspace ratio</strong>
+            max(D₁₁) / min(D₁₁) ≈ <strong style={{ fontFamily:'var(--mono)' }}>{ratio.toFixed(1)}×</strong> across all postures.
+            That's the same robot, the same payload — and an order of magnitude difference in effective inertia.
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop:14, padding:'10px 14px', background:'var(--brand-soft)', borderRadius:6, fontSize:'0.85rem', lineHeight:1.55 }}>
+        <strong>At this pose:</strong> link 2 contributes about{' '}
+        <strong style={{ color:'var(--brand)' }}>
+          {((D12 / D11) * 100).toFixed(0)}%
+        </strong>{' '}
+        of the inertia coupling joint 1 sees, and gravity demands{' '}
+        <strong style={{ color:'#16a34a' }}>{Math.abs(c2).toFixed(2)} N·m</strong> at joint 2.
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   Widget 5 · CONTROL LOOP BUILDER
+   ============================================================ */
+function ControlLoopBuilder() {
+  const [terms, setTerms] = useState({ D:false, h:false, c:false });
+  const [kp, setKp] = useState(40);
+  const [fbOff, setFbOff] = useState(false);
+
+  // toy "tracking error" model
+  const baseError = 1.2; // mm
+  let modelCovered = 0;
+  if (terms.D) modelCovered += 0.40;
+  if (terms.h) modelCovered += 0.25;
+  if (terms.c) modelCovered += 0.25;
+
+  const modelGap = 1 - modelCovered;
+  const fbGain = fbOff ? 0 : Math.min(1, kp / 100);
+  const oscillation = (modelGap > 0.3 && kp > 70) ? (kp - 70) / 30 * 0.4 : 0;
+
+  const error = baseError * (modelGap * (1 - fbGain * 0.7) + oscillation);
+  const ffEffort = (terms.D ? 40 : 0) + (terms.h ? 18 : 0) + (terms.c ? 25 : 0);
+  const fbEffort = fbOff ? 0 : Math.min(60, kp * 0.6 + (modelGap * 100));
+  const totalEffort = ffEffort + fbEffort || 1;
+  const fbPct = (fbEffort / totalEffort) * 100;
+
+  const win = terms.D && terms.h && terms.c && !fbOff && error < 0.15 && fbPct < 10;
+
+  // Generate trace polyline points for "actual vs desired"
+  const tracePts = [];
+  for (let i = 0; i <= 60; i++) {
+    const x = i * 6;
+    const desired = 70 + 30 * Math.sin(i * 0.18);
+    const noise = Math.sin(i * 0.5) * error * 8 + (oscillation > 0 ? Math.sin(i * 0.9) * oscillation * 14 : 0);
+    tracePts.push([x, desired, desired + noise]);
+  }
+
+  return (
+    <div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:18 }}>
+        {/* control loop schematic */}
+        <div style={{ background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8, padding:12 }}>
+          <div style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8 }}>
+            Computed-torque schematic
+          </div>
+          <svg viewBox="0 0 380 220" style={{ width:'100%', background:'white', borderRadius:6, border:'1px solid var(--rule)' }}>
+            <text x={20} y={28} fontFamily="var(--mono)" fontSize="10" fill="#475569">q_d, q̇_d, q̈_d</text>
+            <line x1={90} y1={24} x2={130} y2={24} stroke="#94a3b8" strokeWidth={1.5} markerEnd=""/>
+            <polygon points="130,24 124,20 124,28" fill="#94a3b8"/>
+
+            {/* feedforward block */}
+            <rect x={130} y={10} width={140} height={50} rx={6} fill={modelCovered > 0 ? '#2F5496' : 'white'} stroke="#1e3a73" strokeWidth={1.5}/>
+            <text x={200} y={28} textAnchor="middle" fontFamily="var(--mono)" fontSize="10" fontWeight="700" fill={modelCovered > 0 ? 'white' : '#1e3a73'}>
+              feedforward
+            </text>
+            <text x={200} y={45} textAnchor="middle" fontFamily="var(--mono)" fontSize="9" fill={modelCovered > 0 ? '#dbeafe' : '#475569'}>
+              τ_ff = {terms.D?'D·q̈_d':''}{terms.h?(terms.D?' + h':'h'):''}{terms.c?((terms.D||terms.h)?' + c':'c'):''}{!terms.D&&!terms.h&&!terms.c?'(empty)':''}
+            </text>
+
+            {/* feedback block */}
+            <rect x={130} y={140} width={140} height={50} rx={6} fill={fbOff ? '#fee2e2' : '#7c3aed'} stroke={fbOff ? '#dc2626' : '#5b21b6'} strokeWidth={1.5}/>
+            <text x={200} y={158} textAnchor="middle" fontFamily="var(--mono)" fontSize="10" fontWeight="700" fill={fbOff ? '#7f1d1d' : 'white'}>
+              feedback (PD)
+            </text>
+            <text x={200} y={176} textAnchor="middle" fontFamily="var(--mono)" fontSize="9" fill={fbOff ? '#7f1d1d' : '#ede9fe'}>
+              {fbOff ? 'DISABLED' : `Kp = ${kp}`}
+            </text>
+
+            {/* sum */}
+            <circle cx={300} cy={100} r={14} fill="white" stroke="#1e3a73" strokeWidth={1.5}/>
+            <text x={300} y={104} textAnchor="middle" fontFamily="var(--mono)" fontSize="13" fontWeight="700" fill="#1e3a73">Σ</text>
+
+            <line x1={270} y1={35}  x2={300} y2={92}  stroke="#94a3b8" strokeWidth={1.5}/>
+            <line x1={270} y1={165} x2={300} y2={108} stroke="#94a3b8" strokeWidth={1.5}/>
+            <line x1={314} y1={100} x2={350} y2={100} stroke="#94a3b8" strokeWidth={1.5}/>
+            <polygon points="350,100 344,96 344,104" fill="#94a3b8"/>
+            <text x={355} y={94} fontFamily="var(--mono)" fontSize="10" fill="#475569">τ</text>
+            <text x={355} y={108} fontFamily="var(--mono)" fontSize="10" fill="#475569">→ robot</text>
+
+            <text x={20} y={170} fontFamily="var(--mono)" fontSize="10" fill="#475569">q, q̇</text>
+            <line x1={45} y1={166} x2={130} y2={166} stroke="#94a3b8" strokeWidth={1.5}/>
+            <polygon points="130,166 124,162 124,170" fill="#94a3b8"/>
+          </svg>
+
+          <div style={{ marginTop:10 }}>
+            <div style={{ fontFamily:'var(--mono)', fontSize:'0.78rem', color:'var(--ink-soft)', marginBottom:5 }}>Wire feedforward terms:</div>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+              {[
+                { id:'D', label:'+ D(q)·q̈_d' },
+                { id:'h', label:'+ h(q,q̇)' },
+                { id:'c', label:'+ c(q)' },
+              ].map(t => (
+                <span key={t.id} className={'ff-chip' + (terms[t.id] ? ' is-on' : '')}
+                  onClick={() => setTerms({ ...terms, [t.id]: !terms[t.id] })}>
+                  {t.label}
+                </span>
+              ))}
+            </div>
+            <div style={{ marginTop:8 }}>
+              <label style={{ fontFamily:'var(--mono)', fontSize:'0.78rem', color:'var(--ink-soft)' }}>Kp = {kp}</label>
+              <input type="range" min={5} max={120} value={kp} onChange={e => setKp(+e.target.value)} disabled={fbOff} style={{ width:'100%' }}/>
+            </div>
+            <label style={{ display:'flex', alignItems:'center', gap:6, fontSize:'0.82rem', marginTop:5 }}>
+              <input type="checkbox" checked={fbOff} onChange={e => setFbOff(e.target.checked)}/>
+              Disable feedback entirely
+            </label>
+          </div>
+        </div>
+
+        {/* live traces */}
+        <div>
+          <div style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8 }}>
+            Tracking trace: desired vs. actual
+          </div>
+          <svg viewBox="0 0 380 110" style={{ width:'100%', background:'#fbfaf5', borderRadius:6, border:'1px solid var(--rule)' }}>
+            <line x1={0} y1={70} x2={380} y2={70} stroke="#cbd5e1" strokeDasharray="3 3"/>
+            <polyline points={tracePts.map(p => `${p[0]},${p[1]}`).join(' ')}
+              fill="none" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3"/>
+            <polyline points={tracePts.map(p => `${p[0]},${p[2]}`).join(' ')}
+              fill="none" stroke={error < 0.2 ? '#16a34a' : '#dc2626'} strokeWidth={2}/>
+            <text x={6} y={14} fontFamily="var(--mono)" fontSize="10" fill="#94a3b8">--- desired</text>
+            <text x={6} y={28} fontFamily="var(--mono)" fontSize="10" fill={error < 0.2 ? '#16a34a' : '#dc2626'}>— actual</text>
+          </svg>
+
+          <div style={{ marginTop:10, display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+            <div style={{ padding:'8px 10px', background: error < 0.15 ? '#dcfce7' : '#fee2e2', borderRadius:6 }}>
+              <div style={{ fontSize:'0.7rem', textTransform:'uppercase', letterSpacing:'0.08em', color:'var(--ink-soft)' }}>RMS error</div>
+              <div style={{ fontFamily:'var(--mono)', fontSize:'1.15rem', fontWeight:700, color: error < 0.15 ? '#15803d' : '#7f1d1d' }}>
+                {error.toFixed(2)} mm
+              </div>
+            </div>
+            <div style={{ padding:'8px 10px', background:'#f1f5f9', borderRadius:6 }}>
+              <div style={{ fontSize:'0.7rem', textTransform:'uppercase', letterSpacing:'0.08em', color:'var(--ink-soft)' }}>FB / total effort</div>
+              <div style={{ fontFamily:'var(--mono)', fontSize:'1.15rem', fontWeight:700, color: fbPct < 15 ? '#15803d' : '#d97706' }}>
+                {fbPct.toFixed(0)} %
+              </div>
+            </div>
+          </div>
+
+          {win ? (
+            <div className="callout green" style={{ marginTop:10, fontSize:'0.85rem' }}>
+              <strong>✓ Computed-torque architecture wired correctly.</strong>
+              All three feedforward terms in, modest gain, feedback effort {'<'} 10%. Feedback now specialises in disturbances — exactly the rule of thumb.
+            </div>
+          ) : (
+            <div className="callout amber" style={{ marginTop:10, fontSize:'0.85rem' }}>
+              <strong>Keep tuning.</strong>
+              {!terms.D && ' Add D(q)·q̈_d to kill acceleration overshoot.'}
+              {!terms.c && ' Add c(q) to remove gravity offset.'}
+              {!terms.h && ' Add h(q,q̇) to flatten curves at speed.'}
+              {kp > 90 && terms.D && terms.h && terms.c && ' Gain too high — model is good now, ease Kp back.'}
+              {fbOff && ' Re-enable feedback to absorb disturbances.'}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div style={{ display:'flex', justifyContent:'flex-end', marginTop:12 }}>
+        <button className="btn purple" onClick={() => { setTerms({D:false,h:false,c:false}); setKp(40); setFbOff(false); }}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   Widget 6 · DERIVE MASTER EQUATION (symptom → term)
+   ============================================================ */
+function DeriveMasterEquation() {
+  const TARGETS = [
+    { id:1, symptom:'Arm droops 3 mm when held still in horizontal pose', term:'c', reason:'Position-dependent, velocity-independent — only gravity matches.' },
+    { id:2, symptom:'Torque demand grows quadratically with joint speed', term:'h', reason:'Quadratic in q̇ is the signature of Coriolis/centrifugal.' },
+    { id:3, symptom:'Torque spikes during the acceleration phase, vanishes at constant speed', term:'D', reason:'Proportional to acceleration — pure inertial term.' },
+    { id:4, symptom:'Robot at rest, vertical-up pose, motor still has to push', term:'c', reason:'Even at rest, gravity-induced torque is non-zero unless aligned with g.' },
+    { id:5, symptom:'Two joints both moving — extra force appears that wasn\'t predicted by single-joint analysis', term:'h', reason:'Coriolis comes specifically from joint–joint interaction.' },
+    { id:6, symptom:'Same trajectory, payload doubled — torque demand at acceleration roughly doubles', term:'D', reason:'Mass shows up linearly in D — inertial term scales accordingly.' },
+  ];
+  const TERMS = [
+    { id:'D', label:'D(q)·q̈',  cls:'tok tok-num',   sub:'inertial' },
+    { id:'h', label:'h(q,q̇)',  cls:'tok tok-op',    sub:'Coriolis/centrifugal' },
+    { id:'c', label:'c(q)',     cls:'tok tok-kw',    sub:'gravity' },
+  ];
+
+  const [picks, setPicks] = useState({});
+  const [hint, setHint] = useState({});
+
+  const submit = (tid, term) => {
+    if (picks[tid]) return;
+    setPicks({ ...picks, [tid]: term });
+  };
+  const reset = () => { setPicks({}); setHint({}); };
+
+  const score = TARGETS.filter(t => picks[t.id] === t.term).length;
+
+  return (
+    <div>
+      <div style={{ background:'var(--brand-soft)', border:'1px solid var(--brand)', borderRadius:8, padding:'10px 14px', marginBottom:14 }}>
+        <div style={{ fontFamily:'var(--mono)', fontSize:'0.78rem', fontWeight:600, color:'var(--brand)', marginBottom:5 }}>
+          Production rules of τ
+        </div>
+        <div style={{ fontFamily:'var(--mono)', fontSize:'0.85rem' }}>
+          τ ::= <span className="tok tok-num">D(q)·q̈</span> | <span className="tok tok-op">h(q,q̇)</span> | <span className="tok tok-kw">c(q)</span> | <span className="tok tok-num">D(q)·q̈</span> + <span className="tok tok-op">h(q,q̇)</span> + <span className="tok tok-kw">c(q)</span>
+        </div>
+        <div style={{ fontSize:'0.78rem', color:'var(--ink-soft)', marginTop:6 }}>
+          Each symptom is a leaf — pick the term that <em>derives</em> it.
+        </div>
+      </div>
+
+      {TARGETS.map(t => {
+        const picked = picks[t.id];
+        const correct = picked === t.term;
+        return (
+          <div key={t.id} style={{
+            background:'white', border:'1px solid var(--rule)', borderRadius:8, padding:'12px 14px', marginBottom:10,
+            borderLeft: picked ? '4px solid ' + (correct ? '#16a34a' : '#dc2626') : '4px solid var(--rule)',
+            transition:'border-color 0.3s'
+          }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+              <span style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', fontWeight:700 }}>SYMPTOM #{t.id}</span>
+              <span style={{ flex:1, fontSize:'0.92rem' }}>{t.symptom}</span>
+            </div>
+            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+              {TERMS.map(term => {
+                const isThis = picked === term.id;
+                const isAnswer = picked && t.term === term.id;
+                return (
+                  <button key={term.id}
+                    onClick={() => submit(t.id, term.id)}
+                    disabled={!!picked}
+                    className={term.cls}
+                    style={{
+                      cursor: picked ? 'default' : 'pointer',
+                      transform: isThis ? 'scale(1.08)' : 'scale(1)',
+                      outline: isAnswer ? '2px solid #16a34a' : (isThis && !correct ? '2px solid #dc2626' : 'none'),
+                      opacity: picked && !isThis && !isAnswer ? 0.45 : 1,
+                      transition:'all 0.2s'
+                    }}>
+                    {term.label} <span style={{ fontSize:'0.7rem', opacity:0.75 }}>· {term.sub}</span>
+                  </button>
+                );
+              })}
+              {!picked && (
+                <button className="btn secondary" style={{ fontSize:'0.74rem', padding:'4px 10px' }}
+                  onClick={() => setHint({ ...hint, [t.id]: !hint[t.id] })}>
+                  {hint[t.id] ? 'hide hint' : '? hint'}
+                </button>
+              )}
+            </div>
+            {hint[t.id] && !picked && (
+              <div style={{ marginTop:8, fontSize:'0.82rem', color:'var(--ink-soft)', fontStyle:'italic' }}>
+                Look at what changes in the symptom: position only? velocity? acceleration? That tells you the term.
+              </div>
+            )}
+            {picked && (
+              <div style={{ marginTop:8, fontSize:'0.85rem', color: correct ? '#15803d' : '#7f1d1d' }}>
+                {correct ? '✓ ' : '✗ '}{t.reason}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:8 }}>
+        <div style={{ fontFamily:'var(--mono)', fontSize:'0.85rem' }}>
+          Score: <strong style={{ color: score === TARGETS.length ? '#16a34a' : 'var(--ink)' }}>{score} / {TARGETS.length} derived</strong>
+        </div>
+        <button className="btn purple" onClick={reset}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   Widget 7 · SELF-CHECK MCQ
+   ============================================================ */
+function SelfCheckMCQ() {
+  const QUESTIONS = [
+    { q:'In τ = D(q)q̈ + h(q,q̇) + c(q), which term is position-dependent only — i.e. zero when the robot is in zero-g, regardless of motion?',
+      options:['D(q)q̈','h(q,q̇)','c(q)','All three'], correct:2,
+      explain:'c(q) is the gravitational vector — purely a function of pose, derivable from potential energy. Re-read §5 if this didn\'t land.' },
+    { q:'You are given a desired trajectory q_d(t), q̇_d(t), q̈_d(t) and asked to compute the torques to feed forward. Which problem are you solving?',
+      options:['Forward dynamics','Inverse dynamics','Forward kinematics','Inverse kinematics'], correct:1,
+      explain:'Trajectory in → torque out is inverse dynamics. Forward dynamics would give you q̈ from τ. See §4.' },
+    { q:'Why is D(q) being configuration-dependent the source of so much difficulty?',
+      options:['It makes D non-symmetric','It means the inertia an actuator sees changes with pose, sometimes by 10×','It violates Newton\'s second law','It only matters for parallel manipulators'], correct:1,
+      explain:'The same motor can face wildly different effective inertia at different poses — that\'s why simple linear control fails. See §2 and §6.' },
+    { q:'The skew-symmetry of Ḋ(q) − 2C(q,q̇) is useful because it…',
+      options:['Lets you invert D faster','Encodes a passivity property exploited by Lyapunov-based controllers','Makes h(q,q̇) zero','Eliminates the need for gravity compensation'], correct:1,
+      explain:'It\'s a passivity statement — the algebraic backbone of stability proofs for adaptive and energy-based control. See §6.' },
+  ];
+
+  const [picks, setPicks] = useState({});
+  const score = QUESTIONS.filter((q, i) => picks[i] === q.correct).length;
+
+  return (
+    <div>
+      {QUESTIONS.map((q, i) => {
+        const picked = picks[i];
+        return (
+          <div key={i} style={{
+            background:'white', border:'1px solid var(--rule)', borderRadius:8, padding:'14px 16px', marginBottom:12,
+            borderLeft: '4px solid ' + (picked === undefined ? 'var(--brand)' : picked === q.correct ? '#16a34a' : '#dc2626')
+          }}>
+            <div style={{ display:'flex', alignItems:'flex-start', gap:8, marginBottom:10 }}>
+              <span style={{ fontFamily:'var(--mono)', fontSize:'0.72rem', color:'var(--brand)', fontWeight:700, flexShrink:0 }}>Q{i+1}</span>
+              <div style={{ fontSize:'0.95rem', fontWeight:500 }}>{q.q}</div>
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:6 }}>
+              {q.options.map((opt, oi) => {
+                const isPicked = picked === oi;
+                const isCorrect = q.correct === oi;
+                let bg = 'white', col = 'var(--ink)', border = '1px solid #cbd5e1';
+                if (picked !== undefined) {
+                  if (isCorrect) { bg='#dcfce7'; col='#14532d'; border='2px solid #16a34a'; }
+                  else if (isPicked) { bg='#fee2e2'; col='#7f1d1d'; border='2px solid #dc2626'; }
+                  else { bg='#f1f5f9'; col='#94a3b8'; border='1px solid #e2e8f0'; }
+                }
+                return (
+                  <button key={oi}
+                    onClick={() => picked === undefined && setPicks({ ...picks, [i]: oi })}
+                    disabled={picked !== undefined}
+                    style={{
+                      background:bg, color:col, border, padding:'8px 12px', borderRadius:6,
+                      cursor: picked !== undefined ? 'default' : 'pointer',
+                      fontSize:'0.88rem', textAlign:'left',
+                      transition:'all 0.2s'
+                    }}>
+                    <strong style={{ marginRight:8 }}>{String.fromCharCode(65 + oi)}.</strong>{opt}
+                  </button>
+                );
+              })}
+            </div>
+            {picked !== undefined && (
+              <div style={{ marginTop:10, padding:'8px 12px', background: picked === q.correct ? '#dcfce7' : '#fff3e0', borderRadius:6, fontSize:'0.85rem', lineHeight:1.5 }}>
+                <strong>{picked === q.correct ? '✓ Correct.' : '✗ Not quite.'}</strong> {q.explain}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 14px', background: score === QUESTIONS.length ? '#dcfce7' : 'var(--brand-soft)', borderRadius:8 }}>
+        <div style={{ fontFamily:'var(--mono)', fontSize:'0.95rem' }}>
+          Score: <strong style={{ color: score === QUESTIONS.length ? '#15803d' : 'var(--brand)' }}>{score} / {QUESTIONS.length}</strong>
+          {score === QUESTIONS.length && ' · ready for Module 2 ✓'}
+        </div>
+        <button className="btn purple" onClick={() => setPicks({})}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   Mounts
+   ============================================================ */
+const mounts = [
+  ['kin-vs-dyn-picker',         KinVsDynPicker],
+  ['welding-failure-builder',   WeldingFailureBuilder],
+  ['forward-vs-inverse-animator', ForwardVsInverseAnimator],
+  ['inertia-matrix-picker',     InertiaMatrixPicker],
+  ['control-loop-builder',      ControlLoopBuilder],
+  ['derive-master-equation',    DeriveMasterEquation],
+  ['self-check-mcq',            SelfCheckMCQ],
+];
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are the TSI Buddy for bibliosense's Robot Dynamics course, sitting alongside Lecture 01: From kinematics to dynamics.",
+    "",
+    "Your job in this lecture, specifically:",
+    "- Help students cross the conceptual bridge from kinematics (geometry) to dynamics (forces and torques causing motion).",
+    "- Build intuition for the master equation τ = D(q)q̈ + h(q,q̇) + c(q) — what each term physically represents and when it dominates.",
+    "- Clarify the directional difference between forward dynamics (τ → q̈) and inverse dynamics (q̈ → τ) without spoiling the picker activity.",
+    "- Drive students back to the live widgets when a question is best answered by playing with one (e.g. 'try the inertia picker — drag q₂ and watch D₁₁ change').",
+    "- Connect every numerical example back to the welding-robot case study so the physics stays anchored in something concrete.",
+    "- When students worry the math is opaque, reassure them this lecture is the map; Module 2 (Lagrangian mechanics) is where derivation skills come in.",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "THE FORMULA(S) / KEY DEFINITIONS",
+    "Master equation of manipulator motion: τ = D(q)q̈ + h(q,q̇) + c(q).",
+    "- τ: n×1 joint torque/force vector (what actuators deliver).",
+    "- D(q): n×n inertia matrix, symmetric, positive definite, configuration-dependent.",
+    "- h(q,q̇): n×1 Coriolis + centrifugal vector, quadratic in q̇.",
+    "- c(q): n×1 gravity vector, depends only on pose.",
+    "Forward dynamics: q̈ = D⁻¹(q)[τ − h(q,q̇) − c(q)]. Inverse dynamics: τ = D(q)q̈ + h(q,q̇) + c(q).",
+    "",
+    "WHY (the intuition behind it)",
+    "Kinematics tells you the geometry of the motion; dynamics tells you what it costs. The same Newton's-second-law idea (F = ma) applies, but for an n-link chain 'ma' becomes a coupled, configuration-dependent matrix product. D, h, c are just an organised bookkeeping of three physical realities that always coexist: stuff has inertia, stuff in motion produces interaction forces, and stuff has weight. Every actuator torque has to fight all three at once.",
+    "",
+    "THE GOTCHA (most common student misconception)",
+    "Students often read τ = Dq̈ + h + c as 'three independent forces added together' and assume D is a constant mass like in a single rigid body. It isn't. D depends on q, so the 'effective inertia' each motor sees changes drastically with posture — sometimes by an order of magnitude between extended and folded configurations. Similarly, h is not 'friction' or a small correction; it's quadratic in velocity and can demand a third of total torque at speed. The terms are coupled through q and q̇, not independent.",
+    "",
+    "BOUNDARY CASES",
+    "- At rest (q̇ = 0): h vanishes, q̈ desired = 0 ⇒ τ = c(q). Pure gravity compensation.",
+    "- Zero gravity: c ≈ 0, only inertial and velocity terms remain.",
+    "- Low speed: h is O(q̇²) and becomes negligible; D q̈ + c dominates.",
+    "- Single rigid body / 1-DOF: D collapses to a scalar inertia, h disappears, recovering Iα = τ − mgL sinθ.",
+    "- D is always invertible (positive definite), so forward dynamics is always well-posed.",
+    "",
+    "EXPLAIN-IT-LIKE-THIS",
+    "Imagine carrying a long pole horizontally with both hands. If you only had to know where your hands were going, that's kinematics — easy. Now actually do it: the far end of the pole has huge effective inertia (D depends on how extended it is), gravity pulls it down differently as you tilt it (c(q)), and if you swing your body while rotating the pole, you feel an extra twisting force trying to rip it from your grip (h(q,q̇)). A robot arm feels exactly those three things at every joint, every millisecond.",
+    "",
+    "CURRICULUM CONTEXT",
+    "Came before: forward/inverse position kinematics, transformation matrices, Jacobians, velocity and acceleration propagation. Comes next: Module 2 introduces the Lagrangian (T − V) as a cleaner way to derive D, h, c from first principles.",
+    "",
+    "COMMON STUDENT QUESTIONS",
+    "- 'Isn't Newton's second law enough?' It IS Newton's second law — just written for n coupled bodies whose mass distribution depends on configuration. The matrix form is what makes that tractable.",
+    "- 'Why is D called THE inertia matrix?' Each diagonal entry is the effective scalar inertia at that joint; off-diagonals encode how accelerating one joint exerts inertial torque on the others.",
+    "- 'Coriolis vs. centrifugal in h?' Centrifugal: q̇ᵢ² (joint resisting its own motion). Coriolis: q̇ᵢq̇ⱼ (interaction between simultaneously moving joints).",
+    "- 'Do I need the model with great feedback?' Low speed/precision: no. High speed/precision: yes — feedback reacts after error appears.",
+    "- 'Why care that D is positive definite?' D is always invertible (forward dynamics has a unique solution); kinetic energy ½q̇ᵀDq̇ ≥ 0 underwrites stability proofs.",
+    "",
+    "PRO-INSIGHT WRAP-UP",
+    "The reason we obsess over D, h, and c today is that next module's Lagrangian formulation will let you derive every one of them from a single scalar — L = T − V — without ever drawing a free-body diagram per link.",
+    "",
+    "# PEDAGOGY GUARDS",
+    "- Never reveal the answer to any quiz, MCQ, or picker on the page. Scaffold instead: ask what changes in the symptom (position? velocity? acceleration?), point them at the relevant widget, hint at the physical reasoning.",
+    "- Never write out a full derivation of D, h, or c. That is Module 2's job. Sketch the intuition only.",
+    "- When a student asks something the live widgets can answer better than prose can, redirect: 'Drag q₂ in the inertia picker — you'll see D₁₁ change by an order of magnitude.'",
+    "- Anchor numerical claims in the welding case study (±0.5 mm → ±0.05 mm; 40% cycle-time cut; 25% energy reduction).",
+    "",
+    "# LANGUAGE",
+    "- Default to English regardless of the lecture HTML's language.",
+    "- Switch to another language only on a clearly non-English signal from the student (more than just a single word). When you reply in a non-English language, append a one-line `*EN summary:*` paraphrase at the end so a co-supervisor reading along stays in the loop.",
+    "",
+    "# REPLY STYLE",
+    "- 60–180 words per reply. Plain language. No LaTeX walls — inline `D(q)`, `h(q,q̇)`, `c(q)` is fine.",
+    "- Quote anchors when relevant: 'In §5, the lecture says...' or 'The welding case study (§3) puts this at...'",
+    "- One concrete suggestion per reply (a widget to try, a section to re-read, a question to ask themselves)."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Robot Dynamics · Lecture 01',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>
