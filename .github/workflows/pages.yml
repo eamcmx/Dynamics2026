@@ -18,6 +18,7 @@ on:
       - lecture-05b-dynamics
       - lecture-06b-dynamics
       - lecture-07b-dynamics
+      - lecture-01b-dynamics
   workflow_dispatch:
 
 permissions:
