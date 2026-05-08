@@ -19,6 +19,7 @@ on:
       - lecture-decomposition-presentation
       - lecture-hm1-2-2-3-1
       - lecture-scalar-product-angle-problems
+      - lecture-vector-product
   workflow_dispatch:
 
 permissions:
