@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scalar product & the angle between vectors | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,91,255,0.25);
+  }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .tok { display:inline-block; padding:4px 10px; border-radius:100px; font-family: var(--mono); font-size:0.85rem; font-weight:600; margin:2px 3px; border:1px solid; vertical-align:middle; }
+  .tok-id    { background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; }
+  .tok-num   { background:#d1fae5; border-color:#10b981; color:#065f46; }
+  .tok-op    { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+  .tok-kw    { background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+  .tok-paren { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .tok-nt    { background:#ede9fe; border-color:#8b5cf6; color:#5b21b6; }
+  .tok-term  { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .quiz-card { background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%); border:1px solid #6a1b9a; border-radius:10px; padding:30px 32px; margin:22px 0; scroll-margin-top: 90px; }
+  .quiz-card h2 { font-family: var(--serif); color: #6a1b9a; font-weight: 600; font-size: 1.55rem; margin: 0 0 0.5rem; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { font-size: 0.78rem; color: var(--brand); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 8px; display: block; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Linear Algebra &amp; Vector Geometry<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 07 · Module 1 · Linear Algebra &amp; Vector Geometry</div>
+  <h1 class="lecture-title">Scalar product &amp; the angle between vectors</h1>
+  <p class="lecture-subtitle">Ten worked problems on dot products, cosines, orthogonality, and parallel vectors in 2D and 3D.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 07</span>
+  </div>
+</header>
+
+<div class="voice">Today is a workshop, not a lecture. We have one tool — the scalar product — and we are going to use it ten times in a row, on vectors in the plane and in space, until the geometry is automatic. Every problem is a variation of the same loop: compute $\vec{A}\cdot\vec{B}$, divide by the product of magnitudes, read off the angle. By the end you should know, just by looking, whether two vectors are orthogonal, parallel, or somewhere in between.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span>What this lecture covers</h2>
+  <p>This problem set drills the <strong>scalar (dot) product</strong> and the <strong>angle between vectors</strong> in $\mathbb{R}^2$ and $\mathbb{R}^3$. Every problem reduces to one of three questions: <em>what is $\vec{A}\cdot\vec{B}$?</em>, <em>what is the cosine of the angle between them?</em>, or <em>what is the geometric relationship — orthogonal, parallel, or oblique?</em></p>
+  <p>We work through ten problems in order. The first few are pure computation; later ones use the sign of the dot product and the value of $\cos\theta$ to <strong>classify</strong> the geometric relationship between the two vectors.</p>
+  <div class="voice">Don't memorise ten answers — memorise the one formula and run it ten times.</div>
+  <div class="callout blue"><strong>Core formulas.</strong>$\vec{A}\cdot\vec{B}=\sum_i A_iB_i$ and $\cos\theta=\dfrac{\vec{A}\cdot\vec{B}}{\lVert\vec{A}\rVert\,\lVert\vec{B}\rVert}$.</div>
+  <div class="callout amber"><strong>Sign tells you geometry.</strong>Positive dot product → acute angle. Zero → orthogonal. Negative → obtuse. $\cos\theta=\pm 1$ → parallel.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Sign-of-dot-product · classify before computing</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="angle-classifier-picker"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="problem-1">
+  <h2><span class="badge">1</span>Problem 1 — Plain dot product in 2D</h2>
+  <p>Let $\vec{A}=(3,4)$ and $\vec{B}=(5,2)$. Find $\vec{A}\cdot\vec{B}$.</p>
+  <p>This is the warm-up: just multiply matching components and sum. No magnitudes, no cosines.</p>
+  <div class="code-block">
+    <div class="code-label">Component-wise dot product</div>
+    <pre><code>A·B = 3·5 + 4·2
+    = 15 + 8
+    = 23</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Animated dot product · watch components pair up</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="dot-product-animator"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="problem-2">
+  <h2><span class="badge">2</span>Problem 2 — Cosine of the angle in 2D</h2>
+  <p>Given $\vec{A}=(-2,6)$ and $\vec{B}=(4,-3)$, compute $\cos\theta$.</p>
+  <p>Three quantities are needed: $\vec{A}\cdot\vec{B}$, $\lVert\vec{A}\rVert$, and $\lVert\vec{B}\rVert$. Plug into the cosine formula. The negative result tells you the angle is obtuse.</p>
+  <div class="callout teal"><strong>Read the sign first.</strong>Before reaching for a calculator, note that $\vec{A}\cdot\vec{B}<0$ — so $\theta>90°$ is already guaranteed.</div>
+  <div class="code-block">
+    <div class="code-label">Plug into the cosine formula</div>
+    <pre><code>A·B   = (-2)(4) + (6)(-3) = -8 - 18 = -26
+||A|| = sqrt(4 + 36)  = sqrt(40)
+||B|| = sqrt(16 + 9)  = sqrt(25) = 5
+
+cos θ = -26 / (5·sqrt(40)) ≈ -0.822</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build the cosine formula · fill the three slots</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="cosine-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="problem-3">
+  <h2><span class="badge">3</span>Problem 3 — Angle in degrees</h2>
+  <p>For $\vec{A}=(7,-1)$ and $\vec{B}=(-3,5)$, find both $\vec{A}\cdot\vec{B}$ and the angle in degrees.</p>
+  <p>Same loop as Problem 2, but now we go one step further and apply $\arccos$. Watch the units — the answer is asked for in <strong>degrees</strong>, not radians.</p>
+  <div class="code-block">
+    <div class="code-label">From cosine to degrees</div>
+    <pre><code>A·B   = (7)(-3) + (-1)(5) = -21 - 5 = -26
+||A|| = sqrt(49 + 1)  = sqrt(50)
+||B|| = sqrt(9 + 25)  = sqrt(34)
+
+cos θ = -26 / sqrt(50·34) ≈ -0.6306
+θ     = arccos(-0.6306) ≈ 129.1°</code></pre>
+  </div>
+</section>
+
+<section class="card" id="problem-4">
+  <h2><span class="badge">4</span>Problem 4 — Orthogonality test in 3D</h2>
+  <p>Let $\vec{A}=(2,-1,3)$ and $\vec{B}=(1,4,-2)$. Compute $\vec{A}\cdot\vec{B}$ and decide whether the vectors are orthogonal.</p>
+  <p>The formula extends to three dimensions by adding the $z$-component term. <strong>Two vectors are orthogonal iff their dot product is zero</strong> — so the test reduces to a single arithmetic check.</p>
+  <div class="voice">Orthogonality is the cheapest geometric question you can ask of two vectors: one number, one comparison.</div>
+  <div class="callout green"><strong>Result.</strong>$\vec{A}\cdot\vec{B}=2-4-6=-8\neq 0$ — <strong>not orthogonal</strong>.</div>
+  <div class="code-block">
+    <div class="code-label">Three-component dot product</div>
+    <pre><code>A·B = (2)(1) + (-1)(4) + (3)(-2)
+    = 2 - 4 - 6
+    = -8        ≠ 0  →  not orthogonal</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build an orthogonal partner · find a B with A·B = 0</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="orthogonal-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="problem-5">
+  <h2><span class="badge">5</span>Problem 5 — Cosine in 3D</h2>
+  <p>Given $\vec{A}=(3,4,0)$ and $\vec{B}=(0,-4,3)$, find $\cos\theta$.</p>
+  <p>Note that both vectors have magnitude 5 — that simplifies the denominator a lot. The dot product is dominated by the $-16$ term from the matched $y$-components.</p>
+  <div class="code-block">
+    <div class="code-label">Equal-magnitude shortcut</div>
+    <pre><code>A·B   = (3)(0) + (4)(-4) + (0)(3) = -16
+||A|| = sqrt(9 + 16 + 0) = 5
+||B|| = sqrt(0 + 16 + 9) = 5
+
+cos θ = -16 / (5·5) = -16/25 = -0.64</code></pre>
+  </div>
+</section>
+
+<section class="card" id="problem-6">
+  <h2><span class="badge">6</span>Problem 6 — Angle in radians</h2>
+  <p>For $\vec{A}=(1,2,2)$ and $\vec{B}=(3,0,1)$, compute $\vec{A}\cdot\vec{B}$ and find the angle in <strong>radians</strong>.</p>
+  <p>Same procedure as Problem 3, but the final $\arccos$ is left in radians. Useful reminder that radians, not degrees, are the natural unit when angles feed into further calculus.</p>
+  <div class="code-block">
+    <div class="code-label">Angle in radians</div>
+    <pre><code>A·B   = (1)(3) + (2)(0) + (2)(1) = 5
+||A|| = sqrt(1 + 4 + 4)  = 3
+||B|| = sqrt(9 + 0 + 1)  = sqrt(10)
+
+cos θ = 5 / (3·sqrt(10)) ≈ 0.527
+θ     = arccos(0.527) ≈ 1.017 rad</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Degrees or radians · pick the unit the question wants</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="angle-unit-picker"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="problem-7">
+  <h2><span class="badge">7</span>Problem 7 — When the cosine is exactly zero</h2>
+  <p>Given $\vec{A}=(5,0,0)$ and $\vec{B}=(0,3,4)$, find $\cos\theta$ and comment on the geometry.</p>
+  <p>The dot product is zero — every term involves a factor of zero. So $\cos\theta=0$ and $\theta=90°$: the vectors are <strong>perpendicular</strong>. Geometrically, $\vec{A}$ points along the $x$-axis while $\vec{B}$ lies entirely in the $yz$-plane.</p>
+  <div class="callout green"><strong>Geometric reading.</strong>$\vec{A}$ lies on the $x$-axis. $\vec{B}$ lives in the $yz$-plane. They meet only at the origin and at a right angle.</div>
+  <div class="code-block">
+    <div class="code-label">Orthogonal pair</div>
+    <pre><code>A·B   = (5)(0) + (0)(3) + (0)(4) = 0
+cos θ = 0       →     θ = π/2 = 90°</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Two vectors in 3D · watch the angle close</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="vector-pair-animator"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="problem-8">
+  <h2><span class="badge">8</span>Problem 8 — Negative components, obtuse angle</h2>
+  <p>For $\vec{A}=(-3,-4)$ and $\vec{B}=(2,5)$, calculate $\vec{A}\cdot\vec{B}$ and the cosine of the angle between them.</p>
+  <p>Both components of $\vec{A}$ are negative; both components of $\vec{B}$ are positive — geometrically the vectors point into roughly opposite quadrants, so we expect $\cos\theta<0$.</p>
+  <div class="code-block">
+    <div class="code-label">Sign-aware computation</div>
+    <pre><code>A·B   = (-3)(2) + (-4)(5) = -6 - 20 = -26
+||A|| = sqrt(9 + 16)  = 5
+||B|| = sqrt(4 + 25)  = sqrt(29)
+
+cos θ = -26 / (5·sqrt(29)) ≈ -0.966</code></pre>
+  </div>
+</section>
+
+<section class="card" id="problem-9">
+  <h2><span class="badge">9</span>Problem 9 — Detecting parallel vectors</h2>
+  <p>For $\vec{A}=(1,-1,1)$ and $\vec{B}=(-2,2,-2)$, decide whether the vectors are parallel by computing $\vec{A}\cdot\vec{B}$ and analysing the angle.</p>
+  <p>Notice $\vec{B}=-2\,\vec{A}$ — every component of $\vec{B}$ is exactly $-2$ times the matching component of $\vec{A}$. So the vectors are <strong>anti-parallel</strong>: parallel lines, opposite directions, $\cos\theta=-1$, and $\theta=180°$.</p>
+  <div class="voice">Parallel doesn't mean 'pointing the same way' — it means 'on the same line'. The dot-product test gives you both flavours.</div>
+  <div class="callout purple"><strong>Two parallel signatures.</strong>$\cos\theta=+1$ → same direction. $\cos\theta=-1$ → opposite direction. Both count as parallel.</div>
+  <div class="code-block">
+    <div class="code-label">Anti-parallel pair</div>
+    <pre><code>A·B   = (1)(-2) + (-1)(2) + (1)(-2) = -2 - 2 - 2 = -6
+||A|| = sqrt(3)
+||B|| = sqrt(12) = 2·sqrt(3)
+
+cos θ = -6 / (sqrt(3)·2·sqrt(3)) = -6/6 = -1
+θ     = 180°    →   anti-parallel</code></pre>
+  </div>
+</section>
+
+<section class="card" id="problem-10">
+  <h2><span class="badge">10</span>Problem 10 — Full computation in 3D</h2>
+  <p>Let $\vec{A}=(6,8,-3)$ and $\vec{B}=(-4,5,2)$. Find $\vec{A}\cdot\vec{B}$ and the angle between the two vectors.</p>
+  <p>A closing problem with no special structure — neither orthogonal nor parallel, mixed signs, three dimensions. Run the standard recipe end to end.</p>
+  <div class="code-block">
+    <div class="code-label">End-to-end recipe</div>
+    <pre><code>A·B   = (6)(-4) + (8)(5) + (-3)(2)
+      = -24 + 40 - 6 = 10
+||A|| = sqrt(36 + 64 + 9)  = sqrt(109)
+||B|| = sqrt(16 + 25 + 4)  = sqrt(45)
+
+cos θ = 10 / sqrt(109·45) ≈ 0.1428
+θ     = arccos(0.1428) ≈ 81.8°</code></pre>
+  </div>
+</section>
+
+<section class="card" id="recap">
+  <h2><span class="badge">11</span>Pattern recap — three questions, one formula</h2>
+  <p>Across all ten problems, only one formula did real work: $\cos\theta=\dfrac{\vec{A}\cdot\vec{B}}{\lVert\vec{A}\rVert\,\lVert\vec{B}\rVert}$. What changed was the <strong>question being asked of it</strong>.</p>
+  <ul>
+    <li><strong>Magnitude question</strong> — "what is $\vec{A}\cdot\vec{B}$?" (Problems 1, 4, parts of others).</li>
+    <li><strong>Angle question</strong> — "what is $\theta$?" (Problems 2, 3, 5, 6, 8, 10).</li>
+    <li><strong>Geometric-classification question</strong> — "are they orthogonal? parallel?" (Problems 4, 7, 9).</li>
+  </ul>
+  <p>If you can map any new exercise onto one of those three buckets, you already know what to compute.</p>
+  <div class="voice">One formula, three lenses. Always ask: <em>which lens does this problem want?</em></div>
+  <div class="callout blue"><strong>Quick classifier.</strong>$\vec{A}\cdot\vec{B}=0$ → orthogonal. $\cos\theta=\pm 1$ → parallel. Otherwise → oblique, and the sign of the dot product tells you acute vs. obtuse.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · the four facts you must leave with</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="recap-mcq"></div>
+    </div>
+  </div>
+</section>
+
+<section class="homework" id="homework">
+  <h2>Homework</h2>
+  <p class="hw-intro">Three short tasks to lock in the dot-product reflex. Hand in clean working — show every step.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Re-solve in your own notation</h4>
+      <p>Pick any three problems from the set (one 2D, one 3D, one orthogonality/parallel test) and re-solve them showing every step in your own notation. Hand in clean working, not just answers.</p>
+      <span class="due">Due next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>2 · Build your own pair</h4>
+      <p>Construct one pair of 3D vectors that are orthogonal but neither is axis-aligned, and one pair that are anti-parallel but not unit-length. Verify both with the dot-product test.</p>
+      <span class="due">Due next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Mini-table</h4>
+      <p>For Problems 1, 4, 7, 9, fill a small table with columns: $\vec{A}\cdot\vec{B}$, $\cos\theta$, geometric relationship (orthogonal / parallel / anti-parallel / oblique).</p>
+      <span class="due">Due next lecture</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#problem-1">1 · Problem 1 — Plain dot product in 2D</a></li>
+      <li><a href="#problem-2">2 · Problem 2 — Cosine of the angle in 2D</a></li>
+      <li><a href="#problem-3">3 · Problem 3 — Angle in degrees</a></li>
+      <li><a href="#problem-4">4 · Problem 4 — Orthogonality test in 3D</a></li>
+      <li><a href="#problem-5">5 · Problem 5 — Cosine in 3D</a></li>
+      <li><a href="#problem-6">6 · Problem 6 — Angle in radians</a></li>
+      <li><a href="#problem-7">7 · Problem 7 — When the cosine is exactly zero</a></li>
+      <li><a href="#problem-8">8 · Problem 8 — Negative components, obtuse angle</a></li>
+      <li><a href="#problem-9">9 · Problem 9 — Detecting parallel vectors</a></li>
+      <li><a href="#problem-10">10 · Problem 10 — Full computation in 3D</a></li>
+      <li><a href="#recap">11 · Pattern recap — three questions, one formula</a></li>
+      <li><a href="#homework">★ · Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Linear Algebra &amp; Vector Geometry · Lecture 07 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+function fmt(x) {
+  if (Number.isFinite(x) && x === Math.round(x)) return String(x);
+  return Number(x).toFixed(3);
+}
+
+/* ───────────── 1. DotProductAnimator (problem-1) ───────────── */
+function DotProductAnimator() {
+  const PRESETS = [
+    { label: 'A=(3,4), B=(5,2)',          A: [3,4],     B: [5,2] },
+    { label: 'A=(2,-1,3), B=(1,4,-2)',    A: [2,-1,3],  B: [1,4,-2] },
+    { label: 'A=(6,8,-3), B=(-4,5,2)',    A: [6,8,-3],  B: [-4,5,2] }
+  ];
+  const [presetIdx, setPresetIdx] = useState(0);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const { A, B } = PRESETS[presetIdx];
+  const n = A.length;
+
+  useEffect(() => { setStep(0); setPlaying(false); }, [presetIdx]);
+
+  useEffect(() => {
+    if (!playing) return;
+    if (step >= n + 1) { setPlaying(false); return; }
+    const t = setTimeout(() => setStep(s => s + 1), 850);
+    return () => clearTimeout(t);
+  }, [playing, step, n]);
+
+  const labels = ['x','y','z'];
+  const products = A.map((a, i) => a * B[i]);
+  const final = products.reduce((s, x) => s + x, 0);
+
+  return (
+    <div>
+      <div style={{display:'flex', flexWrap:'wrap', gap:8, marginBottom:14}}>
+        {PRESETS.map((p, i) => (
+          <button key={i}
+            className={'btn ' + (i === presetIdx ? 'purple' : 'secondary')}
+            onClick={() => setPresetIdx(i)}
+            style={{fontSize:'0.78rem', padding:'5px 10px'}}>
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{background:'#fbfaf5', border:'1px solid #e6e1d3', borderRadius:8, padding:'18px 16px'}}>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(' + n + ', 1fr)', gap:14, marginBottom:18}}>
+          {A.map((a, i) => {
+            const active = i + 1 === step;
+            const past   = i + 1 < step;
+            const lit    = i + 1 <= step;
+            return (
+              <div key={i} style={{
+                textAlign:'center', padding:'12px 8px', borderRadius:8,
+                border:'2px solid ' + (active ? '#7c3aed' : past ? '#10b981' : '#cbd5e1'),
+                background: active ? '#f3e8ff' : past ? '#ecfdf5' : 'white',
+                transition:'all 0.4s ease',
+                transform: active ? 'scale(1.05)' : 'scale(1)',
+                boxShadow: active ? '0 4px 14px rgba(124,58,237,0.25)' : 'none'
+              }}>
+                <div style={{fontSize:'0.7rem', letterSpacing:'0.08em', color:'#64748b', textTransform:'uppercase', marginBottom:4}}>
+                  pair {labels[i]}
+                </div>
+                <div style={{fontFamily:'var(--mono)', fontSize:'1rem'}}>
+                  <span style={{color:'#1e3a8a', fontWeight:700}}>{a}</span>
+                  <span style={{margin:'0 6px', color:'#78350f'}}>·</span>
+                  <span style={{color:'#065f46', fontWeight:700}}>{B[i]}</span>
+                </div>
+                <div style={{
+                  marginTop:6, height:24, fontSize:'1.05rem', fontFamily:'var(--mono)',
+                  color: lit ? '#0f172a' : '#cbd5e1', fontWeight:700,
+                  transition:'color 0.3s'
+                }}>
+                  = {products[i]}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{
+          textAlign:'center', padding:'14px 18px', borderRadius:8,
+          background: step >= n + 1 ? '#ecfdf5' : '#f8fafc',
+          border: '2px solid ' + (step >= n + 1 ? '#10b981' : '#e2e8f0'),
+          transition:'all 0.4s'
+        }}>
+          <div style={{fontSize:'0.72rem', letterSpacing:'0.08em', color:'#64748b', textTransform:'uppercase', marginBottom:6}}>
+            Running sum
+          </div>
+          <div style={{fontFamily:'var(--mono)', fontSize:'1.15rem'}}>
+            A · B =
+            {products.map((p, i) => {
+              const used = i < step;
+              const just = i + 1 === step;
+              const sign = i === 0 ? (p < 0 ? '−' : '') : (p < 0 ? ' − ' : ' + ');
+              const mag  = Math.abs(p);
+              return (
+                <span key={i} style={{
+                  margin:'0 2px',
+                  color: just ? '#7c3aed' : used ? '#0f172a' : '#cbd5e1',
+                  fontWeight: just ? 700 : 500,
+                  transition:'color 0.3s'
+                }}>
+                  {' '}{sign}{mag}
+                </span>
+              );
+            })}
+            {step >= n + 1 && (
+              <span style={{marginLeft:14, color:'#16a34a', fontWeight:800, fontSize:'1.4rem'}}>
+                = {final}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:'flex', gap:8, marginTop:14, flexWrap:'wrap'}}>
+        <button className="btn purple" onClick={() => {
+          if (step >= n + 1) setStep(0);
+          setPlaying(p => !p);
+        }}>
+          {playing ? '⏸ Pause' : (step >= n + 1 ? '↻ Replay' : '▶ Play')}
+        </button>
+        <button className="btn secondary"
+          onClick={() => setStep(s => Math.min(s + 1, n + 1))}
+          disabled={playing || step >= n + 1}>
+          Step ▸
+        </button>
+        <button className="btn secondary" onClick={() => { setStep(0); setPlaying(false); }}>
+          ↺ Reset
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ───────────── 2. AngleClassifierPicker (overview) ───────────── */
+function AngleClassifierPicker() {
+  const ITEMS = [
+    { A: [3,4],      B: [5,2],      correct: 'Acute angle (A·B > 0)' },
+    { A: [2,-1,3],   B: [1,4,-2],   correct: 'Obtuse angle (A·B < 0)' },
+    { A: [5,0,0],    B: [0,3,4],    correct: 'Orthogonal (A·B = 0)' },
+    { A: [1,-1,1],   B: [-2,2,-2],  correct: 'Anti-parallel (cos θ = -1)' },
+    { A: [-3,-4],    B: [2,5],      correct: 'Obtuse angle (A·B < 0)' },
+    { A: [1,2],      B: [2,4],      correct: 'Parallel — same direction (cos θ = +1)' }
+  ];
+  const CHOICES = [
+    'Orthogonal (A·B = 0)',
+    'Acute angle (A·B > 0)',
+    'Obtuse angle (A·B < 0)',
+    'Parallel — same direction (cos θ = +1)',
+    'Anti-parallel (cos θ = -1)'
+  ];
+  const [idx, setIdx] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const item = ITEMS[idx];
+
+  const dot  = item.A.reduce((s, a, i) => s + a * item.B[i], 0);
+  const magA = Math.sqrt(item.A.reduce((s, a) => s + a*a, 0));
+  const magB = Math.sqrt(item.B.reduce((s, b) => s + b*b, 0));
+  const cosT = dot / (magA * magB);
+
+  const next = () => { setIdx((idx + 1) % ITEMS.length); setPicked(null); };
+  const prev = () => { setIdx((idx - 1 + ITEMS.length) % ITEMS.length); setPicked(null); };
+
+  return (
+    <div>
+      <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14, gap:14, flexWrap:'wrap'}}>
+        <div>
+          <div style={{fontSize:'0.7rem', textTransform:'uppercase', letterSpacing:'0.1em', color:'#64748b'}}>
+            Item {idx + 1} of {ITEMS.length}
+          </div>
+          <div style={{fontFamily:'var(--mono)', fontSize:'1.05rem', marginTop:4}}>
+            <span style={{color:'#1e3a8a', fontWeight:600}}>A = ({item.A.join(', ')})</span>
+            <span style={{margin:'0 12px', color:'#94a3b8'}}>·</span>
+            <span style={{color:'#065f46', fontWeight:600}}>B = ({item.B.join(', ')})</span>
+          </div>
+        </div>
+        <div style={{display:'flex', gap:6}}>
+          <button className="btn secondary" onClick={prev} style={{padding:'5px 10px'}}>←</button>
+          <button className="btn secondary" onClick={next} style={{padding:'5px 10px'}}>→</button>
+        </div>
+      </div>
+
+      <div style={{display:'grid', gridTemplateColumns:'1fr', gap:8, marginBottom:14}}>
+        {CHOICES.map((c, i) => {
+          const isPicked  = picked === c;
+          const isCorrect = item.correct === c;
+          let bg = 'white', border = '#cbd5e1', color = '#0f172a';
+          if (picked) {
+            if (isCorrect) { bg = '#d1fae5'; border = '#10b981'; color = '#065f46'; }
+            else if (isPicked) { bg = '#fee2e2'; border = '#ef4444'; color = '#7f1d1d'; }
+          }
+          return (
+            <button key={i}
+              onClick={() => !picked && setPicked(c)}
+              disabled={!!picked}
+              style={{
+                textAlign:'left', padding:'10px 14px', borderRadius:6,
+                border:'2px solid ' + border, background:bg, color,
+                cursor: picked ? 'default' : 'pointer',
+                fontSize:'0.93rem', fontFamily:'var(--sans)',
+                transition:'all 0.2s'
+              }}>
+              {c}
+              {picked && isCorrect && '   ✓'}
+              {picked && isPicked && !isCorrect && '   ✗'}
+            </button>
+          );
+        })}
+      </div>
+
+      {picked && (
+        <div className={'callout ' + (picked === item.correct ? 'green' : 'amber')}>
+          <strong>{picked === item.correct ? 'Correct.' : 'Re-check the sign.'}</strong>
+          A · B = {fmt(dot)}, ‖A‖ ≈ {fmt(magA)}, ‖B‖ ≈ {fmt(magB)}, cos θ ≈ {fmt(cosT)}.{' '}
+          {Math.abs(dot) < 1e-9
+            ? 'Zero dot product → orthogonal.'
+            : Math.abs(Math.abs(cosT) - 1) < 1e-9
+              ? (cosT > 0 ? 'cos θ = +1 → parallel, same direction.' : 'cos θ = −1 → anti-parallel.')
+              : (dot > 0 ? 'Positive dot product → acute angle.' : 'Negative dot product → obtuse angle.')}
+        </div>
+      )}
+
+      <div style={{marginTop:10, display:'flex', gap:8}}>
+        <button className="btn secondary" onClick={next}>Next item →</button>
+        {picked && <button className="btn secondary" onClick={() => setPicked(null)}>Try this one again</button>}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────── 3. CosineBuilder (problem-2) ───────────── */
+function CosineBuilder() {
+  const PRESETS = [
+    { A: [-2,6],   B: [4,-3],  expected: -0.822 },
+    { A: [7,-1],   B: [-3,5],  expected: -0.6306 },
+    { A: [3,4,0],  B: [0,-4,3], expected: -0.64 },
+    { A: [1,2,2],  B: [3,0,1],  expected: 0.527 }
+  ];
+  const [pIdx, setPIdx] = useState(0);
+  const p = PRESETS[pIdx];
+
+  const dot  = p.A.reduce((s, a, i) => s + a * p.B[i], 0);
+  const magA = Math.sqrt(p.A.reduce((s, a) => s + a*a, 0));
+  const magB = Math.sqrt(p.B.reduce((s, b) => s + b*b, 0));
+  const sumNorm = Math.sqrt(p.A.reduce((s, a, i) => s + (a + p.B[i]) * (a + p.B[i]), 0));
+
+  const pieces = useMemo(() => [
+    { id: 'dot',    label: 'A · B',         value: fmt(dot) },
+    { id: 'magA',   label: '‖A‖',           value: fmt(magA) },
+    { id: 'magB',   label: '‖B‖',           value: fmt(magB) },
+    { id: 'magAsq', label: '‖A‖²',          value: fmt(magA * magA) },
+    { id: 'sumN',   label: '‖A+B‖',         value: fmt(sumNorm) }
+  ], [pIdx]);
+
+  const [num, setNum]   = useState(null);
+  const [den1, setDen1] = useState(null);
+  const [den2, setDen2] = useState(null);
+  const [activeSlot, setActiveSlot] = useState('num');
+
+  useEffect(() => {
+    setNum(null); setDen1(null); setDen2(null); setActiveSlot('num');
+  }, [pIdx]);
+
+  const place = (id) => {
+    if (activeSlot === 'num')  { setNum(id);  setActiveSlot('den1'); }
+    else if (activeSlot === 'den1') { setDen1(id); setActiveSlot('den2'); }
+    else if (activeSlot === 'den2') { setDen2(id); setActiveSlot(null); }
+  };
+  const reset = () => {
+    setNum(null); setDen1(null); setDen2(null); setActiveSlot('num');
+  };
+
+  const isCorrect = num === 'dot' &&
+    ((den1 === 'magA' && den2 === 'magB') || (den1 === 'magB' && den2 === 'magA'));
+
+  let cosVal = null;
+  if (num && den1 && den2) {
+    const lookup = (id) => parseFloat(pieces.find(x => x.id === id).value);
+    cosVal = lookup(num) / (lookup(den1) * lookup(den2));
+  }
+
+  const slot = (which, val) => {
+    const piece = val ? pieces.find(x => x.id === val) : null;
+    const isActive = activeSlot === which && !piece;
+    return (
+      <div onClick={() => piece ? null : setActiveSlot(which)} style={{
+        display:'inline-flex', alignItems:'center', justifyContent:'center',
+        minWidth: 130, height: 44, padding:'0 14px',
+        border:'2px ' + (piece ? 'solid' : 'dashed') + ' ' + (isActive ? '#7c3aed' : piece ? '#10b981' : '#94a3b8'),
+        background: isActive ? '#f3e8ff' : piece ? '#ecfdf5' : 'white',
+        borderRadius:8, cursor:'pointer',
+        fontFamily:'var(--mono)', fontSize:'0.95rem',
+        color: piece ? '#065f46' : '#94a3b8',
+        transition:'all 0.2s'
+      }}>
+        {piece ? piece.label + ' = ' + piece.value : (isActive ? '⤓ drop here' : 'empty')}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <div style={{display:'flex', flexWrap:'wrap', gap:6, marginBottom:14}}>
+        {PRESETS.map((pp, i) => (
+          <button key={i}
+            className={'btn ' + (i === pIdx ? 'purple' : 'secondary')}
+            style={{fontSize:'0.76rem', padding:'5px 10px'}}
+            onClick={() => setPIdx(i)}>
+            A=({pp.A.join(',')}), B=({pp.B.join(',')})
+          </button>
+        ))}
+      </div>
+
+      <div style={{
+        background:'#fbfaf5', border:'1px solid #e6e1d3', borderRadius:8,
+        padding:'24px 18px', textAlign:'center', marginBottom:14
+      }}>
+        <div style={{display:'inline-block', textAlign:'center'}}>
+          <div style={{fontFamily:'var(--mono)', fontSize:'1.05rem', color:'#0f172a', marginBottom:8}}>
+            cos θ =
+          </div>
+          <div style={{display:'inline-block'}}>
+            {slot('num', num)}
+            <div style={{height:2, background:'#0f172a', margin:'10px 0'}}></div>
+            <div style={{display:'flex', gap:10, justifyContent:'center', alignItems:'center'}}>
+              {slot('den1', den1)}
+              <span style={{color:'#64748b'}}>×</span>
+              {slot('den2', den2)}
+            </div>
+          </div>
+        </div>
+
+        {cosVal !== null && (
+          <div style={{marginTop:18, fontFamily:'var(--mono)', fontSize:'1.1rem'}}>
+            ≈ <strong style={{color: isCorrect ? '#16a34a' : '#dc2626'}}>{cosVal.toFixed(4)}</strong>
+            {isCorrect && Math.abs(cosVal - p.expected) < 0.02 && (
+              <span style={{marginLeft:10, color:'#16a34a', fontWeight:700}}>
+                ✓ matches expected ≈ {p.expected}
+              </span>
+            )}
+            {isCorrect && Math.abs(cosVal - p.expected) >= 0.02 && (
+              <span style={{marginLeft:10, color:'#d97706'}}>
+                (expected ≈ {p.expected} — rounding)
+              </span>
+            )}
+            {!isCorrect && (
+              <span style={{marginLeft:10, color:'#dc2626'}}>
+                ✗ slot assignments aren't right
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div style={{marginBottom:8, fontSize:'0.86rem', color:'#64748b'}}>
+        Click a piece below — it lands in the active slot. The numerator is A·B; the denominator is ‖A‖ × ‖B‖.
+      </div>
+      <div style={{display:'flex', flexWrap:'wrap', gap:8, marginBottom:14}}>
+        {pieces.map(piece => {
+          const used = num === piece.id || den1 === piece.id || den2 === piece.id;
+          return (
+            <button key={piece.id}
+              onClick={() => !used && activeSlot && place(piece.id)}
+              disabled={used || !activeSlot}
+              style={{
+                padding:'8px 14px', borderRadius:6,
+                border:'1px solid ' + (used ? '#cbd5e1' : '#7c3aed'),
+                background: used ? '#f1f5f9' : 'white',
+                color: used ? '#94a3b8' : '#5b21b6',
+                fontFamily:'var(--mono)', fontSize:'0.88rem',
+                cursor: used ? 'default' : 'pointer'
+              }}>
+              {piece.label} = {piece.value}
+            </button>
+          );
+        })}
+      </div>
+
+      <button className="btn secondary" onClick={reset}>↺ Reset slots</button>
+    </div>
+  );
+}
+
+/* ───────────── 4. AngleUnitPicker (problem-6) ───────────── */
+function AngleUnitPicker() {
+  const ITEMS = [
+    { prompt: 'A = (1, 2, 2),  B = (3, 0, 1)  — angle in radians', correct: '≈ 1.017 rad' },
+    { prompt: 'A = (7, -1),  B = (-3, 5)  — angle in degrees',     correct: '≈ 129.1°' },
+    { prompt: 'A = (5, 0, 0),  B = (0, 3, 4)  — angle (any unit)', correct: '≈ π/2' },
+    { prompt: 'A = (6, 8, -3),  B = (-4, 5, 2)  — angle in degrees', correct: '≈ 81.8°' }
+  ];
+  const CHOICES = [
+    '≈ 1.017 rad', '≈ 58.3°', '≈ 129.1°', '≈ π/2', '≈ 81.8°', '≈ 0.527 rad'
+  ];
+  const [idx, setIdx] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const item = ITEMS[idx];
+
+  const next = () => { setIdx((idx + 1) % ITEMS.length); setPicked(null); };
+  const prev = () => { setIdx((idx - 1 + ITEMS.length) % ITEMS.length); setPicked(null); };
+
+  return (
+    <div>
+      <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14, gap:14, flexWrap:'wrap'}}>
+        <div style={{flex:1, minWidth:240}}>
+          <div style={{fontSize:'0.7rem', textTransform:'uppercase', letterSpacing:'0.1em', color:'#64748b'}}>
+            Item {idx + 1} of {ITEMS.length}
+          </div>
+          <div style={{fontFamily:'var(--mono)', fontSize:'0.96rem', marginTop:4, color:'#0f172a'}}>
+            {item.prompt}
+          </div>
+        </div>
+        <div style={{display:'flex', gap:6}}>
+          <button className="btn secondary" onClick={prev} style={{padding:'5px 10px'}}>←</button>
+          <button className="btn secondary" onClick={next} style={{padding:'5px 10px'}}>→</button>
+        </div>
+      </div>
+
+      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:8, marginBottom:14}}>
+        {CHOICES.map((c, i) => {
+          const isPicked  = picked === c;
+          const isCorrect = item.correct === c;
+          let bg = 'white', border = '#cbd5e1', color = '#0f172a';
+          if (picked) {
+            if (isCorrect) { bg = '#d1fae5'; border = '#10b981'; color = '#065f46'; }
+            else if (isPicked) { bg = '#fee2e2'; border = '#ef4444'; color = '#7f1d1d'; }
+          }
+          return (
+            <button key={i}
+              onClick={() => !picked && setPicked(c)}
+              disabled={!!picked}
+              style={{
+                padding:'12px 10px', borderRadius:6,
+                border:'2px solid ' + border, background:bg, color,
+                fontFamily:'var(--mono)', fontSize:'0.92rem', fontWeight:600,
+                cursor: picked ? 'default' : 'pointer',
+                transition:'all 0.2s'
+              }}>
+              {c}
+              {picked && isCorrect && '   ✓'}
+              {picked && isPicked && !isCorrect && '   ✗'}
+            </button>
+          );
+        })}
+      </div>
+
+      {picked && (
+        <div className={'callout ' + (picked === item.correct ? 'green' : 'amber')}>
+          <strong>{picked === item.correct ? 'Right unit, right value.' : 'Watch the unit.'}</strong>
+          arccos returns radians. Multiply by 180/π to convert to degrees. The correct answer is <strong>{item.correct}</strong>.
+        </div>
+      )}
+
+      <div style={{marginTop:10, display:'flex', gap:8}}>
+        <button className="btn secondary" onClick={next}>Next prompt →</button>
+        {picked && <button className="btn secondary" onClick={() => setPicked(null)}>Try again</button>}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────── 5. VectorPairAnimator (problem-7) ───────────── */
+function VectorPairAnimator() {
+  const PRESETS = [
+    { label: 'P7 — orthogonal',   A: [5, 0, 0],  B: [0, 3, 4]  },
+    { label: 'P9 — anti-parallel', A: [1,-1, 1],  B: [-2, 2, -2] },
+    { label: 'P5 — oblique',      A: [3, 4, 0],  B: [0,-4, 3]  },
+    { label: 'P10 — generic',     A: [6, 8,-3],  B: [-4, 5, 2] }
+  ];
+  const [idx, setIdx] = useState(0);
+  const [yaw, setYaw] = useState(35);
+  const [pitch, setPitch] = useState(20);
+  const [stage, setStage] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const STAGE_MAX = 4;
+  const p = PRESETS[idx];
+
+  useEffect(() => { setStage(0); setPlaying(false); }, [idx]);
+
+  useEffect(() => {
+    if (!playing) return;
+    if (stage >= STAGE_MAX) { setPlaying(false); return; }
+    const t = setTimeout(() => setStage(s => s + 1), 700);
+    return () => clearTimeout(t);
+  }, [playing, stage]);
+
+  const project = ([x, y, z]) => {
+    const cy = Math.cos(yaw * Math.PI / 180),  sy = Math.sin(yaw * Math.PI / 180);
+    const cp = Math.cos(pitch * Math.PI / 180), sp = Math.sin(pitch * Math.PI / 180);
+    const x1 = x * cy - z * sy;
+    const z1 = x * sy + z * cy;
+    const y1 = y * cp - z1 * sp;
+    return [x1, -y1];
+  };
+
+  const W = 480, H = 320;
+  const cx = W / 2, cy = H / 2;
+  const allMags = [].concat(p.A, p.B).map(Math.abs);
+  const maxC = Math.max(...allMags, 5);
+  const SCALE = Math.min(120 / maxC, 32);
+
+  const toSvg = (v3) => {
+    const [px, py] = project(v3);
+    return [cx + px * SCALE, cy + py * SCALE];
+  };
+
+  const dot  = p.A.reduce((s, a, i) => s + a * p.B[i], 0);
+  const magA = Math.sqrt(p.A.reduce((s, a) => s + a*a, 0));
+  const magB = Math.sqrt(p.B.reduce((s, b) => s + b*b, 0));
+  const cosT = Math.max(-1, Math.min(1, dot / (magA * magB)));
+  const theta = Math.acos(cosT);
+  const isOrtho = Math.abs(dot) < 1e-9;
+  const isAnti  = Math.abs(cosT + 1) < 1e-6;
+  const isPar   = Math.abs(cosT - 1) < 1e-6;
+  const arcColor = isOrtho ? '#16a34a' : isAnti ? '#dc2626' : isPar ? '#7c3aed' : '#2F5496';
+
+  const O   = toSvg([0, 0, 0]);
+  const Apt = toSvg(p.A);
+  const Bpt = toSvg(p.B);
+  const axL = maxC * 1.1;
+  const Xpt = toSvg([axL, 0, 0]);
+  const Ypt = toSvg([0, axL, 0]);
+  const Zpt = toSvg([0, 0, axL]);
+
+  const arcPath = (() => {
+    const r = 30;
+    const aA = Math.atan2(Apt[1] - O[1], Apt[0] - O[0]);
+    const aB = Math.atan2(Bpt[1] - O[1], Bpt[0] - O[0]);
+    let delta = aB - aA;
+    while (delta > Math.PI)  delta -= 2 * Math.PI;
+    while (delta < -Math.PI) delta += 2 * Math.PI;
+    const sweepFlag = delta >= 0 ? 1 : 0;
+    const largeArc = Math.abs(delta) > Math.PI ? 1 : 0;
+    return 'M ' + (O[0] + r*Math.cos(aA)) + ' ' + (O[1] + r*Math.sin(aA)) +
+           ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' ' + sweepFlag + ' ' +
+           (O[0] + r*Math.cos(aB)) + ' ' + (O[1] + r*Math.sin(aB));
+  })();
+
+  return (
+    <div>
+      <div style={{display:'flex', flexWrap:'wrap', gap:6, marginBottom:12}}>
+        {PRESETS.map((pp, i) => (
+          <button key={i}
+            className={'btn ' + (i === idx ? 'purple' : 'secondary')}
+            style={{fontSize:'0.76rem', padding:'5px 10px'}}
+            onClick={() => setIdx(i)}>
+            {pp.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{background:'#fbfaf5', border:'1px solid #e6e1d3', borderRadius:8, padding:12}}>
+        <svg viewBox={'0 0 ' + W + ' ' + H} style={{width:'100%', height:'auto', display:'block'}}>
+          <defs>
+            <marker id="vpa-arrR" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#dc2626"/></marker>
+            <marker id="vpa-arrG" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#16a34a"/></marker>
+            <marker id="vpa-arrB" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#2F5496"/></marker>
+            <marker id="vpa-arrA" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#1e3a8a"/></marker>
+            <marker id="vpa-arrV" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#7c3aed"/></marker>
+          </defs>
+
+          {/* Stage 0: axes */}
+          <g style={{opacity: stage >= 0 ? 1 : 0.2, transition:'opacity 0.5s'}}>
+            <line x1={O[0]} y1={O[1]} x2={Xpt[0]} y2={Xpt[1]} stroke="#dc2626" strokeWidth="1.5" markerEnd="url(#vpa-arrR)" />
+            <text x={Xpt[0] + 6} y={Xpt[1] + 4} fill="#dc2626" fontSize="12" fontFamily="monospace">x</text>
+            <line x1={O[0]} y1={O[1]} x2={Ypt[0]} y2={Ypt[1]} stroke="#16a34a" strokeWidth="1.5" markerEnd="url(#vpa-arrG)" />
+            <text x={Ypt[0] + 6} y={Ypt[1] + 4} fill="#16a34a" fontSize="12" fontFamily="monospace">y</text>
+            <line x1={O[0]} y1={O[1]} x2={Zpt[0]} y2={Zpt[1]} stroke="#2F5496" strokeWidth="1.5" markerEnd="url(#vpa-arrB)" />
+            <text x={Zpt[0] + 6} y={Zpt[1] + 4} fill="#2F5496" fontSize="12" fontFamily="monospace">z</text>
+            <circle cx={O[0]} cy={O[1]} r="3" fill="#0f172a" />
+          </g>
+
+          {/* Stage 1: A */}
+          {stage >= 1 && (
+            <g style={{transition:'opacity 0.5s', opacity: 1}}>
+              <line x1={O[0]} y1={O[1]} x2={Apt[0]} y2={Apt[1]} stroke="#1e3a8a" strokeWidth="3" markerEnd="url(#vpa-arrA)" />
+              <text x={Apt[0] + 8} y={Apt[1] - 6} fill="#1e3a8a" fontSize="14" fontWeight="700">A</text>
+            </g>
+          )}
+
+          {/* Stage 2: B */}
+          {stage >= 2 && (
+            <g style={{transition:'opacity 0.5s', opacity: 1}}>
+              <line x1={O[0]} y1={O[1]} x2={Bpt[0]} y2={Bpt[1]} stroke="#7c3aed" strokeWidth="3" markerEnd="url(#vpa-arrV)" />
+              <text x={Bpt[0] + 8} y={Bpt[1] + 14} fill="#7c3aed" fontSize="14" fontWeight="700">B</text>
+            </g>
+          )}
+
+          {/* Stage 3: arc */}
+          {stage >= 3 && !isPar && !isAnti && (
+            <path d={arcPath} fill="none" stroke={arcColor} strokeWidth="2.5"
+                  style={{strokeDasharray: 200, strokeDashoffset: stage >= 3 ? 0 : 200, transition:'stroke-dashoffset 0.6s'}} />
+          )}
+
+          {/* Stage 4: label */}
+          {stage >= 4 && (
+            <g>
+              <rect x="10" y="10" width="170" height="38" fill="white" fillOpacity="0.9" stroke={arcColor} strokeWidth="1.5" rx="6" />
+              <text x="20" y="28" fill={arcColor} fontSize="12" fontWeight="700" fontFamily="monospace">
+                A · B = {dot}
+              </text>
+              <text x="20" y="42" fill={arcColor} fontSize="12" fontWeight="600" fontFamily="monospace">
+                {isOrtho ? 'orthogonal · θ = 90°'
+                  : isAnti ? 'anti-parallel · θ = 180°'
+                  : isPar  ? 'parallel · θ = 0°'
+                  : 'cos θ ≈ ' + cosT.toFixed(3) + ' · θ ≈ ' + (theta * 180 / Math.PI).toFixed(1) + '°'}
+              </text>
+            </g>
+          )}
+        </svg>
+
+        <div style={{display:'flex', gap:14, marginTop:10, alignItems:'center', fontSize:'0.82rem', color:'#475569', flexWrap:'wrap'}}>
+          <label style={{display:'flex', flexDirection:'column', flex:'1 1 180px'}}>
+            <span>Yaw {yaw}°</span>
+            <input type="range" min="-180" max="180" value={yaw} onChange={e => setYaw(+e.target.value)} />
+          </label>
+          <label style={{display:'flex', flexDirection:'column', flex:'1 1 180px'}}>
+            <span>Pitch {pitch}°</span>
+            <input type="range" min="-90" max="90" value={pitch} onChange={e => setPitch(+e.target.value)} />
+          </label>
+        </div>
+      </div>
+
+      <div style={{display:'flex', gap:8, marginTop:12, flexWrap:'wrap'}}>
+        <button className="btn purple" onClick={() => {
+          if (stage >= STAGE_MAX) setStage(0);
+          setPlaying(p => !p);
+        }}>
+          {playing ? '⏸ Pause' : (stage >= STAGE_MAX ? '↻ Replay' : '▶ Play sequence')}
+        </button>
+        <button className="btn secondary" onClick={() => setStage(s => Math.min(s + 1, STAGE_MAX))} disabled={playing}>
+          Next stage ▸
+        </button>
+        <button className="btn secondary" onClick={() => { setStage(0); setPlaying(false); }}>
+          ↺ Reset
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ───────────── 6. OrthogonalBuilder (problem-4) ───────────── */
+function OrthogonalBuilder() {
+  const PRESETS = [
+    { A: [2, -1, 3], hint: 'Try B = (1, 5, 1) → 2 − 5 + 3 = 0' },
+    { A: [1,  2, 2], hint: 'Try B = (2, 1, -2) → 2 + 2 − 4 = 0' },
+    { A: [3,  4, 0], hint: 'Any B with 3·Bx + 4·By = 0, e.g. (-4, 3, 1)' }
+  ];
+  const [idx, setIdx] = useState(0);
+  const A = PRESETS[idx].A;
+  const [B, setB] = useState([0, 0, 0]);
+
+  useEffect(() => { setB([0, 0, 0]); }, [idx]);
+
+  const dot = A.reduce((s, a, i) => s + a * B[i], 0);
+  const isZeroB = B.every(x => x === 0);
+
+  let parallel = false;
+  if (!isZeroB) {
+    const firstNZ = A.findIndex((v, i) => v !== 0 && B[i] !== 0);
+    if (firstNZ >= 0) {
+      const k = B[firstNZ] / A[firstNZ];
+      parallel = A.every((a, i) => Math.abs(B[i] - k * a) < 1e-9);
+    }
+  }
+
+  const orthogonal = !isZeroB && !parallel && Math.abs(dot) < 1e-9;
+
+  const setComp = (i, raw) => {
+    const next = [...B];
+    const v = parseFloat(raw);
+    next[i] = isNaN(v) ? 0 : v;
+    setB(next);
+  };
+
+  return (
+    <div>
+      <div style={{display:'flex', flexWrap:'wrap', gap:6, marginBottom:14}}>
+        {PRESETS.map((pp, i) => (
+          <button key={i}
+            className={'btn ' + (i === idx ? 'purple' : 'secondary')}
+            style={{fontSize:'0.78rem', padding:'5px 10px'}}
+            onClick={() => setIdx(i)}>
+            A = ({pp.A.join(', ')})
+          </button>
+        ))}
+      </div>
+
+      <div style={{background:'#fbfaf5', border:'1px solid #e6e1d3', borderRadius:8, padding:'18px 16px'}}>
+        <div style={{fontFamily:'var(--mono)', fontSize:'1.05rem', color:'#1e3a8a', marginBottom:14, fontWeight:600}}>
+          A = ({A.join(', ')})
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:14, marginBottom:14}}>
+          {[0, 1, 2].map(i => (
+            <label key={i} style={{display:'flex', flexDirection:'column', gap:4}}>
+              <span style={{fontSize:'0.74rem', color:'#64748b', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:600}}>
+                B<sub>{['x','y','z'][i]}</sub>
+              </span>
+              <input type="number" step="1" value={B[i]}
+                onChange={e => setComp(i, e.target.value)}
+                className="input-mono" />
+            </label>
+          ))}
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:8, marginBottom:14}}>
+          {[0, 1, 2].map(i => {
+            const term = A[i] * B[i];
+            return (
+              <div key={i} style={{
+                padding:'8px 12px', borderRadius:6,
+                background: term === 0 ? '#f1f5f9' : (term > 0 ? '#dbeafe' : '#fee2e2'),
+                border:'1px solid ' + (term === 0 ? '#cbd5e1' : (term > 0 ? '#3b82f6' : '#ef4444')),
+                fontFamily:'var(--mono)', fontSize:'0.86rem', textAlign:'center'
+              }}>
+                <span style={{color:'#1e3a8a'}}>{A[i]}</span>
+                <span style={{margin:'0 4px'}}>·</span>
+                <span style={{color:'#065f46'}}>{B[i]}</span>
+                <span style={{margin:'0 4px'}}>=</span>
+                <span style={{fontWeight:700}}>{term}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{
+          textAlign:'center', padding:'14px',
+          borderRadius:6,
+          background: orthogonal ? '#d1fae5' : 'white',
+          border:'2px solid ' + (orthogonal ? '#10b981' : '#cbd5e1'),
+          fontFamily:'var(--mono)', fontSize:'1.15rem', fontWeight:700,
+          transition:'all 0.3s'
+        }}>
+          A · B = {dot}
+          {orthogonal && <span style={{marginLeft:14, color:'#16a34a'}}>✓ orthogonal!</span>}
+        </div>
+      </div>
+
+      <div style={{marginTop:12, fontSize:'0.85rem', color:'#475569'}}>
+        <strong>Hint:</strong> <span style={{fontFamily:'var(--mono)'}}>{PRESETS[idx].hint}</span>
+      </div>
+
+      {isZeroB && (
+        <div className="callout amber" style={{marginTop:10}}>
+          <strong>B = 0 doesn't count.</strong>The zero vector is orthogonal to everything trivially — give B at least one non-zero component.
+        </div>
+      )}
+      {parallel && !isZeroB && (
+        <div className="callout amber" style={{marginTop:10}}>
+          <strong>B is parallel to A.</strong>Then A · B = k · ‖A‖² ≠ 0 (unless k = 0). Pick a B that doesn't lie along A.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ───────────── 7. RecapMCQ (recap) ───────────── */
+function RecapMCQ() {
+  const QUESTIONS = [
+    {
+      q: 'Two vectors satisfy A·B < 0. What does that tell you about the angle θ between them?',
+      options: [
+        'θ < 90° (acute)',
+        'θ = 90° (right angle)',
+        'θ > 90° (obtuse)',
+        'Nothing — the sign of A·B is unrelated to θ'
+      ],
+      correct: 2,
+      explain: 'cos θ has the same sign as A·B (since ‖A‖·‖B‖ > 0). Negative dot product → cos θ < 0 → θ ∈ (90°, 180°).'
+    },
+    {
+      q: 'Vectors A and B in ℝ³ have A·B = 0 and neither is the zero vector. Which conclusion is forced?',
+      options: [
+        'A and B are parallel',
+        'A and B are orthogonal',
+        'A = -B',
+        'cos θ = 1'
+      ],
+      correct: 1,
+      explain: 'By definition, two non-zero vectors are orthogonal iff their dot product is zero — that is the entire test.'
+    },
+    {
+      q: 'For A = (1, -1, 1) and B = (-2, 2, -2), A·B = -6 and ‖A‖·‖B‖ = 6, so cos θ = -1. The correct geometric description is:',
+      options: [
+        'Orthogonal',
+        'Parallel, same direction',
+        'Anti-parallel (parallel, opposite direction)',
+        'Oblique with obtuse angle'
+      ],
+      correct: 2,
+      explain: 'cos θ = -1 means θ = 180°. The vectors lie on the same line but point opposite ways — anti-parallel. Note B = -2·A confirms it algebraically.'
+    },
+    {
+      q: 'You compute cos θ ≈ 0.527 and the problem asks for the angle in radians. Which value is correct?',
+      options: [
+        '≈ 0.527 rad',
+        '≈ 58.3 rad',
+        '≈ 1.017 rad',
+        '≈ 30.2 rad'
+      ],
+      correct: 2,
+      explain: 'cos θ is not the angle — apply arccos. arccos(0.527) ≈ 1.017 rad ≈ 58.3°. Choosing 0.527 rad confuses the cosine with the angle itself.'
+    }
+  ];
+  const [picks, setPicks] = useState({});
+
+  const score = Object.keys(picks).reduce((s, k) =>
+    s + (picks[k] === QUESTIONS[+k].correct ? 1 : 0), 0);
+  const answered = Object.keys(picks).length;
+
+  return (
+    <div>
+      {QUESTIONS.map((q, qi) => {
+        const picked = picks[qi];
+        return (
+          <div key={qi} style={{
+            borderTop: qi ? '1px solid #e6e1d3' : 0,
+            paddingTop: qi ? 16 : 0,
+            marginTop: qi ? 16 : 0
+          }}>
+            <div style={{fontWeight:600, marginBottom:10, color:'#0f172a'}}>
+              <span style={{color:'#7c3aed', fontFamily:'var(--mono)', marginRight:6}}>Q{qi + 1}.</span>
+              {q.q}
+            </div>
+            <div style={{display:'flex', flexDirection:'column', gap:6}}>
+              {q.options.map((o, oi) => {
+                const isPicked  = picked === oi;
+                const isCorrect = q.correct === oi;
+                let bg = 'white', border = '#cbd5e1', color = '#0f172a';
+                if (picked !== undefined) {
+                  if (isCorrect) { bg = '#d1fae5'; border = '#10b981'; color = '#065f46'; }
+                  else if (isPicked) { bg = '#fee2e2'; border = '#ef4444'; color = '#7f1d1d'; }
+                }
+                return (
+                  <button key={oi}
+                    onClick={() => picked === undefined && setPicks({ ...picks, [qi]: oi })}
+                    disabled={picked !== undefined}
+                    style={{
+                      textAlign:'left', padding:'9px 12px', borderRadius:6,
+                      border:'1.5px solid ' + border, background:bg, color,
+                      fontFamily:'var(--sans)', fontSize:'0.9rem',
+                      cursor: picked === undefined ? 'pointer' : 'default'
+                    }}>
+                    <strong style={{marginRight:6}}>{String.fromCharCode(65 + oi)}.</strong>
+                    {o}
+                    {picked !== undefined && isCorrect && '   ✓'}
+                    {picked !== undefined && isPicked && !isCorrect && '   ✗'}
+                  </button>
+                );
+              })}
+            </div>
+            {picked !== undefined && (
+              <div className={'callout ' + (picked === q.correct ? 'green' : 'amber')} style={{marginTop:10}}>
+                <strong>{picked === q.correct ? 'Correct.' : 'Not quite.'}</strong>{q.explain}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      <div style={{
+        marginTop:18, padding:'12px 14px', borderRadius:6,
+        background:'#f8fafc', border:'1px solid #e2e8f0',
+        display:'flex', alignItems:'center', justifyContent:'space-between', gap:14, flexWrap:'wrap'
+      }}>
+        <div style={{fontFamily:'var(--mono)', fontSize:'0.92rem'}}>
+          Score: <strong style={{color: score === QUESTIONS.length ? '#16a34a' : '#0f172a'}}>{score} / {QUESTIONS.length}</strong>
+          {answered < QUESTIONS.length && <span style={{marginLeft:10, color:'#94a3b8'}}>({QUESTIONS.length - answered} left)</span>}
+        </div>
+        <button className="btn secondary" onClick={() => setPicks({})}>↺ Reset all</button>
+      </div>
+    </div>
+  );
+}
+
+/* ───────────── Mounts ───────────── */
+const mounts = [
+  ['dot-product-animator',     DotProductAnimator],
+  ['angle-classifier-picker',  AngleClassifierPicker],
+  ['cosine-builder',           CosineBuilder],
+  ['angle-unit-picker',        AngleUnitPicker],
+  ['vector-pair-animator',     VectorPairAnimator],
+  ['orthogonal-builder',       OrthogonalBuilder],
+  ['recap-mcq',                RecapMCQ]
+];
+
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are TSI Buddy — a warm, English-speaking lecturer-friend for bibliosense's Linear Algebra & Vector Geometry course.",
+    "You are reading Lecture 07: \"Scalar product & the angle between vectors\" alongside the student.",
+    "",
+    "# YOUR JOB FOR THIS LECTURE",
+    "- Help students build geometric intuition for the dot product: it measures how much one vector points along the other.",
+    "- Coach the three lenses on the same formula: compute A·B, compute cos θ, classify the geometric relationship.",
+    "- When a student asks about a specific Problem (1–10), nudge them at the matching live widget on the page rather than handing over an answer.",
+    "- Reinforce the two reflexes the lecture is drilling: read the sign of A·B before computing, and remember that anti-parallel still counts as parallel.",
+    "- Quote short phrases from the lecture text when the student references something they can see on the page.",
+    "",
+    "# GROUND TRUTH",
+    "## Formulas / definitions",
+    "- Dot product (component form): A·B = sum of A_i · B_i. In 2D: A_x B_x + A_y B_y. In 3D: add A_z B_z.",
+    "- Geometric form: A·B = ‖A‖ · ‖B‖ · cos θ, so cos θ = (A·B) / (‖A‖ · ‖B‖).",
+    "- Magnitude: ‖A‖ = sqrt(sum of A_i²).",
+    "- The angle θ is taken in [0, π] — never negative, never reflex.",
+    "",
+    "## Why",
+    "- The dot product measures how much one vector points along the other — a signed projection scaled by the projection target's length.",
+    "- The sign of A·B carries geometry for free: positive → leaning the same way (acute), zero → no shared direction (perpendicular), negative → leaning apart (obtuse).",
+    "- Dividing by both magnitudes strips length out and leaves pure direction. That is all cos θ ever is.",
+    "",
+    "## The gotcha",
+    "- Treating \"parallel\" as \"same direction\". Anti-parallel vectors (cos θ = -1, θ = 180°) are still parallel — they live on the same line. Problem 9 catches exactly this.",
+    "- Forgetting to divide by both magnitudes when computing cos θ. The dot product alone is not a cosine — it scales with the lengths of the inputs.",
+    "",
+    "## Boundary cases",
+    "- A·B = 0 with both vectors non-zero → orthogonal (θ = 90°).",
+    "- cos θ = +1 → same direction; cos θ = -1 → opposite direction. Both count as parallel.",
+    "- If either vector is zero, the angle is undefined — the cosine formula divides by zero.",
+    "- cos θ must always be in [-1, 1]. If your arithmetic yields ±1.07, you made a mistake in a magnitude or a sign.",
+    "",
+    "## Vivid analogy",
+    "- Two flashlights at the origin. The dot product is the brightness of one beam falling on the other's path: full brightness when they point the same way, none when perpendicular, *negative* brightness when one shines back into the other's face. Cosine is that brightness rescaled so the maximum is 1 regardless of bulb power.",
+    "",
+    "## Curriculum context",
+    "- Came before: vectors as ordered tuples, vector addition, scalar multiplication, magnitude, components in R² and R³.",
+    "- This lecture: a workshop drilling A·B and cos θ across ten problems.",
+    "- Coming next: vector projection (one vector onto another) and then the cross product — a different product that returns a vector and detects parallelism rather than orthogonality.",
+    "",
+    "# PEDAGOGY GUARDS",
+    "- NEVER reveal a quiz/MCQ answer or spell out a derivation. Scaffold instead: ask a leading question, name the relevant formula, point at the right widget on the page.",
+    "- For Problems 1, 4, 7 specifically: suggest the matching live widget (dot-product animator, orthogonal builder, vector-pair animator) and ask the student to report what they see.",
+    "- Encourage students to read the sign of A·B before reaching for a calculator.",
+    "- Do not hand over numerical answers to homework problems — coach the steps.",
+    "",
+    "# LANGUAGE",
+    "- Default to English. Switch only on a clearly non-English signal from the student.",
+    "- If you reply in another language, append a short \"*EN summary:*\" line at the end with the same point in English.",
+    "",
+    "# STYLE",
+    "- Replies are 60–180 words. Plain language. Anchored to specific phrases the student can find on the page.",
+    "- Use Markdown lightly — short bold phrases for key terms, no walls of text.",
+    "- Be warm and lecturer-shaped. \"Look at\", \"notice\", \"try\" — not \"the optimal approach is\"."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Linear Algebra & Vector Geometry · Lecture 07',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>
