@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applications of the vector cross product | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,91,255,0.25);
+  }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .tok { display:inline-block; padding:4px 10px; border-radius:100px; font-family: var(--mono); font-size:0.85rem; font-weight:600; margin:2px 3px; border:1px solid; vertical-align:middle; }
+  .tok-id    { background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; }
+  .tok-num   { background:#d1fae5; border-color:#10b981; color:#065f46; }
+  .tok-op    { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+  .tok-kw    { background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+  .tok-paren { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .tok-nt    { background:#ede9fe; border-color:#8b5cf6; color:#5b21b6; }
+  .tok-term  { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { font-size: 0.78rem; color: var(--brand); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 8px; display: block; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+
+  /* Widget-internal styles */
+  .vec-row { display:flex; gap:8px; align-items:center; margin:6px 0; flex-wrap:wrap; }
+  .vec-label { font-family: var(--serif); font-size: 1rem; color: var(--ink-soft); min-width: 56px; }
+  .num-input { width: 56px; font-family: var(--mono); padding: 4px 6px; border:1px solid #cbd5e1; border-radius:4px; text-align:center; }
+  .stage-row { display:flex; flex-direction:column; gap:8px; margin: 14px 0; }
+  .stage { padding: 10px 14px; border:1px solid var(--rule); border-radius: 8px; background:white; transition: all 0.35s ease; opacity: 0.45; }
+  .stage.is-active { opacity: 1; border-color: var(--brand); background: var(--brand-soft); transform: translateX(6px); box-shadow: 0 2px 8px rgba(47,84,150,0.15); }
+  .stage.is-done { opacity: 0.85; }
+  .stage-title { font-weight: 600; color: var(--brand-2); font-size: 0.92rem; margin-bottom: 4px; }
+  .stage-body { font-family: var(--mono); font-size: 0.88rem; color: var(--ink); }
+  .pill-row { display:flex; flex-wrap:wrap; gap:6px; margin: 8px 0; }
+  .pill { padding: 4px 10px; border-radius: 999px; font-family: var(--mono); font-size: 0.78rem; cursor:pointer; border:1px solid var(--rule); background: white; color: var(--ink-soft); transition: all 0.15s; }
+  .pill:hover { border-color: var(--brand); color: var(--brand); }
+  .pill.is-on { background: var(--brand); color: white; border-color: var(--brand); }
+  .result-tray { background: var(--math-bg); border:1px solid var(--rule); border-radius:8px; padding: 12px 14px; margin: 10px 0; font-family: var(--mono); font-size: 0.95rem; }
+  .check-line { display:flex; gap: 10px; align-items:center; padding: 6px 0; font-family: var(--mono); font-size:0.88rem; }
+  .check-ok { color: #16a34a; font-weight: 700; }
+  .check-bad { color: #dc2626; font-weight: 700; }
+  .pick-row { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 12px 0; }
+  .pick { text-align:left; padding: 12px 14px; border:1px solid var(--rule); border-radius: 8px; background: white; cursor:pointer; transition: all 0.15s; font-size: 0.93rem; }
+  .pick:hover { border-color: var(--brand); }
+  .pick.is-correct { border-color: #16a34a; background: #e8f5e9; }
+  .pick.is-wrong   { border-color: #dc2626; background: #ffebee; }
+  .pick-tag { font-family: var(--mono); font-size: 0.78rem; color: var(--ink-soft); margin-left: 6px; }
+  .mcq-q { padding: 14px 16px; border:1px solid var(--rule); border-radius: 8px; background: white; margin: 10px 0; }
+  .mcq-q.q-done { border-color: var(--brand); }
+  .mcq-options { display:flex; flex-direction:column; gap:6px; margin: 8px 0; }
+  .mcq-opt { text-align:left; padding: 8px 12px; border:1px solid var(--rule); border-radius:6px; background:white; cursor:pointer; font-size: 0.92rem; transition: all 0.15s; }
+  .mcq-opt:hover { border-color: var(--brand); }
+  .mcq-opt.opt-correct { border-color:#16a34a; background:#e8f5e9; }
+  .mcq-opt.opt-wrong   { border-color:#dc2626; background:#ffebee; }
+  .mcq-explain { margin-top: 8px; padding: 8px 12px; background: var(--voice-bg); border-left:3px solid var(--voice-line); font-size: 0.88rem; font-family: var(--serif); font-style: italic; }
+  .matrix-svg { font-family: var(--mono); }
+  .pp-svg { display:block; margin: 8px auto; }
+  .control-row { display:flex; gap:8px; flex-wrap:wrap; margin: 10px 0; align-items:center; }
+  .slider-row { display:flex; gap:10px; align-items:center; margin: 4px 0; font-family: var(--mono); font-size:0.85rem; }
+  .slider-row input[type=range] { flex: 1; }
+  .preset-bar { display:flex; flex-wrap:wrap; gap:6px; padding: 8px 0 4px; border-bottom:1px dashed var(--rule); margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Engineering Mathematics<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Problem set · Vector product applications</div>
+  <h1 class="lecture-title">Applications of the vector cross product</h1>
+  <p class="lecture-subtitle">A worked problem set: from areas and volumes to torque and the Lorentz force.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Course.</strong> Engineering Mathematics</span>
+  </div>
+</header>
+
+<div class="voice">This session is all problems. We've defined $\mathbf{a}\times\mathbf{b}$ and proved its properties — now we put it to work. We'll compute cross products by hand, read off areas and volumes from their magnitudes, build vectors perpendicular to a given pair, and then push the same machinery into physics: torque about a point and the magnetic force on a moving charge. Two sets of ten problems each. Work them in order; the second set is harder.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span> What this lecture covers</h2>
+  <p>This is a <strong>problem-driven</strong> session on the vector cross product $\mathbf{a}\times\mathbf{b}$. We work through two sets of ten problems each, organised by application:</p>
+  <ul>
+    <li>direct computation and magnitude of $\mathbf{a}\times\mathbf{b}$</li>
+    <li>a unit vector in the direction of the cross product</li>
+    <li>areas of parallelograms and triangles, volume of a parallelepiped</li>
+    <li>finding a vector perpendicular to two given vectors</li>
+    <li>the angle between two vectors via $|\mathbf{a}\times\mathbf{b}|=|\mathbf{a}||\mathbf{b}|\sin\theta$</li>
+    <li>torque $\boldsymbol{\tau}=\mathbf{r}\times\mathbf{F}$ and the moment of a force</li>
+    <li>the Lorentz force $\mathbf{F}_B = q\,\mathbf{v}\times\mathbf{B}$</li>
+    <li>a closing problem on the projection of one cross product onto another direction</li>
+  </ul>
+  <p>Each section below frames the relevant problems from <strong>Problems-I</strong> and <strong>Problems-II</strong> and reminds you of the formula you need.</p>
+  <div class="voice">Don't skim — <em>do</em> them. The cross product only sticks once your hand has cranked through a few 3×3 determinants.</div>
+  <div class="callout blue"><strong>Core formula.</strong> For $\mathbf{a}=(a_1,a_2,a_3)$ and $\mathbf{b}=(b_1,b_2,b_3)$, $\mathbf{a}\times\mathbf{b}=\det\begin{pmatrix}\hat\imath&\hat\jmath&\hat k\\a_1&a_2&a_3\\b_1&b_2&b_3\end{pmatrix}$.</div>
+</section>
+
+<section class="card" id="computing-cross-products">
+  <h2><span class="badge">1</span> Computing a cross product and its magnitude</h2>
+  <p>The mechanical starting point. Expand the symbolic determinant, collect components, and — when asked — take the Euclidean norm.</p>
+  <p><strong>Problems-I, Q1</strong> — compute $\mathbf{a}\times\mathbf{b}$ for $\mathbf{a}=3\hat\imath-4\hat\jmath+2\hat k$, $\mathbf{b}=\hat\imath+2\hat\jmath-\hat k$.</p>
+  <p><strong>Problems-I, Q2</strong> — for $\mathbf{u}=2\hat\imath+3\hat\jmath-4\hat k$ and $\mathbf{v}=-\hat\imath+\hat\jmath+2\hat k$, find $|\mathbf{u}\times\mathbf{v}|$.</p>
+  <p>Report components in the form $(x,y,z)$ and keep magnitudes exact (surds) unless a decimal is asked for.</p>
+  <div class="voice">Two sign conventions, one rule: read the determinant left-to-right, alternate $+,-,+$ on the cofactors. If you flip the order, you flip the sign of the answer.</div>
+  <div class="callout amber"><strong>Sign trap.</strong> $\mathbf{a}\times\mathbf{b}=-(\mathbf{b}\times\mathbf{a})$. Get the rows in the determinant in the <em>order the question asks</em>.</div>
+  <div class="code-block">
+    <div class="code-label">Component formula</div>
+    <pre><code>a × b = ( a2·b3 − a3·b2 ,
+         a3·b1 − a1·b3 ,
+         a1·b2 − a2·b1 )</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Determinant expander · watch a×b unfold cofactor by cofactor</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="determinant-expander"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="unit-vector-direction">
+  <h2><span class="badge">2</span> Direction: a unit vector along the cross product</h2>
+  <p>Once you have $\mathbf{a}\times\mathbf{b}$, the <strong>unit</strong> vector in that direction is $\hat n = \dfrac{\mathbf{a}\times\mathbf{b}}{|\mathbf{a}\times\mathbf{b}|}$. By construction, $\hat n$ is perpendicular to both $\mathbf{a}$ and $\mathbf{b}$, with orientation given by the right-hand rule.</p>
+  <p><strong>Problems-I, Q3</strong> — find $\hat n$ for $\mathbf{a}=4\hat\imath+2\hat\jmath+3\hat k$ and $\mathbf{b}=-\hat\imath+5\hat\jmath+4\hat k$.</p>
+  <div class="callout teal"><strong>Sanity check.</strong> Verify $\hat n\cdot\mathbf{a}=0$ and $\hat n\cdot\mathbf{b}=0$. If either dot product isn't zero, you've slipped a sign in the determinant.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build n̂ · cross, then normalise, then verify</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="unit-normal-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="area-parallelogram-triangle">
+  <h2><span class="badge">3</span> Area of parallelograms and triangles</h2>
+  <p>The geometric meaning of $|\mathbf{a}\times\mathbf{b}|$ is the <strong>area of the parallelogram</strong> spanned by $\mathbf{a}$ and $\mathbf{b}$. Halve it and you get the area of the triangle on the same two edges.</p>
+  <p><strong>Problems-I, Q4</strong> — area of the parallelogram on $\mathbf{p}=\hat\imath+3\hat\jmath+2\hat k$ and $\mathbf{q}=-2\hat\imath+\hat\jmath+\hat k$.</p>
+  <p><strong>Problems-I, Q7</strong> — area of the triangle with vertices $A(1,2,0)$, $B(3,-1,1)$, $C(0,1,4)$. Form the edge vectors $\overrightarrow{AB}$ and $\overrightarrow{AC}$, then $\text{Area}=\tfrac12|\overrightarrow{AB}\times\overrightarrow{AC}|$.</p>
+  <p><strong>Problems-II, Q2</strong> — area of the parallelogram on $\mathbf{a}=4\hat\imath+2\hat\jmath+\hat k$ and $\mathbf{b}=-\hat\imath+3\hat\jmath+5\hat k$.</p>
+  <p><strong>Problems-II, Q6</strong> — area of the triangle with vertices $A(1,0,1)$, $B(2,1,3)$, $C(0,2,1)$.</p>
+  <div class="voice">For a triangle from three points, you must build edge vectors <em>first</em>. The cross product of position vectors is meaningless here.</div>
+  <div class="callout green"><strong>Two formulas, one idea.</strong> Parallelogram area $= |\mathbf{a}\times\mathbf{b}|$. Triangle area $= \tfrac12 |\mathbf{a}\times\mathbf{b}|$.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Triangle from three points · pick the right edge vectors</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="area-from-edges"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="perpendicular-vector">
+  <h2><span class="badge">4</span> A vector perpendicular to two given vectors</h2>
+  <p>Any non-zero scalar multiple of $\mathbf{a}\times\mathbf{b}$ is perpendicular to both $\mathbf{a}$ and $\mathbf{b}$. So <em>the</em> canonical answer is $\mathbf{c}=\mathbf{a}\times\mathbf{b}$ itself.</p>
+  <p><strong>Problems-I, Q5</strong> — find $\mathbf{c}\perp \mathbf{a},\mathbf{b}$ for $\mathbf{a}=5\hat\imath+3\hat\jmath-\hat k$ and $\mathbf{b}=2\hat\imath-\hat\jmath+4\hat k$.</p>
+  <p><strong>Problems-II, Q4</strong> — same task for $\mathbf{a}=5\hat\imath+4\hat\jmath+2\hat k$ and $\mathbf{b}=-\hat\imath+6\hat\jmath+3\hat k$.</p>
+  <div class="callout purple"><strong>Family of answers.</strong> Every $\lambda(\mathbf{a}\times\mathbf{b})$ with $\lambda\neq 0$ works. If a <em>unit</em> perpendicular is asked for, normalise (see §2).</div>
+</section>
+
+<section class="card" id="volume-parallelepiped">
+  <h2><span class="badge">5</span> Volume of a parallelepiped — the scalar triple product</h2>
+  <p>For three edges $\mathbf{a},\mathbf{b},\mathbf{c}$ meeting at a vertex, the parallelepiped's volume is $V = \big|\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c})\big| = \left|\det\begin{pmatrix}a_1&a_2&a_3\\b_1&b_2&b_3\\c_1&c_2&c_3\end{pmatrix}\right|.$</p>
+  <p><strong>Problems-I, Q8</strong> — volume on $\mathbf{a}=\hat\imath+2\hat\jmath+3\hat k$, $\mathbf{b}=-\hat\imath+\hat\jmath+4\hat k$, $\mathbf{c}=2\hat\imath+3\hat\jmath+\hat k$.</p>
+  <div class="voice">Take the <em>absolute value</em> — the determinant is signed (it tracks orientation), but a volume isn't.</div>
+  <div class="callout blue"><strong>Coplanarity test.</strong> If $\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c})=0$, the three vectors are coplanar and the parallelepiped collapses.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Scalar triple product · the parallelepiped grows edge by edge</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="parallelepiped-volume"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="angle-between">
+  <h2><span class="badge">6</span> Angle between two vectors via the cross product</h2>
+  <p>From $|\mathbf{a}\times\mathbf{b}|=|\mathbf{a}||\mathbf{b}|\sin\theta$ we get $\sin\theta = \dfrac{|\mathbf{a}\times\mathbf{b}|}{|\mathbf{a}||\mathbf{b}|}$, with $0\le\theta\le\pi$.</p>
+  <p><strong>Problems-I, Q9</strong> — find the angle between $\mathbf{u}=3\hat\imath-\hat\jmath+2\hat k$ and $\mathbf{v}=\hat\imath+4\hat\jmath-3\hat k$ using their cross product.</p>
+  <div class="voice">The cross-product method gives you $\sin\theta$, which can't distinguish acute from obtuse on its own. If the angle could be obtuse, cross-check with $\cos\theta$ from the dot product.</div>
+</section>
+
+<section class="card" id="orthogonality-check">
+  <h2><span class="badge">7</span> Orthogonality check via the cross product</h2>
+  <p>Two vectors $\mathbf{u},\mathbf{v}$ are <strong>orthogonal</strong> iff $\mathbf{u}\cdot\mathbf{v}=0$. Computing $\mathbf{u}\times\mathbf{v}$ doesn't directly tell you that — but $|\mathbf{u}\times\mathbf{v}| = |\mathbf{u}||\mathbf{v}|$ does, since $\sin\theta=1$ iff $\theta=\pi/2$.</p>
+  <p><strong>Problems-II, Q7</strong> — for $\mathbf{u}=2\hat\imath+5\hat\jmath-3\hat k$ and $\mathbf{v}=4\hat\imath+\hat\jmath+\hat k$, compute the cross product, take its magnitude, and compare with $|\mathbf{u}||\mathbf{v}|$.</p>
+  <div class="voice">In practice the dot product is the cleaner orthogonality test. The question wants you to <em>see</em> the relationship between $|\mathbf{u}\times\mathbf{v}|$ and $\sin\theta$.</div>
+  <div class="callout amber"><strong>Watch the units.</strong> $|\mathbf{u}\times\mathbf{v}|^2 + (\mathbf{u}\cdot\mathbf{v})^2 = |\mathbf{u}|^2|\mathbf{v}|^2$ — Lagrange's identity. A useful cross-check.</div>
+</section>
+
+<section class="card" id="torque-moment">
+  <h2><span class="badge">8</span> Torque and the moment of a force</h2>
+  <p>For a force $\mathbf{F}$ applied at position $\mathbf{r}$ relative to a reference point, the <strong>torque</strong> (or moment of force) about that point is $\boldsymbol\tau = \mathbf{r}\times\mathbf{F}.$ The magnitude $|\boldsymbol\tau|$ has units of $\text{N·m}$; its direction follows the right-hand rule (axis of rotation).</p>
+  <p><strong>Problems-I, Q6</strong> — $\mathbf{F}=7\hat\imath-3\hat\jmath+2\hat k\,\text{N}$ at $\mathbf{r}=3\hat\imath+\hat\jmath-4\hat k\,\text{m}$, torque about the origin.</p>
+  <p><strong>Problems-II, Q1</strong> — $\mathbf{F}=3\hat\imath+4\hat\jmath-2\hat k\,\text{N}$ at $\mathbf{r}=2\hat\imath-\hat\jmath+3\hat k\,\text{m}$, torque about the origin.</p>
+  <p><strong>Problems-II, Q3</strong> — $\mathbf{F}=7\hat\imath-2\hat\jmath+4\hat k\,\text{N}$ at $\mathbf{r}=4\hat\imath+2\hat\jmath-3\hat k\,\text{m}$, moment of force about the point.</p>
+  <p><strong>Problems-II, Q9</strong> — wrench on a bolt: $\mathbf{F}=8\hat\imath+2\hat\jmath-5\hat k\,\text{N}$, moment arm $\mathbf{r}=-3\hat\imath+4\hat\jmath+\hat k\,\text{m}$. Compute $\boldsymbol\tau$.</p>
+  <div class="voice">$\mathbf{r}$ is the position vector <em>of the point where the force is applied</em>, measured from the pivot. Get that vector wrong and the rest is theatre.</div>
+  <div class="callout red"><strong>Order matters.</strong> $\mathbf{r}\times\mathbf{F}$, not $\mathbf{F}\times\mathbf{r}$. Swapping flips the sign and reverses the rotation axis.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build a torque · place r, place F, read τ off the rotation axis</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="torque-right-hand"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="work-done-aside">
+  <h2><span class="badge">9</span> Aside: work done by a force</h2>
+  <p>Strictly, this one is a <strong>dot-product</strong> problem — included in Problems-II as a contrast to the cross-product applications around it.</p>
+  <p>Work done by a constant force $\mathbf{F}$ over a straight displacement $\mathbf{s}$ is $W = \mathbf{F}\cdot\mathbf{s}$.</p>
+  <p><strong>Problems-II, Q5</strong> — $\mathbf{F}=6\hat\imath+3\hat\jmath-2\hat k\,\text{N}$, motion in the direction $\mathbf{d}=2\hat\imath-\hat\jmath+4\hat k$ over a distance of $5\,\text{m}$. Build $\mathbf{s}=5\,\hat d$ where $\hat d=\mathbf{d}/|\mathbf{d}|$, then evaluate $|W| = |\mathbf{F}\cdot\mathbf{s}|$.</p>
+  <div class="voice">If you reach for the cross product here, stop. <em>Work projects force onto displacement</em> — that's the dot product's job.</div>
+  <div class="callout teal"><strong>Why this lives in a cross-product set.</strong> To force you to choose the right product. Recognising which physical quantity needs which product is half the skill.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Dot or cross? · pick the right product for the physics</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="dot-or-cross"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="magnetic-force">
+  <h2><span class="badge">10</span> Magnetic force on a moving charge — the Lorentz force</h2>
+  <p>A charge $q$ moving with velocity $\mathbf{v}$ through a magnetic field $\mathbf{B}$ experiences $\mathbf{F}_B = q\,\mathbf{v}\times\mathbf{B}.$ The force is perpendicular to the plane of $\mathbf{v}$ and $\mathbf{B}$, so the magnetic field does no work — it only bends the trajectory.</p>
+  <p><strong>Problems-I, Q10</strong> — $q=1.5\,\mu\text{C}$, $\mathbf{v}=2\hat\imath-3\hat\jmath+\hat k\,\text{m/s}$, $\mathbf{B}=5\hat\imath+2\hat\jmath-4\hat k\,\text{T}$.</p>
+  <p><strong>Problems-II, Q8</strong> — $q=2\,\mu\text{C}$, $\mathbf{v}=3\hat\imath+2\hat\jmath-\hat k\,\text{m/s}$, $\mathbf{B}=4\hat\imath-\hat\jmath+3\hat k\,\text{T}$.</p>
+  <p>Keep careful track of the $10^{-6}$ from $\mu\text{C}$ and report $\mathbf{F}_B$ in newtons.</p>
+  <div class="voice">Sign of $q$ matters: a negative charge reverses the direction of $\mathbf{F}_B$. Both problems here use positive $q$.</div>
+  <div class="callout blue"><strong>Units.</strong> $[\mathbf{F}_B] = \text{C}\cdot(\text{m/s})\cdot\text{T} = \text{N}$. Always check by walking the units through.</div>
+</section>
+
+<section class="card" id="projection-of-cross-product">
+  <h2><span class="badge">11</span> Projection of a cross product onto a direction</h2>
+  <p>A neat closer that combines two operations. The scalar projection of a vector $\mathbf{w}$ onto a direction $\mathbf{u}$ is $\dfrac{\mathbf{w}\cdot\mathbf{u}}{|\mathbf{u}|}$.</p>
+  <p><strong>Problems-II, Q10</strong> — for $\mathbf{p}=6\hat\imath-3\hat\jmath+2\hat k$ and $\mathbf{q}=\hat\imath+4\hat\jmath-2\hat k$, compute $\mathbf{p}\times\mathbf{q}$, then project the result onto $\hat\imath+\hat\jmath+\hat k$: $\text{proj} = \dfrac{(\mathbf{p}\times\mathbf{q})\cdot(\hat\imath+\hat\jmath+\hat k)}{|\hat\imath+\hat\jmath+\hat k|}.$</p>
+  <div class="voice">Notice the underlying object: $(\mathbf{p}\times\mathbf{q})\cdot\mathbf{r}$ is a scalar triple product — geometrically, the signed volume of the parallelepiped on $\mathbf{p},\mathbf{q},\mathbf{r}$.</div>
+  <div class="callout purple"><strong>Vector vs scalar projection.</strong> Scalar: $\dfrac{\mathbf{w}\cdot\mathbf{u}}{|\mathbf{u}|}$. Vector: $\dfrac{\mathbf{w}\cdot\mathbf{u}}{|\mathbf{u}|^2}\mathbf{u}$. Read the question carefully.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · pick the right tool for each scenario</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="applications-check"></div>
+    </div>
+  </div>
+</section>
+
+<section class="homework" id="homework">
+  <h2><span class="badge">★</span> Homework</h2>
+  <p class="hw-intro">Hand-written or typeset, your call — but every working step must be visible. Cross-check at least three answers with a perpendicularity test.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Problems-I, all 10</h4>
+      <p>Hand in full working for every problem in Problems-I. Show the determinant expansion in Q1, Q2, Q3 explicitly. Give exact answers (surds) where possible.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>2 · Problems-II, all 10</h4>
+      <p>Same expectations as Set I. For Q5 (work done), state explicitly <em>why</em> the dot product is the right tool, not the cross product.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Cross-checks</h4>
+      <p>For at least three of your answers, verify the cross product is perpendicular to both inputs ($\hat n\cdot\mathbf{a}=0$, $\hat n\cdot\mathbf{b}=0$). For one torque problem, state the axis and sense of rotation in plain English.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#computing-cross-products">1 · Computing a cross product</a></li>
+      <li><a href="#unit-vector-direction">2 · Unit vector direction</a></li>
+      <li><a href="#area-parallelogram-triangle">3 · Areas</a></li>
+      <li><a href="#perpendicular-vector">4 · Perpendicular vector</a></li>
+      <li><a href="#volume-parallelepiped">5 · Parallelepiped volume</a></li>
+      <li><a href="#angle-between">6 · Angle between vectors</a></li>
+      <li><a href="#orthogonality-check">7 · Orthogonality check</a></li>
+      <li><a href="#torque-moment">8 · Torque</a></li>
+      <li><a href="#work-done-aside">9 · Work done (aside)</a></li>
+      <li><a href="#magnetic-force">10 · Lorentz force</a></li>
+      <li><a href="#projection-of-cross-product">11 · Projection of a×b</a></li>
+      <li><a href="#homework">★ · Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Engineering Mathematics · Applications of the vector cross product · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+// ── helpers ──────────────────────────────────────────────────────
+const cross = (a, b) => [
+  a[1]*b[2] - a[2]*b[1],
+  a[2]*b[0] - a[0]*b[2],
+  a[0]*b[1] - a[1]*b[0],
+];
+const dot = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+const mag = (a) => Math.sqrt(dot(a, a));
+const fmtV = (v, p=2) => '(' + v.map(x => Math.abs(x) < 1e-9 ? '0' : (Math.round(x*100)/100)).join(', ') + ')';
+const fmtInt = (v) => '(' + v.join(', ') + ')';
+const sign = (n) => n >= 0 ? '+' : '−';
+const abs = (n) => Math.abs(n);
+
+// Pretty surd reducer for small ints
+function simplifySurd(n) {
+  n = Math.round(n);
+  if (n <= 0) return { coeff: 0, rad: 1 };
+  let coeff = 1, rad = n;
+  for (let i = 2; i*i <= rad; i++) {
+    while (rad % (i*i) === 0) { coeff *= i; rad = rad / (i*i); }
+  }
+  return { coeff, rad };
+}
+function surdString(n) {
+  const { coeff, rad } = simplifySurd(n);
+  if (rad === 1) return String(coeff);
+  if (coeff === 1) return '√' + rad;
+  return coeff + '√' + rad;
+}
+
+// ── Widget 1 · Determinant expander (animator) ───────────────────
+function DeterminantExpander() {
+  const PRESETS = [
+    { name: 'I·Q1',   a:[3,-4,2],  b:[1,2,-1] },
+    { name: 'I·Q2',   a:[2,3,-4],  b:[-1,1,2] },
+    { name: 'I·Q3',   a:[4,2,3],   b:[-1,5,4] },
+  ];
+  const [pi, setPi] = useState(0);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [swapped, setSwapped] = useState(false);
+
+  const aSrc = PRESETS[pi].a, bSrc = PRESETS[pi].b;
+  const a = swapped ? bSrc : aSrc;
+  const b = swapped ? aSrc : bSrc;
+
+  const xC =  a[1]*b[2] - a[2]*b[1];
+  const yC = -(a[0]*b[2] - a[2]*b[0]);
+  const zC =  a[0]*b[1] - a[1]*b[0];
+  const result = [xC, yC, zC];
+  const m2 = xC*xC + yC*yC + zC*zC;
+
+  useEffect(() => {
+    if (!playing) return;
+    const t = setTimeout(() => {
+      setStep(s => (s >= 3 ? 0 : s + 1));
+    }, 1300);
+    return () => clearTimeout(t);
+  }, [playing, step]);
+
+  const stages = [
+    {
+      title: 'î-cofactor (sign +)',
+      body: `+ î · det( a₂ a₃ ; b₂ b₃ ) = ${a[1]}·${b[2]} − ${a[2]}·${b[1]} = ${xC}`,
+    },
+    {
+      title: 'ĵ-cofactor (sign −)',
+      body: `− ĵ · det( a₁ a₃ ; b₁ b₃ ) = −(${a[0]}·${b[2]} − ${a[2]}·${b[0]}) = ${yC}`,
+    },
+    {
+      title: 'k̂-cofactor (sign +)',
+      body: `+ k̂ · det( a₁ a₂ ; b₁ b₂ ) = ${a[0]}·${b[1]} − ${a[1]}·${b[0]} = ${zC}`,
+    },
+    {
+      title: 'Assemble & take magnitude',
+      body: `a × b = ${fmtInt(result)}    |a × b| = √${m2} = ${surdString(m2)}`,
+    },
+  ];
+
+  // SVG matrix highlighter
+  const rowFill = (row) => {
+    if (row === 0) return step >= 0 ? '#fef3c7' : 'white';
+    if (row === 1 && step === 0) return '#dbeafe';
+    if (row === 1 && step === 1) return '#fee2e2';
+    if (row === 1 && step === 2) return '#d1fae5';
+    if (row === 2 && step === 0) return '#dbeafe';
+    if (row === 2 && step === 1) return '#fee2e2';
+    if (row === 2 && step === 2) return '#d1fae5';
+    return 'white';
+  };
+  const colStrike = (col) => {
+    if (col === 0 && step === 0) return true;
+    if (col === 1 && step === 1) return true;
+    if (col === 2 && step === 2) return true;
+    return false;
+  };
+
+  return (
+    <div>
+      <div className="preset-bar">
+        <span style={{fontFamily:'var(--mono)', fontSize:'0.78rem', color:'var(--ink-soft)', alignSelf:'center'}}>preset:</span>
+        {PRESETS.map((p, i) => (
+          <button key={i}
+                  className={'pill ' + (i===pi ? 'is-on' : '')}
+                  onClick={() => { setPi(i); setStep(0); setPlaying(false); setSwapped(false); }}>
+            {p.name}
+          </button>
+        ))}
+      </div>
+
+      <div style={{fontFamily:'var(--mono)', fontSize:'0.85rem', color:'var(--ink-soft)', marginBottom:6}}>
+        a = {fmtInt(a)} &nbsp;·&nbsp; b = {fmtInt(b)} {swapped ? '  (rows swapped)' : ''}
+      </div>
+
+      <svg viewBox="0 0 320 130" width="100%" style={{maxWidth:380, display:'block'}} className="matrix-svg">
+        <text x="6" y="22" fontSize="14" fill="#4b515c">det</text>
+        <line x1="34" y1="6" x2="34" y2="124" stroke="#1a1d24" strokeWidth="1"/>
+        <line x1="316" y1="6" x2="316" y2="124" stroke="#1a1d24" strokeWidth="1"/>
+        {[0,1,2].map(c => (
+          <rect key={'r0c'+c} x={48+c*88} y={12} width={80} height={28} fill={rowFill(0)} stroke="#e6e1d3"/>
+        ))}
+        <text x="88"  y="32" fontSize="16" textAnchor="middle">î</text>
+        <text x="176" y="32" fontSize="16" textAnchor="middle">ĵ</text>
+        <text x="264" y="32" fontSize="16" textAnchor="middle">k̂</text>
+        {[0,1,2].map(c => (
+          <rect key={'r1c'+c} x={48+c*88} y={44} width={80} height={28} fill={rowFill(1)} stroke="#e6e1d3"/>
+        ))}
+        <text x="88"  y="64" fontSize="14" textAnchor="middle">{a[0]}</text>
+        <text x="176" y="64" fontSize="14" textAnchor="middle">{a[1]}</text>
+        <text x="264" y="64" fontSize="14" textAnchor="middle">{a[2]}</text>
+        {[0,1,2].map(c => (
+          <rect key={'r2c'+c} x={48+c*88} y={76} width={80} height={28} fill={rowFill(2)} stroke="#e6e1d3"/>
+        ))}
+        <text x="88"  y="96" fontSize="14" textAnchor="middle">{b[0]}</text>
+        <text x="176" y="96" fontSize="14" textAnchor="middle">{b[1]}</text>
+        <text x="264" y="96" fontSize="14" textAnchor="middle">{b[2]}</text>
+        {[0,1,2].map(c => colStrike(c) ? (
+          <line key={'s'+c} x1={48+c*88} y1={104} x2={128+c*88} y2={12} stroke="#dc2626" strokeWidth="2" opacity="0.6"/>
+        ) : null)}
+      </svg>
+
+      <div className="stage-row">
+        {stages.map((s, i) => (
+          <div key={i} className={'stage ' + (i===step ? 'is-active' : (i<step ? 'is-done' : ''))}>
+            <div className="stage-title">Step {i+1} · {s.title}</div>
+            <div className="stage-body">{s.body}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="control-row">
+        <button className="btn purple" onClick={() => setPlaying(p => !p)}>
+          {playing ? '⏸ Pause' : '▶ Play'}
+        </button>
+        <button className="btn" onClick={() => setStep(s => Math.min(3, s+1))}>Step →</button>
+        <button className="btn secondary" onClick={() => { setStep(0); setPlaying(false); }}>↺ Reset</button>
+        <button className="btn secondary" onClick={() => { setSwapped(s => !s); setStep(0); setPlaying(false); }}>
+          {swapped ? 'restore a×b' : 'check b×a (swap)'}
+        </button>
+      </div>
+
+      {step === 3 && (
+        <div className="callout teal" style={{marginTop:10}}>
+          <strong>Result.</strong> a × b = {fmtInt(result)}. Magnitude |a × b| = √{m2} = {surdString(m2)}.
+          {swapped && ' Note the sign flip vs the un-swapped run — that is antisymmetry in action.'}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Widget 2 · Unit normal builder ───────────────────────────────
+function UnitNormalBuilder() {
+  const PRESETS = [
+    { name: 'I·Q3', a:[4,2,3],  b:[-1,5,4] },
+    { name: 'I·Q5', a:[5,3,-1], b:[2,-1,4] },
+  ];
+  const [pi, setPi] = useState(0);
+  const [stage, setStage] = useState(0);
+  const [cross1, setCross1] = useState(['','','']);
+  const [m2Guess, setM2Guess] = useState('');
+  const [verified, setVerified] = useState(false);
+
+  const a = PRESETS[pi].a, b = PRESETS[pi].b;
+  const trueCross = cross(a, b);
+  const trueM2 = trueCross[0]**2 + trueCross[1]**2 + trueCross[2]**2;
+  const trueMag = Math.sqrt(trueM2);
+  const nHat = trueCross.map(x => x / trueMag);
+
+  const cross1Correct = cross1.every((v, i) => v !== '' && parseInt(v, 10) === trueCross[i]);
+  const m2Correct = m2Guess !== '' && parseInt(m2Guess, 10) === trueM2;
+
+  const reset = () => { setStage(0); setCross1(['','','']); setM2Guess(''); setVerified(false); };
+
+  return (
+    <div>
+      <div className="preset-bar">
+        <span style={{fontFamily:'var(--mono)', fontSize:'0.78rem', color:'var(--ink-soft)', alignSelf:'center'}}>preset:</span>
+        {PRESETS.map((p, i) => (
+          <button key={i} className={'pill ' + (i===pi ? 'is-on' : '')}
+                  onClick={() => { setPi(i); reset(); }}>
+            {p.name}
+          </button>
+        ))}
+      </div>
+
+      <div style={{fontFamily:'var(--mono)', fontSize:'0.85rem', color:'var(--ink-soft)', marginBottom:8}}>
+        a = {fmtInt(a)} &nbsp;·&nbsp; b = {fmtInt(b)}
+      </div>
+
+      <div className={'stage ' + (stage===0 ? 'is-active' : 'is-done')}>
+        <div className="stage-title">Step 1 · enter the components of a × b</div>
+        <div className="vec-row" style={{marginTop:6}}>
+          <span className="vec-label">a × b =</span>
+          {[0,1,2].map(i => (
+            <input key={i} className="num-input" type="number"
+                   value={cross1[i]}
+                   disabled={stage > 0 && cross1Correct}
+                   onChange={e => {
+                     const next = [...cross1]; next[i] = e.target.value; setCross1(next);
+                   }}/>
+          ))}
+          {cross1Correct && <span className="check-ok">✓</span>}
+          {!cross1Correct && cross1.every(v => v !== '') && <span className="check-bad">✗ check the cofactor that disagrees</span>}
+        </div>
+        {stage === 0 && (
+          <button className="btn" disabled={!cross1Correct} onClick={() => setStage(1)} style={{marginTop:6}}>
+            next →
+          </button>
+        )}
+      </div>
+
+      <div className={'stage ' + (stage===1 ? 'is-active' : (stage>1 ? 'is-done' : ''))}>
+        <div className="stage-title">Step 2 · enter |a × b|² (the squared magnitude)</div>
+        <div className="vec-row" style={{marginTop:6}}>
+          <span className="vec-label">|a × b|² =</span>
+          <input className="num-input" style={{width:84}} type="number"
+                 value={m2Guess}
+                 disabled={stage > 1 && m2Correct}
+                 onChange={e => setM2Guess(e.target.value)}/>
+          {m2Correct && <span className="check-ok">✓ √{trueM2} = {surdString(trueM2)}</span>}
+          {!m2Correct && m2Guess !== '' && <span className="check-bad">✗</span>}
+        </div>
+        {stage === 1 && (
+          <button className="btn" disabled={!m2Correct} onClick={() => setStage(2)} style={{marginTop:6}}>
+            next →
+          </button>
+        )}
+      </div>
+
+      <div className={'stage ' + (stage===2 ? 'is-active' : '')}>
+        <div className="stage-title">Step 3 · normalise & verify n̂·a = n̂·b = 0</div>
+        {stage >= 2 && (
+          <div className="result-tray">
+            n̂ = (1/{surdString(trueM2)}) · {fmtInt(trueCross)}<br/>
+            &nbsp;&nbsp; ≈ {fmtV(nHat, 3)}
+          </div>
+        )}
+        {stage === 2 && !verified && (
+          <button className="btn purple" onClick={() => setVerified(true)}>verify ⟂</button>
+        )}
+        {verified && (
+          <>
+            <div className="check-line">
+              n̂ · a = {fmtV([dot(nHat, a)], 3).slice(1,-1)} <span className={Math.abs(dot(nHat,a)) < 1e-9 ? 'check-ok' : 'check-bad'}>{Math.abs(dot(nHat,a)) < 1e-9 ? '✓ zero' : '✗'}</span>
+            </div>
+            <div className="check-line">
+              n̂ · b = {fmtV([dot(nHat, b)], 3).slice(1,-1)} <span className={Math.abs(dot(nHat,b)) < 1e-9 ? 'check-ok' : 'check-bad'}>{Math.abs(dot(nHat,b)) < 1e-9 ? '✓ zero' : '✗'}</span>
+            </div>
+            <div className="callout green" style={{marginTop:6}}>
+              <strong>✓ unit normal verified.</strong> Both dot products are zero (within rounding) — n̂ is perpendicular to the plane of a and b.
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="control-row">
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Widget 3 · Area from edges (picker) ──────────────────────────
+function AreaFromEdges() {
+  const PRESETS = [
+    { name: 'I·Q7',  A:[1,2,0],  B:[3,-1,1], C:[0,1,4] },
+    { name: 'II·Q6', A:[1,0,1],  B:[2,1,3],  C:[0,2,1] },
+  ];
+  const [pi, setPi] = useState(0);
+  const [pick, setPick] = useState(null);
+  const A = PRESETS[pi].A, B = PRESETS[pi].B, C = PRESETS[pi].C;
+
+  const sub = (u, v) => [u[0]-v[0], u[1]-v[1], u[2]-v[2]];
+  const AB = sub(B, A), AC = sub(C, A), BC = sub(C, B), BA = sub(A, B);
+  const OA = A, OB = B;
+
+  const choices = [
+    {
+      key: 'OAOB', label: 'OA × OB',
+      note: 'position vectors — wrong; this is the triangle on O, A, B',
+      correct: false,
+      vec1: OA, vec2: OB, vec1Lab: 'OA', vec2Lab: 'OB',
+    },
+    {
+      key: 'ABAC', label: 'AB × AC',
+      note: 'edges from A — correct',
+      correct: true,
+      vec1: AB, vec2: AC, vec1Lab: 'AB', vec2Lab: 'AC',
+    },
+    {
+      key: 'BABC', label: 'BA × BC',
+      note: 'edges from B — also correct, same magnitude',
+      correct: true,
+      vec1: BA, vec2: BC, vec1Lab: 'BA', vec2Lab: 'BC',
+    },
+    {
+      key: 'ABBC', label: 'AB × BC',
+      note: 'no common vertex — wrong; not the triangle\u2019s edges',
+      correct: false,
+      vec1: AB, vec2: BC, vec1Lab: 'AB', vec2Lab: 'BC',
+    },
+  ];
+
+  const picked = pick == null ? null : choices[pick];
+  const crossPicked = picked ? cross(picked.vec1, picked.vec2) : null;
+  const magPicked = picked ? mag(crossPicked) : null;
+
+  return (
+    <div>
+      <div className="preset-bar">
+        <span style={{fontFamily:'var(--mono)', fontSize:'0.78rem', color:'var(--ink-soft)', alignSelf:'center'}}>preset:</span>
+        {PRESETS.map((p, i) => (
+          <button key={i} className={'pill ' + (i===pi ? 'is-on' : '')}
+                  onClick={() => { setPi(i); setPick(null); }}>
+            {p.name}
+          </button>
+        ))}
+      </div>
+
+      <div style={{fontFamily:'var(--mono)', fontSize:'0.85rem', color:'var(--ink-soft)', marginBottom:8}}>
+        A = {fmtInt(A)} &nbsp;·&nbsp; B = {fmtInt(B)} &nbsp;·&nbsp; C = {fmtInt(C)}
+      </div>
+
+      <p style={{margin:'4px 0 2px', fontSize:'0.92rem'}}>Which pair of vectors should you cross to get the triangle's area?</p>
+      <div className="pick-row">
+        {choices.map((c, i) => {
+          const cls = pick === i ? (c.correct ? ' is-correct' : ' is-wrong') : '';
+          return (
+            <button key={c.key} className={'pick' + cls} onClick={() => setPick(i)}>
+              <strong>{c.label}</strong>
+              <span className="pick-tag">{c.note}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {picked && (
+        <div className="result-tray">
+          <div>{picked.vec1Lab} = {fmtInt(picked.vec1)} &nbsp;·&nbsp; {picked.vec2Lab} = {fmtInt(picked.vec2)}</div>
+          <div>{picked.vec1Lab} × {picked.vec2Lab} = {fmtInt(crossPicked)}</div>
+          <div>|{picked.vec1Lab} × {picked.vec2Lab}| = √{Math.round(magPicked*magPicked)} ≈ {(Math.round(magPicked*1000)/1000)}</div>
+          {picked.correct ? (
+            <div className="callout green" style={{marginTop:8}}>
+              <strong>✓ correct.</strong> Triangle area = ½ · {Math.round(magPicked*1000)/1000} = {Math.round((magPicked/2)*1000)/1000}.
+              Both AB×AC and BA×BC give the same magnitude — they describe the same triangle from different vertices.
+            </div>
+          ) : pick !== null && choices[pick].key === 'OAOB' ? (
+            <div className="callout red" style={{marginTop:8}}>
+              <strong>✗ position vectors.</strong> OA and OB are anchored at the origin, not at vertex A. ½|OA × OB| is the area of triangle OAB — which is a different triangle altogether.
+            </div>
+          ) : (
+            <div className="callout red" style={{marginTop:8}}>
+              <strong>✗ no common vertex.</strong> AB starts at A, BC starts at B — they don't share a vertex, so they don't span this triangle. Pick two edges that meet.
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="control-row">
+        <button className="btn secondary" onClick={() => setPick(null)}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Widget 4 · Parallelepiped volume (animator) ──────────────────
+function ParallelepipedVolume() {
+  const [a] = useState([1,2,3]);
+  const [b] = useState([-1,1,4]);
+  const [c, setC] = useState([2,3,1]);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    if (!playing) return;
+    const t = setTimeout(() => setStep(s => (s >= 3 ? 0 : s + 1)), 1300);
+    return () => clearTimeout(t);
+  }, [playing, step]);
+
+  const bxc = cross(b, c);
+  const triple = dot(a, bxc);
+  const vol = Math.abs(triple);
+
+  // 2D iso projection
+  const proj = (v) => {
+    const x = 160 + 22*v[0] + 14*v[1];
+    const y = 110 - 14*v[1] - 18*v[2];
+    return [x, y];
+  };
+  const O = proj([0,0,0]);
+  const PA = proj(a), PB = proj(b), PC = proj(c);
+  const PAB = proj([a[0]+b[0], a[1]+b[1], a[2]+b[2]]);
+  const PAC = proj([a[0]+c[0], a[1]+c[1], a[2]+c[2]]);
+  const PBC = proj([b[0]+c[0], b[1]+c[1], b[2]+c[2]]);
+  const PABC = proj([a[0]+b[0]+c[0], a[1]+b[1]+c[1], a[2]+b[2]+c[2]]);
+
+  const baseFill = step >= 0 ? '#fef3c7' : 'transparent';
+  const showA = step >= 1;
+  const showVol = step >= 2;
+  const showDet = step >= 3;
+
+  const lineA = (p1, p2, color, w=1.5, dash='') => (
+    <line x1={p1[0]} y1={p1[1]} x2={p2[0]} y2={p2[1]} stroke={color} strokeWidth={w} strokeDasharray={dash}/>
+  );
+
+  return (
+    <div>
+      <svg viewBox="0 0 320 220" width="100%" style={{maxWidth:420, display:'block', margin:'0 auto', background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8}} className="pp-svg">
+        {/* axes */}
+        {lineA([20,200],[300,200],'#cbd5e1', 1, '4 3')}
+        {lineA([20,200],[20,20],'#cbd5e1', 1, '4 3')}
+        {/* base parallelogram b,c */}
+        <polygon points={`${O[0]},${O[1]} ${PB[0]},${PB[1]} ${PBC[0]},${PBC[1]} ${PC[0]},${PC[1]}`} fill={baseFill} stroke="#d97706" strokeWidth="1.5" opacity={step>=0?1:0.3}/>
+        {/* edge a */}
+        {showA && lineA(O, PA, '#dc2626', 2)}
+        {/* parallelepiped */}
+        {showVol && (
+          <>
+            <polygon points={`${PA[0]},${PA[1]} ${PAB[0]},${PAB[1]} ${PABC[0]},${PABC[1]} ${PAC[0]},${PAC[1]}`} fill={triple>=0?'#dbeafe':'#fee2e2'} stroke="#2F5496" strokeWidth="1.5" opacity="0.55"/>
+            {lineA(PA, PAB, '#2F5496', 1.3)}
+            {lineA(PAB, PABC, '#2F5496', 1.3)}
+            {lineA(PABC, PAC, '#2F5496', 1.3)}
+            {lineA(PAC, PA, '#2F5496', 1.3)}
+            {lineA(PB, PAB, '#2F5496', 1, '3 2')}
+            {lineA(PC, PAC, '#2F5496', 1, '3 2')}
+            {lineA(PBC, PABC, '#2F5496', 1, '3 2')}
+          </>
+        )}
+        {/* edges b, c */}
+        {lineA(O, PB, '#16a34a', 2)}
+        {lineA(O, PC, '#0284c7', 2)}
+        <text x={PA[0]+4} y={PA[1]-4} fontSize="12" fill="#dc2626">a</text>
+        <text x={PB[0]+4} y={PB[1]+12} fontSize="12" fill="#16a34a">b</text>
+        <text x={PC[0]-12} y={PC[1]+12} fontSize="12" fill="#0284c7">c</text>
+      </svg>
+
+      <div className="stage-row">
+        <div className={'stage ' + (step===0 ? 'is-active' : (step>0 ? 'is-done' : ''))}>
+          <div className="stage-title">Step 1 · base parallelogram on b and c</div>
+          <div className="stage-body">b × c = {fmtInt(bxc)} &nbsp;·&nbsp; |b × c| = {Math.round(mag(bxc)*1000)/1000}</div>
+        </div>
+        <div className={'stage ' + (step===1 ? 'is-active' : (step>1 ? 'is-done' : ''))}>
+          <div className="stage-title">Step 2 · slant edge a from the origin</div>
+          <div className="stage-body">a = {fmtInt(a)}</div>
+        </div>
+        <div className={'stage ' + (step===2 ? 'is-active' : (step>2 ? 'is-done' : ''))}>
+          <div className="stage-title">Step 3 · sweep out the parallelepiped</div>
+          <div className="stage-body">colour = {triple >= 0 ? 'right-handed (det > 0)' : 'left-handed (det < 0)'}</div>
+        </div>
+        <div className={'stage ' + (step===3 ? 'is-active' : '')}>
+          <div className="stage-title">Step 4 · scalar triple product = signed volume</div>
+          <div className="stage-body">a · (b × c) = {triple} &nbsp;⇒&nbsp; V = |{triple}| = <strong>{vol}</strong></div>
+        </div>
+      </div>
+
+      <div className="slider-row">
+        <span style={{minWidth:32}}>c₃</span>
+        <input type="range" min={-4} max={4} step={1} value={c[2]}
+               onChange={e => setC([c[0], c[1], parseInt(e.target.value, 10)])}/>
+        <span style={{minWidth:80}}>c = {fmtInt(c)}</span>
+      </div>
+      <p style={{fontSize:'0.85rem', color:'var(--ink-soft)', margin:'4px 0 8px', fontStyle:'italic'}}>
+        Drag c₃ — when c lies in the plane of a and b, the volume collapses to zero (coplanarity).
+      </p>
+
+      <div className="control-row">
+        <button className="btn purple" onClick={() => setPlaying(p => !p)}>{playing ? '⏸ Pause' : '▶ Play'}</button>
+        <button className="btn" onClick={() => setStep(s => Math.min(3, s+1))}>Step →</button>
+        <button className="btn secondary" onClick={() => { setStep(0); setPlaying(false); setC([2,3,1]); }}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Widget 5 · Torque builder ─────────────────────────────────────
+function TorqueRightHand() {
+  const PRESETS = [
+    { name: 'I·Q6',   r:[3,1,-4],   F:[7,-3,2] },
+    { name: 'II·Q1',  r:[2,-1,3],   F:[3,4,-2] },
+    { name: 'II·Q3',  r:[4,2,-3],   F:[7,-2,4] },
+    { name: 'II·Q9',  r:[-3,4,1],   F:[8,2,-5] },
+  ];
+  const [pi, setPi] = useState(0);
+  const [order, setOrder] = useState('rxF'); // or 'Fxr'
+
+  const r = PRESETS[pi].r, F = PRESETS[pi].F;
+  const tau = order === 'rxF' ? cross(r, F) : cross(F, r);
+  const tauMag = mag(tau);
+
+  // Iso projection
+  const proj = (v) => {
+    const s = 14;
+    const x = 160 + s*v[0] + 9*v[1];
+    const y = 130 - 9*v[1] - 12*v[2];
+    return [x, y];
+  };
+  const O = proj([0,0,0]);
+  const PR = proj(r);
+  const PF = proj([r[0]+F[0]/2, r[1]+F[1]/2, r[2]+F[2]/2]);
+  const PT = proj([tau[0]/Math.max(1,tauMag/3), tau[1]/Math.max(1,tauMag/3), tau[2]/Math.max(1,tauMag/3)]);
+
+  return (
+    <div>
+      <div className="preset-bar">
+        <span style={{fontFamily:'var(--mono)', fontSize:'0.78rem', color:'var(--ink-soft)', alignSelf:'center'}}>preset:</span>
+        {PRESETS.map((p, i) => (
+          <button key={i} className={'pill ' + (i===pi ? 'is-on' : '')} onClick={() => setPi(i)}>{p.name}</button>
+        ))}
+      </div>
+
+      <svg viewBox="0 0 320 240" width="100%" style={{maxWidth:420, display:'block', margin:'0 auto', background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8}}>
+        <line x1="20" y1="220" x2="300" y2="220" stroke="#cbd5e1" strokeDasharray="4 3"/>
+        <line x1="20" y1="220" x2="20" y2="20" stroke="#cbd5e1" strokeDasharray="4 3"/>
+        {/* pivot */}
+        <circle cx={O[0]} cy={O[1]} r="4" fill="#1a1d24"/>
+        <text x={O[0]+8} y={O[1]+4} fontSize="11" fill="#1a1d24">pivot O</text>
+        {/* r */}
+        <line x1={O[0]} y1={O[1]} x2={PR[0]} y2={PR[1]} stroke="#dc2626" strokeWidth="2.2"/>
+        <circle cx={PR[0]} cy={PR[1]} r="3" fill="#dc2626"/>
+        <text x={PR[0]+6} y={PR[1]-4} fontSize="11" fill="#dc2626">r = {fmtInt(r)}</text>
+        {/* F */}
+        <line x1={PR[0]} y1={PR[1]} x2={PF[0]} y2={PF[1]} stroke="#16a34a" strokeWidth="2.2"/>
+        <polygon points={`${PF[0]},${PF[1]} ${PF[0]-6},${PF[1]-3} ${PF[0]-3},${PF[1]+5}`} fill="#16a34a"/>
+        <text x={PF[0]+6} y={PF[1]} fontSize="11" fill="#16a34a">F = {fmtInt(F)}</text>
+        {/* tau */}
+        <line x1={O[0]} y1={O[1]} x2={PT[0]} y2={PT[1]} stroke="#7c3aed" strokeWidth="3"/>
+        <polygon points={`${PT[0]},${PT[1]} ${PT[0]-6},${PT[1]+5} ${PT[0]+5},${PT[1]+4}`} fill="#7c3aed"/>
+        <text x={PT[0]+6} y={PT[1]+12} fontSize="11" fill="#7c3aed">τ-axis</text>
+        {/* rotation arc */}
+        <path d={`M ${O[0]+30} ${O[1]} A 30 12 0 ${order==='rxF' ? '1 1' : '1 0'} ${O[0]+30} ${O[1]+0.1}`} fill="none" stroke="#7c3aed" strokeWidth="1.5" opacity="0.5"/>
+      </svg>
+
+      <div className="result-tray">
+        <div>r = {fmtInt(r)} m &nbsp;·&nbsp; F = {fmtInt(F)} N</div>
+        <div>{order === 'rxF' ? 'τ = r × F' : 'τ = F × r (wrong order!)'} = {fmtInt(tau)} N·m</div>
+        <div>|τ| = √{Math.round(tauMag*tauMag)} ≈ {Math.round(tauMag*100)/100} N·m</div>
+        <div>direction (unit): {fmtV(tau.map(x => x/tauMag), 2)}</div>
+      </div>
+
+      <div className="control-row">
+        <button className={'btn ' + (order==='rxF'?'':'secondary')} onClick={() => setOrder('rxF')}>τ = r × F</button>
+        <button className={'btn ' + (order==='Fxr'?'purple':'secondary')} onClick={() => setOrder('Fxr')}>τ = F × r (flip)</button>
+      </div>
+      {order === 'Fxr' && (
+        <div className="callout red" style={{marginTop:8}}>
+          <strong>Sign flipped.</strong> Swapping the order reverses τ — the rotation arrow on the pivot now spins the other way. The right-hand rule says the answer to a torque problem is r × F, not F × r.
+        </div>
+      )}
+      {order === 'rxF' && (
+        <div className="callout teal" style={{marginTop:8}}>
+          <strong>Reading the result.</strong> The purple arrow is the rotation axis (right-hand rule: curl fingers from r toward F, thumb points along τ). Magnitude {Math.round(tauMag*100)/100} N·m sets the strength of the twist.
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Widget 6 · Dot or cross? (picker) ────────────────────────────
+function DotOrCross() {
+  const QUANTITIES = [
+    { key:'work',   label:'Work  W = ?',         correct:'dot',   hint:'energy is a number',
+      why:'Work projects force onto displacement — a scalar. Dot product.' },
+    { key:'torque', label:'Torque  τ = ?',       correct:'cross', hint:'rotation axis is a vector',
+      why:'Torque is an axial vector perpendicular to r and F. Cross product.' },
+    { key:'lorentz',label:'Magnetic force F_B = q · ?', correct:'cross', hint:'force perpendicular to v and B',
+      why:'F_B is perpendicular to the plane of v and B. Cross product.' },
+    { key:'power',  label:'Power  P = ?',        correct:'dot',   hint:'rate of work',
+      why:'Rate of work done — same logic as W = F·s. Dot product.' },
+  ];
+  const [picks, setPicks] = useState({});
+
+  const setPick = (k, v) => setPicks(p => ({ ...p, [k]: v }));
+
+  return (
+    <div>
+      <p style={{margin:'4px 0 10px', fontSize:'0.92rem'}}>For each quantity, pick the product. Wrong picks show what nonsense the chosen product would produce.</p>
+      <div className="pick-row">
+        {QUANTITIES.map(q => {
+          const pick = picks[q.key];
+          const correct = pick === q.correct;
+          return (
+            <div key={q.key} className="pick" style={{cursor:'default', borderColor: pick ? (correct ? '#16a34a' : '#dc2626') : 'var(--rule)', background: pick ? (correct ? '#e8f5e9' : '#ffebee') : 'white'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:8}}>
+                <strong>{q.label}</strong>
+                <div style={{display:'flex', gap:6}}>
+                  <button className={'pill ' + (pick==='dot' ? 'is-on' : '')} onClick={() => setPick(q.key, 'dot')}>·  dot</button>
+                  <button className={'pill ' + (pick==='cross' ? 'is-on' : '')} onClick={() => setPick(q.key, 'cross')}>×  cross</button>
+                </div>
+              </div>
+              {pick && correct && (
+                <div style={{marginTop:8, fontSize:'0.88rem', color:'#14532d'}}>
+                  <strong>✓ correct.</strong> {q.why}
+                </div>
+              )}
+              {pick && !correct && (
+                <div style={{marginTop:8, fontSize:'0.88rem', color:'#7f1d1d'}}>
+                  <strong>✗ wrong product.</strong> {pick==='cross' && q.correct==='dot'
+                    ? 'A cross product gives a vector — but ' + q.label.split(' ')[0].toLowerCase() + ' is a scalar. The units would come out wrong (this would be a quantity in N·m as a vector, i.e. torque, not energy).'
+                    : 'A dot product gives a number — but ' + q.label.split(' ')[0].toLowerCase() + ' is a vector. The right-hand rule wouldn\u2019t apply.'}
+                  &nbsp;Try the other one.
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="control-row">
+        <button className="btn secondary" onClick={() => setPicks({})}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Widget 7 · Applications check (mcq) ──────────────────────────
+function ApplicationsCheck() {
+  const QS = [
+    {
+      q: 'You are given three points A, B, C in 3D and asked for the area of triangle ABC. Which is correct?',
+      options: [
+        '½|OA × OB| where O is the origin',
+        '½|AB × AC|',
+        '|AB × AC|',
+        '½(|AB| + |AC| + |BC|) using Heron\u2019s on cross-product magnitudes',
+      ],
+      correct: 1,
+      explain: 'Build edge vectors from a common vertex (here A), cross them, take half the magnitude. Position vectors from the origin describe a different triangle entirely.',
+    },
+    {
+      q: 'For vectors u and v with |u|=3, |v|=4, |u × v|=12, what is the angle between them?',
+      options: ['0', 'π/4', 'π/2', 'π'],
+      correct: 2,
+      explain: '|u × v| = |u||v|sin θ ⇒ sin θ = 12/(3·4) = 1, so θ = π/2. The vectors are orthogonal — the dot product would confirm it as zero.',
+    },
+    {
+      q: 'For the projection problem (p × q)·r̂ where r = î+ĵ+k̂, the underlying geometric object is:',
+      options: [
+        'The area of the triangle on p and q',
+        'The signed volume of the parallelepiped on p, q, r divided by |r|',
+        'The angle between p × q and r',
+        'The component of p along q',
+      ],
+      correct: 1,
+      explain: '(p × q)·r is the scalar triple product — the signed volume of the parallelepiped on p, q, r. Dividing by |r| gives the scalar projection of p × q onto the direction of r.',
+    },
+    {
+      q: 'A particle of charge q = −2 μC moves with the same v and B as Problems-II Q8. Compared with the q = +2 μC case, the magnetic force F_B is:',
+      options: [
+        'Identical',
+        'Equal in magnitude, opposite in direction',
+        'Zero (negative charges feel no magnetic force)',
+        'Larger by a factor of 2',
+      ],
+      correct: 1,
+      explain: 'F_B = q v × B is linear in q. Flipping the sign of q reverses the force vector but preserves its magnitude — the particle curves the other way.',
+    },
+  ];
+
+  const [picks, setPicks] = useState({});
+  const setPick = (i, j) => setPicks(p => ({ ...p, [i]: j }));
+
+  return (
+    <div>
+      <p style={{margin:'4px 0 8px', fontSize:'0.92rem', color:'var(--ink-soft)'}}>Four quick checks. Click an answer; the explanation appears whether you're right or wrong.</p>
+      {QS.map((q, i) => {
+        const pick = picks[i];
+        return (
+          <div key={i} className={'mcq-q ' + (pick != null ? 'q-done' : '')}>
+            <p style={{margin:'0 0 8px', fontWeight:600}}>{i+1}. {q.q}</p>
+            <div className="mcq-options">
+              {q.options.map((o, j) => {
+                let cls = '';
+                if (pick != null) {
+                  if (j === q.correct) cls = ' opt-correct';
+                  else if (j === pick) cls = ' opt-wrong';
+                }
+                return (
+                  <button key={j} className={'mcq-opt' + cls} onClick={() => setPick(i, j)} disabled={pick != null}>
+                    {String.fromCharCode(65+j)}. {o}
+                  </button>
+                );
+              })}
+            </div>
+            {pick != null && (
+              <div className="mcq-explain">{pick === q.correct ? '✓ ' : '✗ '}{q.explain}</div>
+            )}
+          </div>
+        );
+      })}
+      <div className="control-row">
+        <button className="btn secondary" onClick={() => setPicks({})}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Mounts ───────────────────────────────────────────────────────
+const mounts = [
+  ['determinant-expander', DeterminantExpander],
+  ['unit-normal-builder',  UnitNormalBuilder],
+  ['area-from-edges',      AreaFromEdges],
+  ['parallelepiped-volume',ParallelepipedVolume],
+  ['torque-right-hand',    TorqueRightHand],
+  ['dot-or-cross',         DotOrCross],
+  ['applications-check',   ApplicationsCheck],
+];
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are bibliosense, the lecturer's study buddy for Engineering Mathematics — Applications of the vector cross product.",
+    "",
+    "# YOUR JOB FOR THIS LECTURE",
+    "- Help the student work through two problem sets (Problems-I and Problems-II) on cross-product applications: areas, volumes, perpendicular vectors, torque, and the Lorentz force.",
+    "- Build intuition for when to reach for × (vector answer, area, volume, axis of rotation) versus · (scalar, energy, projection, angle via cosine).",
+    "- Coach the student through the determinant expansion when they slip a sign — point at the offending cofactor rather than restating the rule.",
+    "- For physics problems (torque, magnetic force, work), insist they identify the right vectors first (r from the pivot; v of the charge; s along the displacement) before reaching for any product.",
+    "- Recommend the live widgets when intuition is the bottleneck: the determinant expander for §1, the unit-normal builder for §2, the edge-picker for §3, the parallelepiped animator for §5, the torque builder for §8, and the dot-or-cross picker for §9.",
+    "- Remind the student of the right-hand rule and the sanity checks (n̂·a = n̂·b = 0; r×F not F×r; absolute value of the triple product for volume) without doing the arithmetic for them.",
+    "",
+    "# PEDAGOGY GUARDS",
+    "- Never reveal the numerical answer to any homework problem. If the student asks 'what is the answer to Problems-I Q1?', refuse and instead ask which step is sticking — the determinant setup, the cofactor signs, or the assembly.",
+    "- Never spell out a derivation in full. Give one nudge per turn: identify the missing piece (e.g. 'check the sign on your ĵ-cofactor') and let them re-attempt.",
+    "- Never solve a homework deliverable for the student. Scaffold instead — questions, partial structure, the relevant formula in a box.",
+    "- Point at the live widgets for visualisation: 'open the parallelepiped widget and slide c₃ — watch the volume collapse when the three vectors become coplanar.'",
+    "- For the work-done question (Problems-II Q5), if the student tries to use a cross product, ask 'is your final answer a number or a vector?' before saying anything else.",
+    "",
+    "# LANGUAGE",
+    "- Default to English. Match British academic register (precise, dry, occasionally drier).",
+    "- Switch language only on a clearly non-English signal from the student. When you reply in another language, append a short *EN summary:* line at the end so the lecturer can scan transcripts.",
+    "",
+    "# LENGTH & TONE",
+    "- 60–180 words per reply. Plain language, anchored quotes from the lecture text where useful. Avoid jargon you haven't defined in the same reply.",
+    "- One concrete next move at the end of every reply: 'try Q4 next' or 'open the determinant widget and run preset I·Q1'.",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "## THE FORMULA(S) / KEY DEFINITIONS",
+    "- Cross product: a × b = det([î ĵ k̂; a₁ a₂ a₃; b₁ b₂ b₃]); components (a₂b₃ − a₃b₂, a₃b₁ − a₁b₃, a₁b₂ − a₂b₁).",
+    "- Magnitude: |a × b| = |a||b| sin θ, with θ ∈ [0, π].",
+    "- Unit normal: n̂ = (a × b)/|a × b|, perpendicular to both, oriented by the right-hand rule.",
+    "- Areas: parallelogram = |a × b|; triangle on edges AB, AC = ½|AB × AC|.",
+    "- Scalar triple product: a · (b × c) = det of the 3×3 matrix of components; volume of parallelepiped = |a · (b × c)|.",
+    "- Torque: τ = r × F. Lorentz force: F_B = q(v × B). Scalar projection of w onto u: (w · u)/|u|.",
+    "",
+    "## WHY (the intuition behind it)",
+    "The cross product packages two geometric facts into one vector: a direction perpendicular to the plane of a and b (right-hand rule), and a magnitude equal to the area of the parallelogram those two vectors span. Sin θ in the magnitude is the 'spread' — when a and b are parallel there is no plane, no area, and a × b = 0. Torque and Lorentz force inherit this: both quantities care about the perpendicular component of one vector relative to another, and that's exactly what sin θ extracts.",
+    "",
+    "## THE GOTCHA (most common student misconception)",
+    "Treating × like multiplication: students reach for a × b when they need a · b (work, projection, orthogonality) or vice versa. Rule of thumb: if the answer is a *number* (energy, an angle's cosine, a length), you almost certainly want the dot product. If the answer is a *vector* (axis of rotation, normal direction, force on a charge) or an *area/volume*, you want the cross product (or scalar triple product). Second trap: forgetting that a × b = −(b × a). Order is not optional — it sets the sign and the rotation sense.",
+    "",
+    "## BOUNDARY CASES",
+    "- Parallel inputs (θ = 0 or π): a × b = 0, area collapses, no perpendicular direction is defined.",
+    "- Perpendicular inputs (θ = π/2): |a × b| = |a||v|, the maximum.",
+    "- Coplanar triple: a · (b × c) = 0 ⇒ the three vectors lie in one plane and the parallelepiped has zero volume.",
+    "- Zero charge or v ∥ B: F_B = 0, the magnetic field exerts no force on a charge moving along the field lines.",
+    "- Force through the pivot (r = 0, or F ∥ r): τ = 0 — pushing straight along the lever arm produces no rotation.",
+    "",
+    "## EXPLAIN-IT-LIKE-THIS",
+    "Think of a door. Push it at the hinge — nothing happens. Push at the handle, perpendicular to the door — it swings easily. Push at the handle but along the door (toward the hinge) — again nothing. Torque = r × F is just the maths of 'where you push' times 'how much of your push is perpendicular to the lever'. The vector points along the hinge axis, and its sign tells you which way the door swings.",
+    "",
+    "## CURRICULUM CONTEXT",
+    "Students have already met the dot product (work, angle via cos θ, scalar projection) and the cross product itself — its definition, the determinant form, anti-commutativity, and the right-hand rule. This session is the *applications* layer. Set II is harder than Set I and includes one deliberate dot-product question (work, Q5) so they practise *choosing* the right product.",
+    "",
+    "## COMMON STUDENT QUESTIONS",
+    "- Why does the cross product give an area? — Because |a||b| sin θ is exactly base-times-height of the parallelogram on a and b; sin θ projects b onto the perpendicular to a.",
+    "- Can I use a × b for the angle if I already have a · b? — Yes, and it's a good cross-check: tan θ = |a × b|/(a · b). Cross product alone gives only sin θ, which can't distinguish acute from obtuse.",
+    "- For the triangle from three points, why can't I just cross the position vectors? — Position vectors are measured from the origin, not from a vertex. You need *edge* vectors AB and AC to span the triangle's plane.",
+    "- Does the magnetic field do work on the charge? — No. F_B is perpendicular to v, so F_B · v = 0 and the kinetic energy is unchanged — the field only bends the path.",
+    "- Is r × F or F × r right for torque? — r × F. Swapping flips the sign and reverses the rotation axis you'd report.",
+    "",
+    "## PRO-INSIGHT WRAP-UP",
+    "The same scalar triple product used for parallelepiped volume and projection-of-a-cross-product is what later defines orientation and the Jacobian determinant when you change variables in multiple integrals — geometry now, calculus soon."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Engineering Mathematics · Applications of the vector cross product',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>
