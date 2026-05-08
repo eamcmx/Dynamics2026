@@ -15,6 +15,7 @@ on:
       - lecture-03-dynamics
       - lecture-03b-dynamics
       - lecture-04b-dynamics
+      - lecture-05b-dynamics
   workflow_dispatch:
 
 permissions:
