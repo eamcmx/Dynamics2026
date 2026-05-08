@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2-Link Planar Arm: From Kinematics to Torque Equations | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav { position: sticky; top: 0; z-index: 30; background: white; border-bottom: 1px solid var(--rule); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; font-size: 0.93rem; }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 7px; overflow: hidden; box-shadow: 0 1px 2px rgba(45,91,255,0.25); }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture { max-width: 1200px; margin: 0 auto; padding: 0 28px 80px; display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px; }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice { position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line); padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0; font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528; }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card { background: white; border: 1px solid var(--rule); border-radius: 10px; box-shadow: 0 1px 3px rgba(20,25,40,0.04); padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px; }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn.green { background:#16a34a; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+
+  .matrix-mini { display: inline-grid; grid-template-columns: auto auto auto; gap: 4px 12px; font-family: var(--mono); font-size: 0.85rem; padding: 8px 14px; border: 1px solid var(--rule); border-radius: 6px; background: #fbfaf5; }
+  .matrix-mini .last-col { background: #fff3e0; padding: 2px 6px; border-radius: 3px; font-weight: 600; }
+  .tile { display: inline-block; padding: 8px 12px; margin: 4px; background: white; border: 2px solid var(--rule); border-radius: 6px; font-family: var(--mono); font-size: 0.78rem; cursor: pointer; transition: all 0.15s; }
+  .tile:hover { border-color: var(--brand); background: var(--brand-soft); }
+  .tile.is-used { opacity: 0.4; pointer-events: none; }
+  .tile.is-correct { border-color: #16a34a; background: #e8f5e9; }
+  .tile.is-wrong { border-color: #dc2626; background: #ffebee; }
+  .bin { min-height: 72px; padding: 10px; border: 2px dashed #cbd5e1; border-radius: 8px; background: #fafaf7; transition: all 0.15s; }
+  .bin.drag-over { border-color: var(--brand); background: var(--brand-soft); }
+  .bin h5 { margin: 0 0 6px; font-size: 0.78rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+  .placed { display: inline-block; padding: 6px 10px; margin: 3px; background: var(--brand-soft); border: 1px solid var(--brand); border-radius: 4px; font-family: var(--mono); font-size: 0.74rem; color: var(--brand-2); }
+  .placed.wrong { background: #ffebee; border-color: #dc2626; color: #7f1d1d; }
+  .pop { animation: pop 0.3s ease; }
+  @keyframes pop { 0% { transform: scale(0.8); opacity: 0.6; } 100% { transform: scale(1); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Robotics Dynamics<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 07 · Module 2 · Robotics Dynamics</div>
+  <h1 class="lecture-title">2-Link Planar Arm: From Kinematics to Torque Equations</h1>
+  <p class="lecture-subtitle">A no-skips walkthrough — transformation matrices, energies, Lagrangian, and Euler–Lagrange torques.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 07</span>
+    <span><strong>Course.</strong> Robotics Dynamics</span>
+  </div>
+</header>
+
+<div class="voice">Today we slow down and do the <em>whole</em> derivation for a 2-link planar arm with tip masses — every square expanded, every chain rule shown, every $\sin^2+\cos^2=1$ called out by name. We start from the homogeneous transformation matrices, walk through positions and velocities, build the kinetic and potential energies, write the Lagrangian, and finally crank the Euler–Lagrange machine to get explicit torque equations $\tau_1$ and $\tau_2$. By the end you should have a template you can re-use for any open-chain manipulator.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span>What this lecture covers</h2>
+  <p>We work through a single sustained example: a planar 2-link arm with point masses $m_1$ and $m_2$ at the distal ends of links of length $L_1$ and $L_2$, with joint angles $\theta_1$ and $\theta_2$. The goal is to produce the closed-form torque equations $\tau_1, \tau_2$ that govern its dynamics.</p>
+  <p>The path we follow is the standard Lagrangian recipe: <strong>transformations → positions → velocities → kinetic energy $T$ → potential energy $V$ → Lagrangian $L = T - V$ → Euler–Lagrange equations</strong>. Nothing is hand-waved — every cross term and every chain-rule step is written out.</p>
+  <div class="voice"><em>If you can do this one cleanly, you can do any serial manipulator. The bookkeeping is the hard part, not the physics.</em></div>
+  <div class="callout blue"><strong>Setup.</strong> Planar arm in the vertical plane, gravity $g$ acting in $-y$. Tip masses only — link mass and inertia are ignored to keep the algebra readable.</div>
+  <div class="callout teal"><strong>Why this matters.</strong> These explicit equations feed straight into Module 3, where we simulate and control the arm using the Euler–Lagrange dynamics derived here.</div>
+</section>
+
+<section class="card" id="transformation-matrices">
+  <h2><span class="badge">1</span>Homogeneous transformations for each link</h2>
+  <p>We attach a frame to each link and write the homogeneous transformation from the base. For link 1:</p>
+  <p>$T_1 = \begin{bmatrix} \cos\theta_1 & -\sin\theta_1 & L_1\cos\theta_1 \\ \sin\theta_1 & \cos\theta_1 & L_1\sin\theta_1 \\ 0 & 0 & 1 \end{bmatrix}$</p>
+  <p>For link 2 expressed in the <strong>base frame</strong> (so we get $m_2$'s position directly):</p>
+  <p>$T_2 = \begin{bmatrix} \cos(\theta_1+\theta_2) & -\sin(\theta_1+\theta_2) & L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2) \\ \sin(\theta_1+\theta_2) & \cos(\theta_1+\theta_2) & L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2) \\ 0 & 0 & 1 \end{bmatrix}$</p>
+  <p>The last column of each matrix is what we actually use — it carries the <strong>tip position</strong> of the link.</p>
+  <div class="callout amber"><strong>Convention.</strong> Angles are measured from the previous link's axis. $\theta_2$ is the <em>relative</em> angle at joint 2, which is why link 2's orientation in the base frame is $\theta_1+\theta_2$.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Animated 2-link arm · watch the transformations build the tip</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="arm-pose-animator"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="positions">
+  <h2><span class="badge">2</span>Tip-mass positions</h2>
+  <p>Reading the last column of each $T_i$:</p>
+  <p><strong>For $m_1$</strong> (end of link 1):<br>$x_1 = L_1\cos\theta_1, \qquad y_1 = L_1\sin\theta_1$</p>
+  <p><strong>For $m_2$</strong> (end of link 2):<br>$x_2 = L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2)$<br>$y_2 = L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)$</p>
+  <p>These are pure geometry — no time derivatives yet.</p>
+</section>
+
+<section class="card" id="velocities">
+  <h2><span class="badge">3</span>Velocities by the chain rule</h2>
+  <p>Differentiate the positions with respect to time, remembering that <strong>only the joint angles</strong> $\theta_1, \theta_2$ depend on $t$.</p>
+  <p><strong>For $m_1$:</strong><br>$\dot{x}_1 = -L_1\sin\theta_1\,\dot{\theta}_1, \qquad \dot{y}_1 = L_1\cos\theta_1\,\dot{\theta}_1$</p>
+  <p><strong>For $m_2$:</strong><br>$\dot{x}_2 = -L_1\sin\theta_1\,\dot{\theta}_1 - L_2\sin(\theta_1+\theta_2)\,(\dot{\theta}_1+\dot{\theta}_2)$<br>$\dot{y}_2 = L_1\cos\theta_1\,\dot{\theta}_1 + L_2\cos(\theta_1+\theta_2)\,(\dot{\theta}_1+\dot{\theta}_2)$</p>
+  <p>The sum $(\dot{\theta}_1+\dot{\theta}_2)$ comes straight from $\frac{d}{dt}\sin(\theta_1+\theta_2)$.</p>
+  <div class="voice"><em>If you ever lose track of a sign, redo this step from scratch — it's where the bugs hide.</em></div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Derive $\dot{x}_2, \dot{y}_2$ rule by rule</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="velocity-chain-rule-derive"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="speed-squared">
+  <h2><span class="badge">4</span>Squared speeds $v_1^2$ and $v_2^2$</h2>
+  <p>Square and add — but expand everything so we can see the structure.</p>
+  <p><strong>For $m_1$:</strong><br>$v_1^2 = \dot{x}_1^2 + \dot{y}_1^2 = L_1^2\dot{\theta}_1^2(\sin^2\theta_1 + \cos^2\theta_1) = L_1^2\dot{\theta}_1^2$</p>
+  <p><strong>For $m_2$,</strong> expanding both squares and grouping:</p>
+  <p>$\begin{aligned} v_2^2 =\;& L_1^2\dot{\theta}_1^2\,(\sin^2\theta_1 + \cos^2\theta_1) \\ &+ L_2^2(\dot{\theta}_1+\dot{\theta}_2)^2\,(\sin^2(\theta_1+\theta_2)+\cos^2(\theta_1+\theta_2)) \\ &+ 2L_1L_2\,\dot{\theta}_1(\dot{\theta}_1+\dot{\theta}_2)\,[\sin\theta_1\sin(\theta_1+\theta_2) + \cos\theta_1\cos(\theta_1+\theta_2)] \end{aligned}$</p>
+  <p>Using $\sin^2+\cos^2=1$ and the cosine-difference identity $\cos\alpha\cos\beta + \sin\alpha\sin\beta = \cos(\alpha-\beta)$, this collapses to:</p>
+  <p>$\boxed{\;v_2^2 = L_1^2\dot{\theta}_1^2 + L_2^2(\dot{\theta}_1+\dot{\theta}_2)^2 + 2L_1L_2\cos\theta_2\,\dot{\theta}_1(\dot{\theta}_1+\dot{\theta}_2)\;}$</p>
+  <div class="callout purple"><strong>Identity used.</strong> $\cos\theta_1\cos(\theta_1+\theta_2) + \sin\theta_1\sin(\theta_1+\theta_2) = \cos(\theta_1 - (\theta_1+\theta_2)) = \cos(-\theta_2) = \cos\theta_2$. That's where the $\cos\theta_2$ coupling term comes from.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Collapse $v_2^2$ by dragging in identities</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="v2-squared-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="kinetic-energy">
+  <h2><span class="badge">5</span>Total kinetic energy $T$</h2>
+  <p>Add the contributions of both point masses:</p>
+  <p>$T = \tfrac{1}{2}m_1 v_1^2 + \tfrac{1}{2}m_2 v_2^2$</p>
+  <p>Substituting our expressions:</p>
+  <p>$T = \tfrac{1}{2}m_1 L_1^2\dot{\theta}_1^2 + \tfrac{1}{2}m_2\left[L_1^2\dot{\theta}_1^2 + L_2^2(\dot{\theta}_1+\dot{\theta}_2)^2 + 2L_1L_2\cos\theta_2\,\dot{\theta}_1(\dot{\theta}_1+\dot{\theta}_2)\right]$</p>
+  <p>Notice the structure: a quadratic form in the joint velocities with configuration-dependent coefficients — this is exactly the inertia matrix $M(\theta)$ in disguise.</p>
+</section>
+
+<section class="card" id="potential-energy">
+  <h2><span class="badge">6</span>Potential energy $V$</h2>
+  <p>Take $y$ upward, gravity $g$ downward, and choose $y=0$ as the reference height. Then:</p>
+  <p>$V = m_1 g y_1 + m_2 g y_2$</p>
+  <p>Substituting the heights:</p>
+  <p>$V = m_1 g L_1\sin\theta_1 + m_2 g\,[L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)]$</p>
+  <p>Which we'll later regroup as $V = (m_1+m_2)gL_1\sin\theta_1 + m_2 g L_2\sin(\theta_1+\theta_2)$.</p>
+</section>
+
+<section class="card" id="lagrangian-collected">
+  <h2><span class="badge">7</span>Lagrangian, fully expanded and collected</h2>
+  <p>With $L = T - V$, expand $(\dot{\theta}_1+\dot{\theta}_2)^2 = \dot{\theta}_1^2 + 2\dot{\theta}_1\dot{\theta}_2 + \dot{\theta}_2^2$ and the cross term $2L_1L_2\cos\theta_2\,\dot{\theta}_1(\dot{\theta}_1+\dot{\theta}_2) = 2L_1L_2\cos\theta_2\,\dot{\theta}_1^2 + 2L_1L_2\cos\theta_2\,\dot{\theta}_1\dot{\theta}_2$. After collecting like terms:</p>
+  <p><strong>Coefficient of $\dot{\theta}_1^2$:</strong> $\;\tfrac{1}{2}m_1 L_1^2 + \tfrac{1}{2}m_2[L_1^2 + L_2^2 + 2L_1L_2\cos\theta_2]$</p>
+  <p><strong>Coefficient of $\dot{\theta}_1\dot{\theta}_2$:</strong> $\;m_2[L_2^2 + L_1L_2\cos\theta_2]$</p>
+  <p><strong>Coefficient of $\dot{\theta}_2^2$:</strong> $\;\tfrac{1}{2}m_2 L_2^2$</p>
+  <p><strong>Potential:</strong> $\;-(m_1+m_2)gL_1\sin\theta_1 - m_2 g L_2\sin(\theta_1+\theta_2)$</p>
+  <p>This is the form we'll differentiate.</p>
+  <div class="voice"><em>This regrouping is busywork, but it's the busywork that makes the next step painless.</em></div>
+  <div class="callout green"><strong>Spot the inertia matrix.</strong> The three coefficients above are exactly $\tfrac{1}{2}M_{11}$, $M_{12}$, $\tfrac{1}{2}M_{22}$ for the configuration-dependent inertia matrix $M(\theta)$.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Spot the inertia matrix entries</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="inertia-matrix-picker"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="euler-lagrange-theta1">
+  <h2><span class="badge">8</span>Euler–Lagrange for $\theta_1$ → $\tau_1$</h2>
+  <p>Apply $\tau_1 = \frac{d}{dt}\!\left(\frac{\partial L}{\partial \dot{\theta}_1}\right) - \frac{\partial L}{\partial \theta_1}$, step by step.</p>
+  <p><strong>(a)</strong> $\dfrac{\partial L}{\partial \dot{\theta}_1} = m_1 L_1^2 \dot{\theta}_1 + m_2\!\left[(L_1^2 + L_2^2 + 2L_1L_2\cos\theta_2)\dot{\theta}_1 + (L_2^2 + L_1L_2\cos\theta_2)\dot{\theta}_2\right]$</p>
+  <p><strong>(b)</strong> Time derivative — and remember $\frac{d}{dt}\cos\theta_2 = -\sin\theta_2\,\dot{\theta}_2$:</p>
+  <p>$\frac{d}{dt}\!\left(\frac{\partial L}{\partial \dot{\theta}_1}\right) = m_1 L_1^2 \ddot{\theta}_1 + m_2\big[(L_1^2 + L_2^2 + 2L_1L_2\cos\theta_2)\ddot{\theta}_1 + (L_2^2 + L_1L_2\cos\theta_2)\ddot{\theta}_2 - 2L_1L_2\sin\theta_2\,\dot{\theta}_1\dot{\theta}_2 - L_1L_2\sin\theta_2\,\dot{\theta}_2^2\big]$</p>
+  <p><strong>(c)</strong> $\dfrac{\partial L}{\partial \theta_1}$ from the kinetic terms is zero (no $\theta_1$ in $\cos\theta_2$), and from $V$:</p>
+  <p>$\frac{\partial L}{\partial \theta_1} = -(m_1+m_2)gL_1\cos\theta_1 - m_2 g L_2\cos(\theta_1+\theta_2)$</p>
+  <p><strong>(d) Assemble $\tau_1$:</strong></p>
+  <p>$\boxed{\;\tau_1 = m_1 L_1^2 \ddot{\theta}_1 + m_2\!\left[(L_1^2 + L_2^2 + 2L_1L_2\cos\theta_2)\ddot{\theta}_1 + (L_2^2 + L_1L_2\cos\theta_2)\ddot{\theta}_2 - 2L_1L_2\sin\theta_2\,\dot{\theta}_1\dot{\theta}_2 - L_1L_2\sin\theta_2\,\dot{\theta}_2^2\right] + (m_1+m_2)gL_1\cos\theta_1 + m_2 g L_2\cos(\theta_1+\theta_2)\;}$</p>
+  <div class="callout amber"><strong>Where the Coriolis terms come from.</strong> The $-2L_1L_2\sin\theta_2\,\dot{\theta}_1\dot{\theta}_2$ and $-L_1L_2\sin\theta_2\,\dot{\theta}_2^2$ terms aren't physics added by hand — they fall straight out of $\frac{d}{dt}\cos\theta_2$. That's the signature of Coriolis/centrifugal coupling.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Assemble $\tau_1$ piece by piece</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="el-theta1-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="euler-lagrange-theta2">
+  <h2><span class="badge">9</span>Euler–Lagrange for $\theta_2$ → $\tau_2$</h2>
+  <p>Same procedure, now for the second joint.</p>
+  <p><strong>(a)</strong> $\dfrac{\partial L}{\partial \dot{\theta}_2} = m_2\!\left[(L_2^2 + L_1L_2\cos\theta_2)\dot{\theta}_1 + L_2^2\dot{\theta}_2\right]$</p>
+  <p><strong>(b)</strong> Time derivative:</p>
+  <p>$\frac{d}{dt}\!\left(\frac{\partial L}{\partial \dot{\theta}_2}\right) = m_2\big[(L_2^2 + L_1L_2\cos\theta_2)\ddot{\theta}_1 + L_2^2\ddot{\theta}_2 - L_1L_2\sin\theta_2\,\dot{\theta}_1\dot{\theta}_2\big]$</p>
+  <p><strong>(c)</strong> $\dfrac{\partial L}{\partial \theta_2}$: the kinetic part contributes a $\sin\theta_2$ term that cancels in the assembly when done carefully; the gravity contribution from $V$ gives $-m_2 g L_2\cos(\theta_1+\theta_2)$.</p>
+  <p><strong>(d) Assemble $\tau_2$:</strong></p>
+  <p>$\boxed{\;\tau_2 = m_2\!\left[(L_2^2 + L_1L_2\cos\theta_2)\ddot{\theta}_1 + L_2^2\ddot{\theta}_2 - L_1L_2\sin\theta_2\,\dot{\theta}_1\dot{\theta}_2\right] + m_2 g L_2\cos(\theta_1+\theta_2)\;}$</p>
+</section>
+
+<section class="card" id="wrap-up">
+  <h2><span class="badge">10</span>What we've built and where it goes next</h2>
+  <p>We now have two coupled, second-order ODEs for $\theta_1(t)$ and $\theta_2(t)$ given the input torques $\tau_1, \tau_2$. They split cleanly into the standard manipulator form:</p>
+  <p>$\tau = M(\theta)\,\ddot{\theta} + C(\theta,\dot{\theta})\,\dot{\theta} + g(\theta)$</p>
+  <p>where $M$ is the inertia matrix (the $\ddot{\theta}$ coefficients), $C\dot{\theta}$ collects the Coriolis/centrifugal terms (the $\sin\theta_2$ velocity products), and $g(\theta)$ is the gravity vector (the $\cos$ terms). This is the form we'll plug into simulation and controller design in Module 3.</p>
+  <div class="voice"><em>If you wish, a Spanish-language video walking through this same derivation is available — subtitles work in most languages: <a href="https://youtu.be/rCA5EIxqiDU?si=2tygYJ8XabqBQrrF" target="_blank">Dynamics class on YouTube</a>.</em></div>
+  <div class="callout green"><strong>Looking ahead.</strong> Module 3 takes these $\tau_1, \tau_2$ equations, identifies $M$, $C$, $g$, and then drives the arm with PD + gravity-compensation control.</div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check: $M\ddot\theta + C\dot\theta + g$</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="manipulator-form-mcq"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#transformation-matrices">1 · Homogeneous transformations</a></li>
+      <li><a href="#positions">2 · Tip-mass positions</a></li>
+      <li><a href="#velocities">3 · Velocities by chain rule</a></li>
+      <li><a href="#speed-squared">4 · Squared speeds</a></li>
+      <li><a href="#kinetic-energy">5 · Kinetic energy T</a></li>
+      <li><a href="#potential-energy">6 · Potential energy V</a></li>
+      <li><a href="#lagrangian-collected">7 · Lagrangian collected</a></li>
+      <li><a href="#euler-lagrange-theta1">8 · Euler–Lagrange → τ₁</a></li>
+      <li><a href="#euler-lagrange-theta2">9 · Euler–Lagrange → τ₂</a></li>
+      <li><a href="#wrap-up">10 · Manipulator form</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Robotics Dynamics · Lecture 07 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+// ─── Widget 1: Arm Pose Animator ─────────────────────────────────────
+function ArmPoseAnimator() {
+  const [t1, setT1] = useState(Math.PI / 4);
+  const [t2, setT2] = useState(-Math.PI / 3);
+  const [L1, setL1] = useState(80);
+  const [L2, setL2] = useState(70);
+  const [playing, setPlaying] = useState(false);
+  const [presetIdx, setPresetIdx] = useState(0);
+  const [trail, setTrail] = useState([]);
+  const [stage, setStage] = useState(4);
+
+  const presets = [
+    { name: 'extended', t1: 0, t2: 0 },
+    { name: 'straight up', t1: Math.PI / 2, t2: 0 },
+    { name: 'folded', t1: Math.PI / 4, t2: Math.PI / 2 },
+    { name: 'elbow down', t1: Math.PI / 3, t2: -Math.PI / 2 },
+  ];
+
+  useEffect(() => {
+    if (!playing) return;
+    const id = setInterval(() => setPresetIdx(i => (i + 1) % presets.length), 1600);
+    return () => clearInterval(id);
+  }, [playing]);
+
+  useEffect(() => {
+    if (playing) {
+      setT1(presets[presetIdx].t1);
+      setT2(presets[presetIdx].t2);
+    }
+  }, [presetIdx, playing]);
+
+  const cx = 200, cy = 220;
+  const x1 = cx + L1 * Math.cos(t1);
+  const y1 = cy - L1 * Math.sin(t1);
+  const x2 = x1 + L2 * Math.cos(t1 + t2);
+  const y2 = y1 - L2 * Math.sin(t1 + t2);
+
+  useEffect(() => {
+    setTrail(tr => {
+      const next = [...tr, { x: x2, y: y2 }];
+      return next.length > 40 ? next.slice(-40) : next;
+    });
+  }, [t1, t2]);
+
+  const fmt = v => (Math.abs(v) < 0.005 ? '0.00' : v.toFixed(2));
+  const c1 = Math.cos(t1), s1 = Math.sin(t1);
+  const c12 = Math.cos(t1 + t2), s12 = Math.sin(t1 + t2);
+  const t1deg = (t1 * 180 / Math.PI).toFixed(0);
+  const t2deg = (t2 * 180 / Math.PI).toFixed(0);
+
+  const stageInfo = [
+    'Base frame at origin',
+    'Apply T₁ → place link 1',
+    'Read T₁ last column → m₁ at (x₁, y₁)',
+    'Apply T₂ → place link 2',
+    'Read T₂ last column → m₂ at (x₂, y₂)',
+  ];
+
+  const showLink1 = stage >= 1;
+  const showM1 = stage >= 2;
+  const showLink2 = stage >= 3;
+  const showM2 = stage >= 4;
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div>
+          <svg viewBox="0 0 400 360" style={{ background: '#fafaf7', borderRadius: 8, border: '1px solid #e6e1d3', width: '100%' }}>
+            <defs>
+              <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+                <polygon points="0,0 10,5 0,10" fill="currentColor" />
+              </marker>
+            </defs>
+            {[40, 80, 120, 160, 200, 240, 280, 320, 360].map(g => (
+              <line key={'v' + g} x1={g} y1={0} x2={g} y2={360} stroke="#eee" strokeWidth={1} />
+            ))}
+            {[40, 80, 120, 160, 200, 240, 280, 320].map(g => (
+              <line key={'h' + g} x1={0} y1={g} x2={400} y2={g} stroke="#eee" strokeWidth={1} />
+            ))}
+            <g style={{ color: '#dc2626' }}>
+              <line x1={cx} y1={cy} x2={cx + 36} y2={cy} stroke="#dc2626" strokeWidth={2} markerEnd="url(#arr)" />
+            </g>
+            <g style={{ color: '#16a34a' }}>
+              <line x1={cx} y1={cy} x2={cx} y2={cy - 36} stroke="#16a34a" strokeWidth={2} markerEnd="url(#arr)" />
+            </g>
+            <text x={cx + 42} y={cy + 4} fontSize="11" fill="#dc2626" fontWeight="600">x</text>
+            <text x={cx - 14} y={cy - 42} fontSize="11" fill="#16a34a" fontWeight="600">y</text>
+            {showM2 && trail.map((p, i) => (
+              <circle key={i} cx={p.x} cy={p.y} r={1.6} fill="#7c3aed" opacity={(i / trail.length) * 0.55} />
+            ))}
+            {showLink1 && (
+              <line x1={cx} y1={cy} x2={x1} y2={y1} stroke="#2F5496" strokeWidth={6} strokeLinecap="round"
+                style={{ transition: 'all 0.3s' }} />
+            )}
+            {showLink2 && (
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1e3a73" strokeWidth={6} strokeLinecap="round"
+                style={{ transition: 'all 0.3s' }} />
+            )}
+            <circle cx={cx} cy={cy} r={5} fill="#1a1d24" />
+            {showLink1 && <circle cx={x1} cy={y1} r={4} fill="#1a1d24" />}
+            {showM1 && (
+              <g className="pop">
+                <circle cx={x1} cy={y1} r={9} fill="#c2a25a" stroke="#fff" strokeWidth={2} />
+                <text x={x1 + 13} y={y1 + 4} fontSize="11" fontWeight="700" fill="#1a1d24">m₁</text>
+              </g>
+            )}
+            {showM2 && (
+              <g className="pop">
+                <circle cx={x2} cy={y2} r={11} fill="#7c3aed" stroke="#fff" strokeWidth={2} />
+                <text x={x2 + 14} y={y2 + 4} fontSize="11" fontWeight="700" fill="#1a1d24">m₂</text>
+              </g>
+            )}
+            <text x={10} y={20} fontSize="11" fill="#4b515c" fontWeight="600">Stage {stage}: {stageInfo[stage]}</text>
+          </svg>
+          <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+            {stageInfo.map((s, i) => (
+              <button key={i} onClick={() => setStage(i)}
+                style={{
+                  padding: '4px 10px', fontSize: '0.74rem', borderRadius: 4,
+                  border: '1px solid ' + (stage === i ? '#2F5496' : '#cbd5e1'),
+                  background: stage === i ? '#e8eef8' : 'white', cursor: 'pointer',
+                  color: stage === i ? '#1e3a73' : '#4b515c', fontWeight: stage === i ? 600 : 400,
+                }}>{i}</button>
+            ))}
+          </div>
+        </div>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: '0.78rem' }}>
+          <div style={{ marginBottom: 6, fontWeight: 700, color: '#2F5496' }}>T₁ (link 1)</div>
+          <div className="matrix-mini" style={{ marginBottom: 14 }}>
+            <span>{fmt(c1)}</span><span>{fmt(-s1)}</span><span className="last-col">{fmt(L1 * c1)}</span>
+            <span>{fmt(s1)}</span><span>{fmt(c1)}</span><span className="last-col">{fmt(L1 * s1)}</span>
+            <span>0</span><span>0</span><span className="last-col">1</span>
+          </div>
+          <div style={{ fontSize: '0.72rem', color: '#4b515c', marginBottom: 14 }}>
+            Last column ⇒ m₁ at <strong style={{ color: '#78350f' }}>({fmt(L1 * c1)}, {fmt(L1 * s1)})</strong>
+          </div>
+          <div style={{ marginBottom: 6, fontWeight: 700, color: '#2F5496' }}>T₂ (in base frame)</div>
+          <div className="matrix-mini">
+            <span>{fmt(c12)}</span><span>{fmt(-s12)}</span><span className="last-col" style={{ background: '#e3f2fd' }}>{fmt(L1 * c1 + L2 * c12)}</span>
+            <span>{fmt(s12)}</span><span>{fmt(c12)}</span><span className="last-col" style={{ background: '#e3f2fd' }}>{fmt(L1 * s1 + L2 * s12)}</span>
+            <span>0</span><span>0</span><span className="last-col" style={{ background: '#e3f2fd' }}>1</span>
+          </div>
+          <div style={{ fontSize: '0.72rem', color: '#4b515c', marginTop: 6 }}>
+            Last column ⇒ m₂ at <strong style={{ color: '#0d3d6e' }}>({fmt(L1 * c1 + L2 * c12)}, {fmt(L1 * s1 + L2 * s12)})</strong>
+          </div>
+        </div>
+      </div>
+      <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <div>
+          <label style={{ fontSize: '0.85rem' }}>θ₁ = <strong>{t1deg}°</strong></label>
+          <input type="range" min={-Math.PI} max={Math.PI} step={0.02} value={t1}
+            onChange={e => { setT1(parseFloat(e.target.value)); setPlaying(false); }} style={{ width: '100%' }} />
+        </div>
+        <div>
+          <label style={{ fontSize: '0.85rem' }}>θ₂ = <strong>{t2deg}°</strong></label>
+          <input type="range" min={-Math.PI} max={Math.PI} step={0.02} value={t2}
+            onChange={e => { setT2(parseFloat(e.target.value)); setPlaying(false); }} style={{ width: '100%' }} />
+        </div>
+        <div>
+          <label style={{ fontSize: '0.85rem' }}>L₁ = <strong>{L1.toFixed(0)}</strong></label>
+          <input type="range" min={30} max={100} value={L1} onChange={e => setL1(parseFloat(e.target.value))} style={{ width: '100%' }} />
+        </div>
+        <div>
+          <label style={{ fontSize: '0.85rem' }}>L₂ = <strong>{L2.toFixed(0)}</strong></label>
+          <input type="range" min={30} max={100} value={L2} onChange={e => setL2(parseFloat(e.target.value))} style={{ width: '100%' }} />
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+        <button className="btn purple" onClick={() => setPlaying(p => !p)}>
+          {playing ? '⏸ Pause' : '▶ Cycle presets'}
+        </button>
+        <button className="btn secondary" onClick={() => { setT1(0); setT2(0); setTrail([]); setPlaying(false); setStage(4); }}>↺ Reset</button>
+        <button className="btn secondary" onClick={() => setTrail([])}>Clear trail</button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Widget 2: Velocity Chain Rule Derive ────────────────────────────
+function VelocityChainRuleDerive() {
+  const targets = [
+    {
+      name: 'ẋ₂',
+      start: 'x₂ = L₁ cos(θ₁) + L₂ cos(θ₁+θ₂)',
+      steps: [
+        { prompt: 'Differentiate L₁ cos(θ₁) — pick the rule:', options: [
+            { rule: 'd/dt cos(u) = -sin(u) · du/dt   with u=θ₁', correct: true,  result: '-L₁ sin(θ₁) θ̇₁' },
+            { rule: 'd/dt cos(u) = sin(u) · du/dt   (sign flip)', correct: false },
+            { rule: 'd/dt cos(u) = -sin(u)   (drop chain)',         correct: false },
+        ] },
+        { prompt: 'Differentiate L₂ cos(θ₁+θ₂) — outer rule:', options: [
+            { rule: 'd/dt cos(u) = -sin(u) · du/dt', correct: true, result: '-L₂ sin(θ₁+θ₂) · d/dt(θ₁+θ₂)' },
+            { rule: 'd/dt cos(u) = -sin(u)   (skip chain)', correct: false },
+        ] },
+        { prompt: 'Now expand du/dt where u = θ₁+θ₂:', options: [
+            { rule: 'd/dt(a+b) = ȧ + ḃ  ⇒  θ̇₁ + θ̇₂', correct: true, result: '-L₂ sin(θ₁+θ₂) (θ̇₁ + θ̇₂)' },
+            { rule: 'd/dt(a+b) = ȧ           (drop θ̇₂)', correct: false },
+            { rule: 'd/dt(a+b) = ȧ · ḃ    (product?)', correct: false },
+        ] },
+      ],
+      final: 'ẋ₂ = -L₁ sin(θ₁) θ̇₁ - L₂ sin(θ₁+θ₂) (θ̇₁ + θ̇₂)',
+    },
+    {
+      name: 'ẏ₂',
+      start: 'y₂ = L₁ sin(θ₁) + L₂ sin(θ₁+θ₂)',
+      steps: [
+        { prompt: 'Differentiate L₁ sin(θ₁):', options: [
+            { rule: 'd/dt sin(u) = cos(u) · du/dt', correct: true, result: 'L₁ cos(θ₁) θ̇₁' },
+            { rule: 'd/dt sin(u) = -cos(u) · du/dt', correct: false },
+        ] },
+        { prompt: 'Differentiate L₂ sin(θ₁+θ₂):', options: [
+            { rule: 'd/dt sin(u) = cos(u) · du/dt', correct: true, result: 'L₂ cos(θ₁+θ₂) · (θ̇₁ + θ̇₂)' },
+            { rule: 'd/dt sin(u) = cos(u)   (drop chain)', correct: false },
+        ] },
+      ],
+      final: 'ẏ₂ = L₁ cos(θ₁) θ̇₁ + L₂ cos(θ₁+θ₂) (θ̇₁ + θ̇₂)',
+    },
+  ];
+
+  const [tIdx, setTIdx] = useState(0);
+  const [stepIdx, setStepIdx] = useState(0);
+  const [history, setHistory] = useState([]);
+  const [feedback, setFeedback] = useState(null);
+
+  const T = targets[tIdx];
+
+  function pick(opt) {
+    if (opt.correct) {
+      setHistory(h => [...h, { rule: opt.rule, result: opt.result }]);
+      setStepIdx(i => i + 1);
+      setFeedback({ ok: true, msg: '✓ Correct rule applied.' });
+      setTimeout(() => setFeedback(null), 1500);
+    } else {
+      setFeedback({ ok: false, msg: '✗ That rule loses something — re-read the chain rule and try again.' });
+    }
+  }
+
+  function reset() { setStepIdx(0); setHistory([]); setFeedback(null); }
+  function nextTarget() { setTIdx(i => (i + 1) % targets.length); reset(); }
+
+  const done = stepIdx >= T.steps.length;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+        {targets.map((tg, i) => (
+          <button key={i} className={'btn ' + (i === tIdx ? '' : 'secondary')}
+            onClick={() => { setTIdx(i); reset(); }}>
+            Target: {tg.name}
+          </button>
+        ))}
+      </div>
+      <div style={{ background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 8, padding: 14, fontFamily: 'var(--mono)', fontSize: '0.88rem', marginBottom: 12 }}>
+        <div style={{ color: '#4b515c', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Position</div>
+        <div style={{ color: '#1e3a73', fontWeight: 600 }}>{T.start}</div>
+        {history.length > 0 && (
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px dashed #e6e1d3' }}>
+            <div style={{ color: '#4b515c', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Derivation so far</div>
+            {history.map((h, i) => (
+              <div key={i} style={{ marginBottom: 6 }}>
+                <span style={{ color: '#7c3aed', fontSize: '0.74rem' }}>[{h.rule}]</span><br />
+                <span style={{ color: '#065f46', fontWeight: 600 }}>→ {h.result}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {done && (
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #16a34a', background: '#e8f5e9', padding: 10, borderRadius: 6 }}>
+            <div style={{ color: '#14532d', fontWeight: 700, marginBottom: 4 }}>✓ Derived!</div>
+            <div style={{ color: '#065f46', fontWeight: 600 }}>{T.final}</div>
+          </div>
+        )}
+      </div>
+      {!done && (
+        <div>
+          <div style={{ fontSize: '0.92rem', fontWeight: 600, marginBottom: 8 }}>{T.steps[stepIdx].prompt}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {T.steps[stepIdx].options.map((opt, i) => (
+              <button key={i} className="btn secondary" style={{ textAlign: 'left', fontFamily: 'var(--mono)', fontSize: '0.82rem' }}
+                onClick={() => pick(opt)}>{opt.rule}</button>
+            ))}
+          </div>
+        </div>
+      )}
+      {feedback && (
+        <div style={{
+          marginTop: 10, padding: '8px 12px', borderRadius: 6,
+          background: feedback.ok ? '#e8f5e9' : '#ffebee',
+          color: feedback.ok ? '#14532d' : '#7f1d1d', fontSize: '0.88rem',
+        }}>{feedback.msg}</div>
+      )}
+      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+        <button className="btn secondary" onClick={reset}>↺ Restart this target</button>
+        {done && <button className="btn purple" onClick={nextTarget}>→ Next target</button>}
+      </div>
+    </div>
+  );
+}
+
+// ─── Widget 3: v2² Builder (group by identities) ─────────────────────
+function V2SquaredBuilder() {
+  const tiles = [
+    { id: 'A1', text: 'L₁² sin²(θ₁) θ̇₁²', group: 'pyth1' },
+    { id: 'A2', text: 'L₁² cos²(θ₁) θ̇₁²', group: 'pyth1' },
+    { id: 'B1', text: 'L₂² sin²(θ₁+θ₂)(θ̇₁+θ̇₂)²', group: 'pyth2' },
+    { id: 'B2', text: 'L₂² cos²(θ₁+θ₂)(θ̇₁+θ̇₂)²', group: 'pyth2' },
+    { id: 'C1', text: '2 L₁L₂ sin(θ₁) sin(θ₁+θ₂) θ̇₁(θ̇₁+θ̇₂)', group: 'cosdiff' },
+    { id: 'C2', text: '2 L₁L₂ cos(θ₁) cos(θ₁+θ₂) θ̇₁(θ̇₁+θ̇₂)', group: 'cosdiff' },
+  ];
+  const groups = {
+    pyth1: { label: 'sin²+cos² = 1  (group θ̇₁²)', collapsed: 'L₁² θ̇₁²' },
+    pyth2: { label: 'sin²+cos² = 1  (group (θ̇₁+θ̇₂)²)', collapsed: 'L₂² (θ̇₁+θ̇₂)²' },
+    cosdiff: { label: 'cos α cos β + sin α sin β = cos(α−β)', collapsed: '2 L₁L₂ cos(θ₂) θ̇₁(θ̇₁+θ̇₂)' },
+  };
+
+  const [placed, setPlaced] = useState({ pyth1: [], pyth2: [], cosdiff: [] });
+  const [selected, setSelected] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+
+  function placeTile(grpId) {
+    if (!selected) return;
+    const tile = tiles.find(t => t.id === selected);
+    if (tile.group === grpId) {
+      setPlaced(p => ({ ...p, [grpId]: [...p[grpId], tile.id] }));
+      setFeedback({ ok: true, msg: '✓ ' + tile.text + ' joined the ' + groups[grpId].label + ' group.' });
+    } else {
+      setFeedback({ ok: false, msg: '✗ That term doesn\'t fit ' + groups[grpId].label + ' — try another zone.' });
+    }
+    setSelected(null);
+    setTimeout(() => setFeedback(null), 2200);
+  }
+
+  const usedIds = Object.values(placed).flat();
+  const allDone = usedIds.length === tiles.length;
+
+  function reset() { setPlaced({ pyth1: [], pyth2: [], cosdiff: [] }); setSelected(null); setFeedback(null); }
+
+  return (
+    <div>
+      <div style={{ marginBottom: 10, fontSize: '0.88rem', color: '#4b515c' }}>
+        Click a tile to select it, then click an identity zone to drop it in. The expression collapses as identities consume their terms.
+      </div>
+      <div style={{ marginBottom: 14, padding: 10, background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 8 }}>
+        <div style={{ fontSize: '0.74rem', color: '#4b515c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Tiles (the six expanded terms of v₂²)</div>
+        <div>
+          {tiles.map(t => (
+            <div key={t.id}
+              onClick={() => !usedIds.includes(t.id) && setSelected(selected === t.id ? null : t.id)}
+              className={'tile ' + (usedIds.includes(t.id) ? 'is-used' : '') + (selected === t.id ? ' is-correct' : '')}
+              style={{ borderColor: selected === t.id ? '#7c3aed' : undefined }}>
+              {t.text}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 12 }}>
+        {Object.entries(groups).map(([gid, g]) => (
+          <div key={gid} className="bin" onClick={() => placeTile(gid)}
+            style={{ cursor: selected ? 'pointer' : 'default', borderColor: selected ? '#7c3aed' : undefined }}>
+            <h5>{g.label}</h5>
+            {placed[gid].length === groups[gid] && groups[gid].label.includes('+1') ? null : null}
+            {placed[gid].map(tid => (
+              <div key={tid} className="placed">{tiles.find(t => t.id === tid).text}</div>
+            ))}
+            {placed[gid].length >= 2 && (
+              <div style={{ marginTop: 8, padding: 6, background: '#e8f5e9', borderLeft: '3px solid #16a34a', borderRadius: 3, fontFamily: 'var(--mono)', fontSize: '0.78rem', color: '#14532d', fontWeight: 600 }}>
+                ⇒ {g.collapsed}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      {feedback && (
+        <div style={{
+          marginBottom: 10, padding: '8px 12px', borderRadius: 6,
+          background: feedback.ok ? '#e8f5e9' : '#ffebee',
+          color: feedback.ok ? '#14532d' : '#7f1d1d', fontSize: '0.85rem',
+        }}>{feedback.msg}</div>
+      )}
+      {allDone && (
+        <div style={{ background: 'linear-gradient(135deg,#e8f5e9,#f3e5f5)', border: '1px solid #16a34a', padding: 14, borderRadius: 8, marginBottom: 10 }}>
+          <strong style={{ color: '#14532d' }}>✓ Collapsed!</strong>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: '0.88rem', color: '#1e3a73', marginTop: 6, fontWeight: 600 }}>
+            v₂² = L₁² θ̇₁² + L₂² (θ̇₁+θ̇₂)² + 2 L₁L₂ cos(θ₂) θ̇₁(θ̇₁+θ̇₂)
+          </div>
+        </div>
+      )}
+      <button className="btn secondary" onClick={reset}>↺ Reset</button>
+    </div>
+  );
+}
+
+// ─── Widget 4: Inertia Matrix Picker ─────────────────────────────────
+function InertiaMatrixPicker() {
+  const choices = [
+    {
+      slot: 'M₁₁',
+      options: [
+        'm₁ L₁² + m₂ [L₁² + L₂² + 2 L₁L₂ cos(θ₂)]',
+        'm₂ L₂²',
+        'm₂ [L₂² + L₁L₂ cos(θ₂)]',
+        'm₁ L₁²',
+      ],
+      correct: 0,
+      explain: 'M₁₁ multiplies θ̈₁; coefficient of θ̇₁² in L is ½M₁₁, which gives this combined inertia.',
+    },
+    {
+      slot: 'M₁₂ = M₂₁',
+      options: [
+        'm₂ L₂²',
+        'm₂ [L₂² + L₁L₂ cos(θ₂)]',
+        '2 m₂ L₁L₂ cos(θ₂)',
+        '0',
+      ],
+      correct: 1,
+      explain: 'The coefficient of θ̇₁θ̇₂ is exactly M₁₂ — symmetric inertia matrix, configuration-dependent.',
+    },
+    {
+      slot: 'M₂₂',
+      options: [
+        'm₁ L₁²',
+        'm₂ L₂²',
+        'm₂ [L₁² + L₂²]',
+        'm₂ L₁L₂ cos(θ₂)',
+      ],
+      correct: 1,
+      explain: 'Coefficient of θ̇₂² in L is ½M₂₂ = ½m₂L₂². Only m₂ at the tip of link 2 contributes.',
+    },
+  ];
+
+  const [picks, setPicks] = useState({ 0: null, 1: null, 2: null });
+  const [show, setShow] = useState({ 0: false, 1: false, 2: false });
+
+  function choose(qIdx, optIdx) {
+    setPicks(p => ({ ...p, [qIdx]: optIdx }));
+    setShow(s => ({ ...s, [qIdx]: true }));
+  }
+
+  function reset() { setPicks({ 0: null, 1: null, 2: null }); setShow({ 0: false, 1: false, 2: false }); }
+
+  const m11 = picks[0] === 0 ? choices[0].options[0] : '?';
+  const m12 = picks[1] === 1 ? choices[1].options[1] : '?';
+  const m22 = picks[2] === 1 ? choices[2].options[1] : '?';
+  const allRight = picks[0] === 0 && picks[1] === 1 && picks[2] === 1;
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 16 }}>
+      <div>
+        {choices.map((c, qi) => (
+          <div key={qi} style={{ marginBottom: 14, padding: 12, background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 8 }}>
+            <div style={{ fontSize: '0.92rem', fontWeight: 600, marginBottom: 8, color: '#1e3a73' }}>
+              Which coefficient is {c.slot}?
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {c.options.map((opt, oi) => {
+                const picked = picks[qi] === oi;
+                const right = picked && oi === c.correct;
+                const wrong = picked && oi !== c.correct;
+                return (
+                  <button key={oi} onClick={() => choose(qi, oi)}
+                    className="btn secondary"
+                    style={{
+                      textAlign: 'left', fontFamily: 'var(--mono)', fontSize: '0.78rem',
+                      borderColor: right ? '#16a34a' : wrong ? '#dc2626' : undefined,
+                      background: right ? '#e8f5e9' : wrong ? '#ffebee' : undefined,
+                      color: right ? '#14532d' : wrong ? '#7f1d1d' : undefined,
+                    }}>
+                    {right ? '✓ ' : wrong ? '✗ ' : ''}{opt}
+                  </button>
+                );
+              })}
+            </div>
+            {show[qi] && (
+              <div style={{
+                marginTop: 8, padding: 8, fontSize: '0.82rem',
+                background: picks[qi] === c.correct ? '#e8f5e9' : '#fff3e0',
+                color: picks[qi] === c.correct ? '#14532d' : '#78350f',
+                borderRadius: 4,
+              }}>{c.explain}</div>
+            )}
+          </div>
+        ))}
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+      </div>
+      <div>
+        <div style={{ position: 'sticky', top: 100 }}>
+          <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#4b515c', marginBottom: 8, fontWeight: 700 }}>Live M(θ)</div>
+          <div style={{ background: 'white', border: '2px solid ' + (allRight ? '#16a34a' : '#cbd5e1'), borderRadius: 8, padding: 14, fontFamily: 'var(--mono)', fontSize: '0.74rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div style={{ padding: 6, background: picks[0] === 0 ? '#e8f5e9' : '#f3f4f6', borderRadius: 4, minHeight: 50 }}>
+                <div style={{ fontSize: '0.66rem', color: '#4b515c' }}>M₁₁</div>{m11}
+              </div>
+              <div style={{ padding: 6, background: picks[1] === 1 ? '#e8f5e9' : '#f3f4f6', borderRadius: 4, minHeight: 50 }}>
+                <div style={{ fontSize: '0.66rem', color: '#4b515c' }}>M₁₂</div>{m12}
+              </div>
+              <div style={{ padding: 6, background: picks[1] === 1 ? '#e8f5e9' : '#f3f4f6', borderRadius: 4, minHeight: 50 }}>
+                <div style={{ fontSize: '0.66rem', color: '#4b515c' }}>M₂₁</div>{m12}
+              </div>
+              <div style={{ padding: 6, background: picks[2] === 1 ? '#e8f5e9' : '#f3f4f6', borderRadius: 4, minHeight: 50 }}>
+                <div style={{ fontSize: '0.66rem', color: '#4b515c' }}>M₂₂</div>{m22}
+              </div>
+            </div>
+            {allRight && (
+              <div style={{ marginTop: 10, padding: 8, background: 'linear-gradient(135deg,#e8f5e9,#dcfce7)', borderRadius: 4, color: '#14532d', fontSize: '0.78rem', fontWeight: 600, textAlign: 'center' }}>
+                ✓ Inertia matrix assembled
+              </div>
+            )}
+          </div>
+          <div style={{ fontSize: '0.74rem', color: '#4b515c', marginTop: 8, lineHeight: 1.5 }}>
+            Symmetric, configuration-dependent through cos(θ₂).
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Widget 5: τ₁ Builder (bin sorting) ──────────────────────────────
+function ELTheta1Builder() {
+  const candidates = [
+    { id: 'a', text: 'm₁ L₁² θ̈₁',                                              bin: 'M' },
+    { id: 'b', text: 'm₂(L₁²+L₂²+2L₁L₂cos θ₂) θ̈₁',                              bin: 'M' },
+    { id: 'c', text: 'm₂(L₂²+L₁L₂cos θ₂) θ̈₂',                                   bin: 'M' },
+    { id: 'd', text: '−2 m₂ L₁L₂ sin θ₂ θ̇₁ θ̇₂',                                bin: 'C' },
+    { id: 'e', text: '−m₂ L₁L₂ sin θ₂ θ̇₂²',                                    bin: 'C' },
+    { id: 'f', text: '(m₁+m₂) g L₁ cos θ₁',                                     bin: 'g' },
+    { id: 'g', text: 'm₂ g L₂ cos(θ₁+θ₂)',                                      bin: 'g' },
+    { id: 'h', text: '+m₂ L₁L₂ sin θ₂ θ̇₂²  (sign trap)',                        bin: 'D' },
+    { id: 'i', text: 'm₂ L₂² θ̈₂  (missing cos coupling)',                       bin: 'D' },
+  ];
+  const bins = {
+    M: { label: 'Inertia M(θ) θ̈', color: '#1976d2' },
+    C: { label: 'Coriolis/centrifugal C(θ,θ̇)θ̇', color: '#d97706' },
+    g: { label: 'Gravity g(θ)', color: '#16a34a' },
+    D: { label: 'Distractor / drop', color: '#7f1d1d' },
+  };
+
+  const [placed, setPlaced] = useState({ M: [], C: [], g: [], D: [] });
+  const [selected, setSelected] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+
+  const usedIds = Object.values(placed).flat();
+
+  function placeIn(binId) {
+    if (!selected) return;
+    const c = candidates.find(x => x.id === selected);
+    setPlaced(p => ({ ...p, [binId]: [...p[binId], { id: c.id, text: c.text, correct: c.bin === binId }] }));
+    setFeedback({ ok: c.bin === binId, msg: c.bin === binId ? '✓ Correct bin.' : '✗ That term belongs in “' + bins[c.bin].label + '” — moved anyway.' });
+    setSelected(null);
+    setTimeout(() => setFeedback(null), 2000);
+  }
+
+  function reset() { setPlaced({ M: [], C: [], g: [], D: [] }); setSelected(null); setFeedback(null); }
+
+  const correctCount = Object.values(placed).flat().filter(x => x.correct).length;
+  const allDone = usedIds.length === candidates.length;
+  const allRight = allDone && correctCount === candidates.length;
+
+  return (
+    <div>
+      <div style={{ marginBottom: 10, fontSize: '0.88rem', color: '#4b515c' }}>
+        Click a candidate term to select it, then click the bin where it belongs in <em>τ₁ = M θ̈ + C θ̇ + g</em>.
+      </div>
+      <div style={{ background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 8, padding: 10, marginBottom: 14 }}>
+        <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#4b515c', marginBottom: 6 }}>Candidate terms</div>
+        {candidates.filter(c => !usedIds.includes(c.id)).map(c => (
+          <div key={c.id} className="tile"
+            onClick={() => setSelected(selected === c.id ? null : c.id)}
+            style={{ borderColor: selected === c.id ? '#7c3aed' : undefined, background: selected === c.id ? '#f3e8ff' : undefined }}>
+            {c.text}
+          </div>
+        ))}
+        {usedIds.length === candidates.length && <div style={{ color: '#16a34a', fontWeight: 600, padding: 8 }}>All terms placed.</div>}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10 }}>
+        {Object.entries(bins).map(([bid, b]) => (
+          <div key={bid} className="bin"
+            onClick={() => placeIn(bid)}
+            style={{
+              cursor: selected ? 'pointer' : 'default',
+              borderColor: selected ? b.color : undefined,
+              borderStyle: selected ? 'solid' : 'dashed',
+            }}>
+            <h5 style={{ color: b.color }}>{b.label}</h5>
+            {placed[bid].map(p => (
+              <div key={p.id} className={'placed' + (p.correct ? '' : ' wrong')}>{p.correct ? '✓ ' : '✗ '}{p.text}</div>
+            ))}
+          </div>
+        ))}
+      </div>
+      {feedback && (
+        <div style={{
+          marginTop: 12, padding: '8px 12px', borderRadius: 6,
+          background: feedback.ok ? '#e8f5e9' : '#ffebee',
+          color: feedback.ok ? '#14532d' : '#7f1d1d', fontSize: '0.85rem',
+        }}>{feedback.msg}</div>
+      )}
+      <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center' }}>
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+        <span style={{ fontSize: '0.85rem', color: '#4b515c' }}>
+          {usedIds.length}/{candidates.length} placed · {correctCount} correct
+        </span>
+        {allRight && <span style={{ marginLeft: 'auto', color: '#14532d', fontWeight: 700 }}>✓ τ₁ assembled correctly!</span>}
+      </div>
+    </div>
+  );
+}
+
+// ─── Widget 6: Manipulator Form MCQ ──────────────────────────────────
+function ManipulatorFormMCQ() {
+  const questions = [
+    {
+      q: 'In τ₁, the term −2 L₁L₂ sin θ₂ θ̇₁θ̇₂ belongs to which part of M θ̈ + C θ̇ + g?',
+      options: [
+        'M(θ) θ̈ — it\'s an inertia term',
+        'C(θ,θ̇) θ̇ — Coriolis/centrifugal',
+        'g(θ) — gravity',
+        'None — it cancels',
+      ],
+      correct: 1,
+      explain: 'Velocity products θ̇ᵢθ̇ⱼ with configuration-dependent coefficients are exactly the Coriolis/centrifugal column.',
+    },
+    {
+      q: 'Where does the cos θ₂ inside M₁₁ ultimately come from?',
+      options: [
+        'The potential energy V',
+        'The cosine-difference identity cos α cos β + sin α sin β = cos(α−β) inside v₂²',
+        'A small-angle approximation',
+        'The choice of base frame',
+      ],
+      correct: 1,
+      explain: 'When grouping v₂², the cross terms collapse via cos(θ₁−(θ₁+θ₂)) = cos θ₂ — that\'s the source of every cos θ₂ coupling downstream.',
+    },
+    {
+      q: 'Why does τ₂ contain m₂ g L₂ cos(θ₁+θ₂) but no m₁ gravity term?',
+      options: [
+        'm₁\'s height y₁ = L₁ sin θ₁ doesn\'t depend on θ₂, so ∂V/∂θ₂ kills it',
+        'm₁ is assumed massless',
+        'Because θ₂ is measured relatively',
+        'Because gravity is in −y only',
+      ],
+      correct: 0,
+      explain: 'V has m₁ g L₁ sin θ₁ which has no θ₂ dependence, so it vanishes under ∂/∂θ₂.',
+    },
+    {
+      q: 'In the standard form τ = M θ̈ + C θ̇ + g, the matrix M(θ) for this arm is...',
+      options: [
+        'Constant',
+        'Symmetric and configuration-dependent',
+        'Diagonal',
+        'Anti-symmetric',
+      ],
+      correct: 1,
+      explain: 'M₁₂ = M₂₁ = m₂[L₂² + L₁L₂ cos θ₂] — symmetric, and the cos θ₂ makes it configuration-dependent.',
+    },
+  ];
+
+  const [picks, setPicks] = useState({});
+
+  function pick(qi, oi) {
+    setPicks(p => ({ ...p, [qi]: oi }));
+  }
+
+  function reset() { setPicks({}); }
+
+  const score = Object.entries(picks).filter(([qi, oi]) => questions[qi].correct === oi).length;
+  const allAnswered = Object.keys(picks).length === questions.length;
+
+  return (
+    <div>
+      {questions.map((Q, qi) => (
+        <div key={qi} style={{ marginBottom: 16, padding: 14, background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 8 }}>
+          <div style={{ fontWeight: 600, marginBottom: 8, color: '#1e3a73', fontSize: '0.94rem' }}>
+            <span style={{ color: '#7c3aed', marginRight: 6 }}>Q{qi + 1}.</span>{Q.q}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {Q.options.map((opt, oi) => {
+              const picked = picks[qi] === oi;
+              const right = picked && oi === Q.correct;
+              const wrong = picked && oi !== Q.correct;
+              return (
+                <button key={oi} onClick={() => pick(qi, oi)}
+                  className="btn secondary"
+                  style={{
+                    textAlign: 'left', fontSize: '0.86rem',
+                    borderColor: right ? '#16a34a' : wrong ? '#dc2626' : undefined,
+                    background: right ? '#e8f5e9' : wrong ? '#ffebee' : undefined,
+                    color: right ? '#14532d' : wrong ? '#7f1d1d' : undefined,
+                  }}>
+                  {right ? '✓ ' : wrong ? '✗ ' : ''}{opt}
+                </button>
+              );
+            })}
+          </div>
+          {picks[qi] !== undefined && (
+            <div style={{
+              marginTop: 8, padding: 8, fontSize: '0.84rem', borderRadius: 4,
+              background: picks[qi] === Q.correct ? '#e8f5e9' : '#fff3e0',
+              color: picks[qi] === Q.correct ? '#14532d' : '#78350f',
+            }}>{Q.explain}</div>
+          )}
+        </div>
+      ))}
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+        <span style={{ fontSize: '0.9rem', color: '#4b515c' }}>
+          Score: <strong style={{ color: score === questions.length ? '#16a34a' : '#1e3a73' }}>{score}/{questions.length}</strong>
+        </span>
+        {allAnswered && score === questions.length && (
+          <span style={{ color: '#14532d', fontWeight: 700, marginLeft: 'auto' }}>✓ All correct — manipulator form is yours.</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Mounts ──────────────────────────────────────────────────────────
+const mounts = [
+  ['arm-pose-animator', ArmPoseAnimator],
+  ['velocity-chain-rule-derive', VelocityChainRuleDerive],
+  ['v2-squared-builder', V2SquaredBuilder],
+  ['inertia-matrix-picker', InertiaMatrixPicker],
+  ['el-theta1-builder', ELTheta1Builder],
+  ['manipulator-form-mcq', ManipulatorFormMCQ],
+];
+
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are the TSI Buddy for bibliosense's Robotics Dynamics, Lecture 07: 2-Link Planar Arm — From Kinematics to Torque Equations.",
+    "",
+    "# YOUR JOB FOR THIS LECTURE",
+    "- Help the student internalise the Lagrangian recipe for serial manipulators: transformations → positions → velocities → kinetic & potential energies → Lagrangian → Euler–Lagrange.",
+    "- Coach them through the chain-rule bookkeeping (especially d/dt cos θ₂ = −sin θ₂ · θ̇₂) without doing the algebra for them.",
+    "- Make sure they can read τ₁, τ₂ in the standard manipulator form τ = M(θ)θ̈ + C(θ,θ̇)θ̇ + g(θ) and identify which terms live where.",
+    "- Point them to the live widgets (arm-pose-animator for the kinematics, v2-squared-builder for the cos θ₂ collapse, el-theta1-builder for τ₁ assembly, manipulator-form-mcq for self-check) when a hands-on step would clear up confusion.",
+    "- Quote the boxed formulas and identities verbatim from the lecture when they ask 'what is X' — don't paraphrase notation.",
+    "- Keep the curriculum context: this feeds Module 3 (simulation, PD + gravity-comp control).",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "THE FORMULA(S) / KEY DEFINITIONS",
+    "Tip positions: $x_2 = L_1\\cos\\theta_1 + L_2\\cos(\\theta_1+\\theta_2)$, $y_2 = L_1\\sin\\theta_1 + L_2\\sin(\\theta_1+\\theta_2)$.",
+    "Lagrangian: $L = T - V$, with $T = \\tfrac{1}{2}m_1 L_1^2\\dot\\theta_1^2 + \\tfrac{1}{2}m_2[L_1^2\\dot\\theta_1^2 + L_2^2(\\dot\\theta_1+\\dot\\theta_2)^2 + 2L_1L_2\\cos\\theta_2\\,\\dot\\theta_1(\\dot\\theta_1+\\dot\\theta_2)]$.",
+    "Euler–Lagrange: $\\tau_i = \\tfrac{d}{dt}(\\partial L/\\partial\\dot\\theta_i) - \\partial L/\\partial\\theta_i$.",
+    "Standard manipulator form: $\\tau = M(\\theta)\\ddot\\theta + C(\\theta,\\dot\\theta)\\dot\\theta + g(\\theta)$.",
+    "",
+    "WHY (the intuition behind it)",
+    "Lagrangian mechanics replaces force-and-torque bookkeeping with a single scalar energy difference. Once you have T and V in terms of joint angles, the Euler–Lagrange operator mechanically grinds out the equations of motion — no free-body diagrams, no constraint forces. The cos θ₂ coupling appears because rotating joint 2 changes how the kinetic energy depends on θ̇₁, which is exactly what configuration-dependent inertia means.",
+    "",
+    "THE GOTCHA (most common student misconception)",
+    "Students forget that cos θ₂ depends on time when they take d/dt(∂L/∂θ̇₁). That single oversight wipes out the Coriolis terms −2L₁L₂ sin θ₂ θ̇₁θ̇₂ and −L₁L₂ sin θ₂ θ̇₂². The Coriolis/centrifugal physics is *already inside* the Lagrangian — it only emerges when you differentiate cos θ₂ properly via the chain rule.",
+    "",
+    "BOUNDARY CASES",
+    "If L₂ → 0 or m₂ → 0: the system collapses to a single pendulum, τ₁ = m₁ L₁² θ̈₁ + m₁ g L₁ cos θ₁.",
+    "If θ₂ = π/2 (links perpendicular): cos θ₂ = 0, so the inertial coupling between joints temporarily vanishes — M₁₂ is at its smallest.",
+    "If θ̇₁ = θ̇₂ = 0 (statics): only the gravity terms remain — useful as a sanity check on signs.",
+    "",
+    "EXPLAIN-IT-LIKE-THIS",
+    "Think of a figure skater holding a barbell at arm's length. When she rotates her shoulder (θ₁), the barbell at the end of the forearm (θ₂) doesn't just go along for the ride — its motion couples back into how hard her shoulder has to push. The harder the geometry folds the second link toward the first (cos θ₂ near 1), the more 'effective inertia' joint 1 feels. That coupling — geometry-dependent inertia — is what the messy L₁L₂ cos θ₂ terms encode.",
+    "",
+    "CURRICULUM CONTEXT",
+    "Built on: forward kinematics with homogeneous transformations, the Lagrangian formulation L = T − V, and the Euler–Lagrange equation introduced earlier in Module 2. The point-mass simplification (no link inertia) keeps the algebra readable while preserving every structural feature. Next: identifying M(θ), C(θ,θ̇), and g(θ) from these torque equations, then using them in Module 3 for simulation and controller design (PD + gravity compensation).",
+    "",
+    "COMMON STUDENT QUESTIONS",
+    "Q: Why does θ₁ + θ₂ show up everywhere for link 2 instead of just θ₂? | A: Joint angles are measured relative to the previous link. Link 2's orientation in the base frame is the sum of all upstream joint angles — that's how serial chains compose.",
+    "Q: Where exactly does cos θ₂ in v₂² come from? | A: From the cosine-of-difference identity: cos θ₁ cos(θ₁+θ₂) + sin θ₁ sin(θ₁+θ₂) = cos(−θ₂) = cos θ₂. Pure trig collapsing the cross term.",
+    "Q: Why is ∂L/∂θ₁ zero for the kinetic part? | A: Because θ₁ doesn't appear inside any of the kinetic-energy coefficients — only θ₂ does (through cos θ₂). So θ₁ is a 'cyclic-ish' coordinate for T, and gravity is the only contributor.",
+    "Q: Are we ignoring link mass on purpose? | A: Yes — point masses at the tips keep the algebra tractable. The structure (inertia matrix, Coriolis, gravity) is identical when you add distributed inertia; only the coefficients get heavier.",
+    "Q: How do I read off M, C, g from the final τ? | A: Coefficients of θ̈ⱼ form M(θ). Terms quadratic in joint velocities form C(θ,θ̇)θ̇. Terms with no velocities or accelerations form g(θ).",
+    "",
+    "PRO-INSIGHT WRAP-UP",
+    "The cos θ₂ and sin θ₂ terms you just derived are exactly the entries of M(θ) and C(θ,θ̇) that Module 3's gravity-compensated PD controller will need to cancel out in real time.",
+    "",
+    "# PEDAGOGY GUARDS",
+    "- NEVER reveal answers to the on-page MCQ or builders before the student has tried. Scaffold with hints (which rule? which identity?) instead of doing the step.",
+    "- NEVER spell out a derivation in a single block. Walk the student through one step, then ask them to take the next.",
+    "- Point them at the live widgets when relevant: 'Try the v₂² builder — drag the sin² and cos² tiles into the Pythagorean zone first.'",
+    "- If they ask for 'the answer' to τ₁ outright, point them back to the boxed expression in section 8 and ask which term they're stuck on.",
+    "",
+    "# LANGUAGE",
+    "- Default to English. Switch only on a clearly non-English signal from the student (whole message, not a single loanword).",
+    "- If you reply in a non-English language, append a one-line `*EN summary:*` so the lecturer can skim.",
+    "",
+    "# REPLY STYLE",
+    "- 60–180 words. Plain language. Anchor any factual claim to a quote from the lecture (boxed formula, identity name, callout).",
+    "- Lecturer-warm tone — encouraging but specific. No filler praise.",
+    "- Use Unicode math symbols (θ, θ̇, θ̈, ∂, π) inline; reserve $...$ for when the auto-render is essential."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Robotics Dynamics · Lecture 07',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>
