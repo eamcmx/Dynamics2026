@@ -16,6 +16,7 @@ on:
       - lecture-hm1-1-1-4
       - lecture-hm1-2-2-1
       - lecture-hm1-2-2-2
+      - lecture-decomposition-presentation
   workflow_dispatch:
 
 permissions:
