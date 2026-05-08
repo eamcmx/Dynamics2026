@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Worked example — kinematics & energies of a 2-link planar arm | bibliosense</title>
+<title>Worked Example: Kinematics &amp; Energies of a 2-Link Planar Arm | bibliosense</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,15 +16,7 @@
 
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
-        onload="renderMathInElement(document.body, {
-          delimiters: [
-            {left:'$$',right:'$$',display:true},
-            {left:'\\[',right:'\\]',display:true},
-            {left:'$',right:'$',display:false},
-            {left:'\\(',right:'\\)',display:false}
-          ],
-          throwOnError: false
-        });"></script>
+        onload="renderMathInElement(document.body, { delimiters: [ {left:'$$',right:'$$',display:true}, {left:'\\[',right:'\\]',display:true}, {left:'$',right:'$',display:false}, {left:'\\(',right:'\\)',display:false} ], throwOnError: false });"></script>
 
 <script type="importmap">
 {
@@ -187,42 +179,52 @@
   footer.lecture-footer a { color: var(--brand); text-decoration: none; }
   footer.lecture-footer a:hover { text-decoration: underline; }
 
-  /* Widget-specific styling */
-  .pose-btn { padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: white; cursor: pointer; font-size: 0.85rem; font-family: var(--sans); transition: all 0.15s; }
-  .pose-btn:hover { border-color: var(--brand); }
-  .pose-btn.is-active { background: var(--brand); color: white; border-color: var(--brand); }
-  .matrix-grid { display: inline-grid; grid-template-columns: repeat(3, minmax(80px, auto)); gap: 6px; padding: 10px 14px; border-left: 2px solid var(--ink); border-right: 2px solid var(--ink); font-family: var(--mono); font-size: 0.86rem; background: #fbfaf5; }
-  .matrix-cell { padding: 4px 8px; text-align: center; }
-  .matrix-cell.highlight { background: #fef3c7; border-radius: 4px; font-weight: 700; }
-  .stage-card { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--rule); transition: all 0.4s; }
-  .stage-card.is-active { background: var(--brand-soft); border-color: var(--brand); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(47,84,150,0.15); }
-  .stage-card.is-done { background: #e8f5e9; border-color: #16a34a; opacity: 0.85; }
-  .stage-card.is-pending { opacity: 0.5; }
-  .quiz-q { padding: 14px; border: 1px solid var(--rule); border-radius: 8px; margin-bottom: 12px; background: #fcfcf9; }
-  .quiz-q .q-text { font-weight: 600; margin-bottom: 10px; color: var(--ink); }
-  .quiz-opt { display: block; width: 100%; text-align: left; padding: 8px 12px; margin: 4px 0; border: 1px solid #cbd5e1; border-radius: 6px; background: white; cursor: pointer; font-family: var(--sans); font-size: 0.92rem; transition: all 0.15s; }
-  .quiz-opt:hover { border-color: var(--brand); }
-  .quiz-opt.is-correct { background: #d1fae5; border-color: #16a34a; color: #14532d; }
-  .quiz-opt.is-wrong   { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
-  .quiz-opt.is-disabled { cursor: default; opacity: 0.7; }
-  .derive-form { padding: 14px; background: var(--math-bg); border: 1px solid var(--rule); border-radius: 8px; font-family: var(--mono); font-size: 0.84rem; line-height: 1.7; overflow-x: auto; }
-  .derive-form .group { padding: 2px 4px; border-radius: 3px; }
-  .derive-form .group.collapsible { background: #fef3c7; cursor: pointer; transition: background 0.2s; }
-  .derive-form .group.collapsible:hover { background: #fde68a; }
-  .derive-form .group.collapsed { background: #d1fae5; }
-  .builder-slot { padding: 14px; border: 2px dashed #cbd5e1; border-radius: 8px; min-height: 60px; background: #fcfcf9; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.86rem; transition: all 0.2s; }
-  .builder-slot.is-filled { border-style: solid; border-color: var(--brand); background: var(--brand-soft); color: var(--brand-2); font-weight: 600; }
-  .builder-slot.is-correct { border-color: #16a34a; background: #d1fae5; color: #14532d; }
-  .builder-slot.is-wrong { border-color: #dc2626; background: #fee2e2; }
-  .palette-chip { display: inline-block; padding: 6px 12px; margin: 3px; border-radius: 16px; background: white; border: 1px solid var(--brand); color: var(--brand); cursor: pointer; font-family: var(--mono); font-size: 0.82rem; transition: all 0.15s; }
-  .palette-chip:hover { background: var(--brand-soft); }
-  .palette-chip.is-used { opacity: 0.4; cursor: default; pointer-events: none; }
-  .palette-chip.distractor { border-color: #b91c1c; color: #b91c1c; }
-  .slider-row { display: grid; grid-template-columns: 100px 1fr 70px; gap: 10px; align-items: center; padding: 5px 0; }
-  .slider-row label { font-family: var(--mono); font-size: 0.85rem; }
-  .slider-row .val { text-align: right; color: var(--brand); font-family: var(--mono); font-size: 0.85rem; }
-  .slider-row input[type=range] { width: 100%; }
-  .heatmap-canvas { display: block; border: 1px solid var(--rule); border-radius: 6px; }
+  /* widget-specific local styles */
+  .slider-row { display:flex; align-items:center; gap:10px; margin:6px 0; font-size:0.88rem; color:var(--ink-soft); }
+  .slider-row input[type=range] { flex:1; }
+  .slider-row label { min-width:54px; font-family:var(--mono); color:var(--ink); }
+  .slider-row .val { min-width:62px; text-align:right; font-family:var(--mono); color:var(--brand); }
+  .preset-row { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 4px; }
+  .preset-row .btn { padding:4px 10px; font-size:0.78rem; }
+  .stage-list { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 10px; }
+  .stage-pill { padding:5px 10px; border-radius:100px; font-size:0.74rem; font-family:var(--mono); border:1px solid var(--rule); background:white; color:var(--ink-soft); transition:all 0.25s; }
+  .stage-pill.is-active { background:var(--brand); color:white; border-color:var(--brand); transform:scale(1.05); box-shadow:0 2px 6px rgba(47,84,150,0.28); }
+  .stage-text { background:var(--brand-soft); border-radius:6px; padding:8px 12px; font-size:0.9rem; color:var(--brand-2); margin:8px 0; min-height:44px; }
+  .matrix-mono { font-family:var(--mono); font-size:0.78rem; line-height:1.4; background:#fbfaf5; padding:10px 12px; border-radius:6px; border:1px solid var(--rule); white-space:pre; overflow-x:auto; }
+  .matrix-mono .col-hi { background:#fff3cd; padding:0 4px; border-radius:3px; }
+  .tile-row { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+  .tile { padding:8px 12px; border:1px solid var(--rule); border-radius:6px; background:white; cursor:pointer; font-family:var(--mono); font-size:0.84rem; transition:all 0.15s; user-select:none; }
+  .tile:hover { background:var(--brand-soft); border-color:var(--brand); }
+  .tile.is-selected { background:var(--brand); color:white; border-color:var(--brand); }
+  .tile.is-decoy { border-style:dashed; color:#a14040; }
+  .tile.is-used { opacity:0.4; cursor:default; }
+  .slot-row { display:grid; grid-template-columns:auto 1fr; gap:8px 12px; align-items:center; margin:6px 0; }
+  .slot-label { font-family:var(--mono); color:var(--brand-2); font-size:0.95rem; }
+  .slot { min-height:36px; padding:6px 10px; border:2px dashed var(--rule); border-radius:6px; background:#fbfaf5; font-family:var(--mono); font-size:0.84rem; cursor:pointer; }
+  .slot.is-target { border-color:var(--brand); background:var(--brand-soft); }
+  .slot.is-filled { border-style:solid; background:white; color:var(--ink); }
+  .slot.is-correct { border-color:#16a34a; background:#e8f5e9; }
+  .slot.is-wrong { border-color:#dc2626; background:#ffebee; }
+  .arm-svg { display:block; width:100%; max-width:420px; height:auto; background:#fbfaf5; border-radius:8px; border:1px solid var(--rule); }
+  .mcq-q { background:#fbfaf5; border:1px solid var(--rule); border-radius:8px; padding:14px 16px; margin:10px 0; }
+  .mcq-q .q-text { font-weight:600; color:var(--ink); margin-bottom:8px; }
+  .mcq-opts { display:grid; gap:6px; }
+  .mcq-opt { padding:8px 12px; background:white; border:1px solid var(--rule); border-radius:6px; cursor:pointer; font-size:0.92rem; transition:all 0.15s; }
+  .mcq-opt:hover { background:var(--brand-soft); border-color:var(--brand); }
+  .mcq-opt.is-correct { background:#e8f5e9; border-color:#16a34a; color:#14532d; }
+  .mcq-opt.is-wrong { background:#ffebee; border-color:#dc2626; color:#7f1d1d; }
+  .mcq-explain { margin-top:8px; font-size:0.88rem; color:var(--ink-soft); padding:8px 12px; background:white; border-left:3px solid var(--brand); border-radius:0 4px 4px 0; }
+  .readout { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px; margin-top:10px; }
+  .readout-item { background:#fbfaf5; border:1px solid var(--rule); border-radius:6px; padding:8px 10px; font-family:var(--mono); font-size:0.82rem; }
+  .readout-item .lbl { color:var(--ink-soft); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; }
+  .readout-item .v   { color:var(--brand); font-weight:600; font-size:1.0rem; }
+  .term-box { display:inline-block; padding:4px 8px; border-radius:5px; margin:2px; font-family:var(--mono); font-size:0.86rem; }
+  .term-1 { background:#dbeafe; color:#1e3a8a; }
+  .term-2 { background:#d1fae5; color:#065f46; }
+  .term-3 { background:#fef3c7; color:#78350f; border:2px solid #d97706; }
+  .build-row { display:flex; flex-wrap:wrap; gap:6px; padding:10px; background:#fbfaf5; border:1px dashed var(--rule); border-radius:6px; min-height:48px; align-items:center; }
+  .build-chip { padding:6px 10px; background:white; border:1px solid var(--brand); border-radius:5px; font-family:var(--mono); font-size:0.82rem; color:var(--brand-2); position:relative; }
+  .build-chip .x { margin-left:6px; cursor:pointer; color:#dc2626; font-weight:bold; }
 </style>
 </head>
 <body>
@@ -239,7 +241,7 @@
         <circle cx="86" cy="22" r="3"   fill="#fff"/>
       </svg>
     </span>
-    <span>Robotics: Dynamics & Control<span class="brand-meta">by bibliosense</span></span>
+    <span>Robotics &amp; Dynamics<span class="brand-meta">by bibliosense</span></span>
   </a>
   <div class="topnav-links">
     <a href="../">All lectures</a>
@@ -250,237 +252,218 @@
 <main class="lecture-main">
 
 <header class="lecture-header">
-  <div class="lecture-eyebrow">Lecture 07 · Module 2 · Robotics: Dynamics & Control</div>
-  <h1 class="lecture-title">Worked example — kinematics & energies of a 2-link planar arm</h1>
-  <p class="lecture-subtitle">From transformation matrices to the Lagrangian, one careful step at a time.</p>
+  <div class="lecture-eyebrow">Lecture 07 · Module 2 · Robotics &amp; Dynamics</div>
+  <h1 class="lecture-title">Worked Example: Kinematics &amp; Energies of a 2-Link Planar Arm</h1>
+  <p class="lecture-subtitle">From transformation matrices to the Lagrangian — the full derivation for a tip-mass planar robot.</p>
   <div class="lecture-byline">
     <span><strong>Lecturer.</strong> bibliosense</span>
     <span><strong>Lecture.</strong> 07</span>
   </div>
 </header>
 
-<div class="voice">This one is a long, deliberate worked example — no new theory, just the bookkeeping. We take a 2-link planar arm with a point mass at the tip of each link and walk it all the way from the homogeneous transforms down to a clean Lagrangian. The point of the exercise is the <em>grouping</em>: when you square the velocities and use $\sin^2+\cos^2=1$ and $\cos(\alpha-\beta)$ identities, the mess collapses into something you can actually feed into Euler-Lagrange next module.</div>
+<div class="voice">Today we walk a single problem all the way through. We have a 2-link planar arm with point masses at the tips, and we want the Lagrangian — because that's the gateway to the dynamics in Module 3. We'll start from the homogeneous transformation matrices, read off tip positions, differentiate to get velocities, square and simplify using the Pythagorean and angle-difference identities, then assemble $T$ and $V$. Take it slowly: every step here is a habit you'll re-use.</div>
 
 <section class="card" id="overview">
   <h2><span class="badge">0</span> What this lecture covers</h2>
-  <p>We work a single problem from start to finish: a <strong>2-link planar robot arm</strong> with tip masses $m_1$ and $m_2$ at the distal end of each link, link lengths $L_1, L_2$, joint angles $\theta_1, \theta_2$. The goal is to derive the <strong>Lagrangian</strong> $L = T - V$ that we will hand to Euler-Lagrange in Module 3.</p>
-  <p>The path is fixed and worth memorising:</p>
-  <ol>
-    <li>Write each link's homogeneous transformation.</li>
-    <li>Read off Cartesian positions of the tip masses.</li>
-    <li>Differentiate to get velocities.</li>
-    <li>Square and simplify to get $v^2$.</li>
-    <li>Assemble kinetic energy $T$, potential energy $V$, and finally $L = T-V$.</li>
-  </ol>
-  <div class="voice">No new physics today — just the careful algebra that earns you the right to use Euler-Lagrange next time.</div>
-  <div class="callout blue"><strong>Setup.</strong> Planar arm in the $xy$-plane, gravity along $-y$. Tip masses are point masses (no link inertia) — that simplification is what keeps the algebra tractable.</div>
+  <p>This lecture is a complete worked solution for a <strong>2-link planar robot arm</strong> with tip masses $m_1$ and $m_2$ at the distal end of each link. We will build, step by step, every quantity needed to apply the Lagrangian formulation:</p>
+  <ul>
+    <li>the homogeneous transformation matrices $T_1$ and $T_2$,</li>
+    <li>the Cartesian positions $(x_i, y_i)$ of each tip mass,</li>
+    <li>the velocities $(\dot{x}_i, \dot{y}_i)$ via the chain rule,</li>
+    <li>the squared speeds $v_i^2$ simplified using trig identities,</li>
+    <li>the kinetic energy $T$, the potential energy $V$, and finally the Lagrangian $L = T - V$.</li>
+  </ul>
+  <p>By the end you will have an explicit, ready-to-differentiate $L(\theta_1, \theta_2, \dot{\theta}_1, \dot{\theta}_2)$ — the exact object Module 3 plugs into the Euler–Lagrange equations.</p>
+  <div class="voice">Treat this as a recipe card. Once you've done it once cleanly, every future manipulator becomes 'same steps, more terms'.</div>
+  <div class="callout blue"><strong>The setup.</strong> Two rigid links of length $L_1$ and $L_2$, joint angles $\theta_1$ (at the base) and $\theta_2$ (relative to link 1), with point masses $m_1$, $m_2$ at the tips.</div>
+  <div class="callout purple"><strong>Why this matters.</strong> Every dynamics problem in Module 3 starts exactly here: you cannot write Euler–Lagrange equations until you have $T$ and $V$ as functions of the generalised coordinates.</div>
 </section>
 
-<section class="card" id="transforms">
-  <h2><span class="badge">1</span> Homogeneous transformations for each link</h2>
-  <p>We start with the <strong>base-to-link transforms</strong>. In 2D a homogeneous transform is a $3\times 3$ matrix: rotation in the upper-left $2\times 2$ block, translation in the last column.</p>
-  <p>For link 1 (rotation by $\theta_1$, translation along the link of length $L_1$):</p>
+<section class="card" id="transformations">
+  <h2><span class="badge">1</span> Transformation matrices for each link</h2>
+  <p>We describe the geometry of the arm with <strong>homogeneous transformations</strong>. The transformation from the base frame to the tip of link 1 rotates by $\theta_1$ and translates by $L_1$ along the rotated axis:</p>
   <p>$$T_1 = \begin{bmatrix} \cos\theta_1 & -\sin\theta_1 & L_1\cos\theta_1 \\ \sin\theta_1 & \cos\theta_1 & L_1\sin\theta_1 \\ 0 & 0 & 1 \end{bmatrix}$$</p>
-  <p>For link 2, expressed <strong>relative to the base</strong> (already composed through link 1), the rotation accumulates to $\theta_1+\theta_2$ and the translation is the sum of both link contributions:</p>
+  <p>The transformation from the base frame to the tip of link 2 (where $m_2$ sits) composes the two rotations and adds both translations:</p>
   <p>$$T_2 = \begin{bmatrix} \cos(\theta_1+\theta_2) & -\sin(\theta_1+\theta_2) & L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2) \\ \sin(\theta_1+\theta_2) & \cos(\theta_1+\theta_2) & L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2) \\ 0 & 0 & 1 \end{bmatrix}$$</p>
-  <div class="voice">$T_2$ is what you get from $T_1 \cdot T_{1\to 2}$ — we just write the result so we don't carry the multiplication clutter through the rest of the derivation.</div>
-  <div class="callout teal"><strong>Why homogeneous?</strong> Stacking rotation and translation into one matrix lets us <em>compose</em> link frames by multiplication. The bottom row $[0,0,1]$ is the bookkeeping that makes that work.</div>
+  <p>Notice that the rotation block of $T_2$ is by $\theta_1+\theta_2$ — angles add when frames are chained.</p>
+  <div class="voice">The third column is what you actually care about: it's the position of the tip in base coordinates.</div>
+  <div class="callout teal"><strong>Reading the matrix.</strong> For a 2D homogeneous transform, the top-left $2\times 2$ block is the rotation, and the third column $(\,p_x, p_y, 1\,)^T$ is the translation in base coordinates.</div>
 
   <div class="widget">
     <div class="widget-header">
-      <h3 class="widget-title">Pose picker · see the transform matrices come alive</h3>
+      <h3 class="widget-title">Animated forward kinematics · build T₁ then T₂</h3>
       <span class="widget-tag">live</span>
     </div>
     <div class="widget-body">
-      <div id="transform-poser"></div>
+      <div id="forward-kinematics-animator"></div>
     </div>
   </div>
 </section>
 
 <section class="card" id="positions">
-  <h2><span class="badge">2</span> Cartesian positions of the tip masses</h2>
-  <p>The Cartesian position of each tip mass is just the translation column of its transform.</p>
-  <p><strong>Mass $m_1$</strong> (end of link 1):</p>
-  <p>$$x_1 = L_1\cos\theta_1, \qquad y_1 = L_1\sin\theta_1$$</p>
-  <p><strong>Mass $m_2$</strong> (end of link 2):</p>
-  <p>$$x_2 = L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2)$$</p>
-  <p>$$y_2 = L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)$$</p>
-  <p>This is forward kinematics in two equations. Notice that $m_2$'s position depends on <strong>both</strong> joint angles — that coupling is what will make the velocities (and ultimately the dynamics) interesting.</p>
-
-  <div class="widget">
-    <div class="widget-header">
-      <h3 class="widget-title">Animated forward kinematics · base → tip₁ → tip₂</h3>
-      <span class="widget-tag">live</span>
-    </div>
-    <div class="widget-body">
-      <div id="forward-kinematics-walker"></div>
-    </div>
-  </div>
+  <h2><span class="badge">2</span> Tip positions $(x_i, y_i)$</h2>
+  <p>Reading the third column of each transformation matrix directly gives the Cartesian positions of the masses.</p>
+  <p><strong>For $m_1$ (end of link 1):</strong></p>
+  <p>$$\begin{aligned} x_1 &= L_1\cos\theta_1 \\ y_1 &= L_1\sin\theta_1 \end{aligned}$$</p>
+  <p><strong>For $m_2$ (end of link 2):</strong></p>
+  <p>$$\begin{aligned} x_2 &= L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2) \\ y_2 &= L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2) \end{aligned}$$</p>
+  <p>These are pure functions of the generalised coordinates $\theta_1$ and $\theta_2$ — no time derivatives yet.</p>
+  <div class="voice">You can sanity-check by setting $\theta_2 = 0$: link 2 lines up with link 1 and $x_2 = (L_1+L_2)\cos\theta_1$. Good.</div>
 </section>
 
 <section class="card" id="velocities">
-  <h2><span class="badge">3</span> Velocities by the chain rule</h2>
-  <p>Differentiate each position with respect to time. The angles are the time-varying coordinates, so we use the chain rule and pick up $\dot\theta_1$ and $\dot\theta_2$ factors.</p>
+  <h2><span class="badge">3</span> Velocities via the chain rule</h2>
+  <p>Differentiate each position with respect to time. Because $x_i$ and $y_i$ depend on the joint angles, and the joint angles depend on time, the chain rule pulls $\dot\theta_1$ and $\dot\theta_2$ out of every trig term.</p>
   <p><strong>For $m_1$:</strong></p>
-  <p>$$\dot{x}_1 = -L_1\sin\theta_1\,\dot{\theta}_1, \qquad \dot{y}_1 = L_1\cos\theta_1\,\dot{\theta}_1$$</p>
-  <p><strong>For $m_2$:</strong></p>
-  <p>$$\dot{x}_2 = -L_1\sin\theta_1\,\dot{\theta}_1 - L_2\sin(\theta_1+\theta_2)\,(\dot{\theta}_1+\dot{\theta}_2)$$</p>
-  <p>$$\dot{y}_2 = L_1\cos\theta_1\,\dot{\theta}_1 + L_2\cos(\theta_1+\theta_2)\,(\dot{\theta}_1+\dot{\theta}_2)$$</p>
-  <p>The key chain-rule moment is differentiating $\cos(\theta_1+\theta_2)$ — its time derivative is $-\sin(\theta_1+\theta_2)\cdot(\dot\theta_1+\dot\theta_2)$, <strong>not</strong> $-\sin(\theta_1+\theta_2)\cdot\dot\theta_2$. Forgetting the $\dot\theta_1$ inside that bracket is the single most common mistake on this problem.</p>
-  <div class="voice">If you take nothing else away from this lecture, take the bracket $(\dot\theta_1 + \dot\theta_2)$ on the link-2 velocity terms. That sum is the angular velocity of link 2 in the world frame, and you cannot drop the $\dot\theta_1$.</div>
-  <div class="callout amber"><strong>Common slip.</strong> Many students write $-L_2\sin(\theta_1+\theta_2)\,\dot\theta_2$ instead of $-L_2\sin(\theta_1+\theta_2)\,(\dot\theta_1+\dot\theta_2)$. The chain rule applies to the <em>whole argument</em> of the trig function.</div>
+  <p>$$\begin{aligned} \dot{x}_1 &= -L_1\sin\theta_1\,\dot{\theta}_1 \\ \dot{y}_1 &= L_1\cos\theta_1\,\dot{\theta}_1 \end{aligned}$$</p>
+  <p><strong>For $m_2$ — note that $(\theta_1+\theta_2)$ differentiates to $(\dot{\theta}_1+\dot{\theta}_2)$:</strong></p>
+  <p>$$\begin{aligned} \dot{x}_2 &= -L_1\sin\theta_1\,\dot{\theta}_1 - L_2\sin(\theta_1+\theta_2)\,(\dot{\theta}_1+\dot{\theta}_2) \\ \dot{y}_2 &= L_1\cos\theta_1\,\dot{\theta}_1 + L_2\cos(\theta_1+\theta_2)\,(\dot{\theta}_1+\dot{\theta}_2) \end{aligned}$$</p>
+  <p>The second mass picks up <em>two</em> contributions: motion from joint 1 swinging the whole arm, and motion from joint 2 swinging link 2 about its base.</p>
+  <div class="voice">Don't drop the $(\dot\theta_1+\dot\theta_2)$ factor — that's the single most common mistake on this kind of derivation.</div>
+  <div class="callout amber"><strong>Watch the inner derivative.</strong> $\dfrac{d}{dt}\sin(\theta_1+\theta_2) = \cos(\theta_1+\theta_2)\,(\dot\theta_1+\dot\theta_2)$. Both angles are functions of time.</div>
 
   <div class="widget">
     <div class="widget-header">
-      <h3 class="widget-title">Chain-rule self-check · the $(\dot\theta_1+\dot\theta_2)$ trap</h3>
-      <span class="widget-tag tag-violet">practice</span>
+      <h3 class="widget-title">Build ẋ₂ and ẏ₂ term by term</h3>
+      <span class="widget-tag tag-violet">activity</span>
     </div>
     <div class="widget-body">
-      <div id="chain-rule-pitfall-quiz"></div>
+      <div id="chain-rule-builder"></div>
     </div>
   </div>
 </section>
 
-<section class="card" id="v1-squared">
+<section class="card" id="v-squared-m1">
   <h2><span class="badge">4</span> Squared speed of $m_1$</h2>
-  <p>Square the velocity components and add. For $m_1$ this is short and clean:</p>
-  <p>$$v_1^2 = \dot{x}_1^2 + \dot{y}_1^2 = L_1^2\dot\theta_1^2\sin^2\theta_1 + L_1^2\dot\theta_1^2\cos^2\theta_1$$</p>
-  <p>Factor out $L_1^2\dot\theta_1^2$ and use the Pythagorean identity $\sin^2\theta_1 + \cos^2\theta_1 = 1$:</p>
-  <p>$$\boxed{\,v_1^2 = L_1^2\dot\theta_1^2\,}$$</p>
-  <p>That is exactly what intuition expects: the tip of a rigid link of length $L_1$ rotating at angular speed $\dot\theta_1$ moves at linear speed $L_1\dot\theta_1$.</p>
-  <div class="callout green"><strong>Sanity check.</strong> $v = L\dot\theta$ for a point on a rotating arm — the algebra recovers the textbook answer, which is the cheapest way to confirm we set up the transforms correctly.</div>
+  <p>Square and add the velocity components. The $\sin^2 + \cos^2 = 1$ identity collapses the result instantly:</p>
+  <p>$$v_1^2 = \dot{x}_1^2 + \dot{y}_1^2 = (-L_1\sin\theta_1\,\dot{\theta}_1)^2 + (L_1\cos\theta_1\,\dot{\theta}_1)^2$$</p>
+  <p>$$= L_1^2\dot{\theta}_1^2(\sin^2\theta_1 + \cos^2\theta_1) = L_1^2\dot{\theta}_1^2$$</p>
+  <p>This is the classic result for a point mass at the end of a rotating rigid arm: speed is <em>(arm length)</em> × <em>(angular rate)</em>.</p>
+  <div class="voice">If your derivation ever ends in something this clean, you're probably right.</div>
 </section>
 
-<section class="card" id="v2-squared">
-  <h2><span class="badge">5</span> Squared speed of $m_2$ — the messy one</h2>
-  <p>For $m_2$ we need to square <em>both</em> brackets and collect terms. Start by squaring each component:</p>
+<section class="card" id="v-squared-m2">
+  <h2><span class="badge">5</span> Squared speed of $m_2$ — the algebra</h2>
+  <p>This one is longer but uses exactly the same two identities. Start by squaring the velocity components:</p>
   <p>$$v_2^2 = (\dot{x}_2)^2 + (\dot{y}_2)^2$$</p>
-  <p>Expanding $(\dot x_2)^2$ and $(\dot y_2)^2$ produces six terms each, but after pairing the $x$- and $y$-contributions:</p>
-  <p>$$\begin{aligned} v_2^2 =\;& L_1^2\sin^2\theta_1\,\dot\theta_1^2 + L_2^2\sin^2(\theta_1+\theta_2)(\dot\theta_1+\dot\theta_2)^2 \\ & + 2L_1L_2\sin\theta_1\sin(\theta_1+\theta_2)\,\dot\theta_1(\dot\theta_1+\dot\theta_2) \\ & + L_1^2\cos^2\theta_1\,\dot\theta_1^2 + L_2^2\cos^2(\theta_1+\theta_2)(\dot\theta_1+\dot\theta_2)^2 \\ & + 2L_1L_2\cos\theta_1\cos(\theta_1+\theta_2)\,\dot\theta_1(\dot\theta_1+\dot\theta_2) \end{aligned}$$</p>
-  <p>Now apply two identities:</p>
+  <p>Expanding both brackets gives six terms — three from each square:</p>
+  <p>$$\begin{aligned} v_2^2 = \;& L_1^2\sin^2\theta_1\,\dot{\theta}_1^2 + L_2^2\sin^2(\theta_1+\theta_2)\,(\dot{\theta}_1+\dot{\theta}_2)^2 \\ & + 2L_1L_2\sin\theta_1\sin(\theta_1+\theta_2)\,\dot{\theta}_1(\dot{\theta}_1+\dot{\theta}_2) \\ & + L_1^2\cos^2\theta_1\,\dot{\theta}_1^2 + L_2^2\cos^2(\theta_1+\theta_2)\,(\dot{\theta}_1+\dot{\theta}_2)^2 \\ & + 2L_1L_2\cos\theta_1\cos(\theta_1+\theta_2)\,\dot{\theta}_1(\dot{\theta}_1+\dot{\theta}_2) \end{aligned}$$</p>
+  <p>Now group with <strong>two</strong> identities:</p>
   <ul>
-    <li><strong>Pythagoras:</strong> $\sin^2\alpha + \cos^2\alpha = 1$ — collapses the $L_1^2$ and $L_2^2$ pairs.</li>
-    <li><strong>Cosine of difference:</strong> $\sin\alpha\sin\beta + \cos\alpha\cos\beta = \cos(\alpha - \beta)$. With $\alpha=\theta_1$ and $\beta=\theta_1+\theta_2$, the difference is $-\theta_2$ and $\cos(-\theta_2) = \cos\theta_2$.</li>
+    <li>$\sin^2\alpha + \cos^2\alpha = 1$ kills the pure-square pairs.</li>
+    <li>$\sin\alpha\sin\beta + \cos\alpha\cos\beta = \cos(\alpha - \beta)$ collapses the cross terms; here $\alpha-\beta = \theta_1 - (\theta_1+\theta_2) = -\theta_2$, and $\cos(-\theta_2) = \cos\theta_2$.</li>
   </ul>
-  <p>The whole thing collapses to:</p>
-  <p>$$\boxed{\,v_2^2 = L_1^2\dot\theta_1^2 + L_2^2(\dot\theta_1+\dot\theta_2)^2 + 2L_1L_2\cos\theta_2\,\dot\theta_1(\dot\theta_1+\dot\theta_2)\,}$$</p>
-  <div class="voice">This is the moment the algebra pays off — six pages of expansion fold down to three terms, and the cross-term carries a $\cos\theta_2$ that will become the <em>coupling</em> between the two joints in the dynamics.</div>
-  <div class="callout purple"><strong>The coupling term.</strong> The last term, $2L_1L_2\cos\theta_2\,\dot\theta_1(\dot\theta_1+\dot\theta_2)$, is what makes a 2-link arm a <em>coupled</em> dynamical system. When $\theta_2 = \pm 90°$, the coupling vanishes and the joints decouple instantaneously.</div>
-  <div class="callout amber"><strong>Sign of the angle.</strong> $\cos(-\theta_2) = \cos\theta_2$ because cosine is even. If we had ended up with sines, we would have picked up a minus sign — worth slowing down on.</div>
+  <p>The whole expression collapses to:</p>
+  <p>$$\boxed{\,v_2^2 = L_1^2\dot{\theta}_1^2 + L_2^2(\dot{\theta}_1+\dot{\theta}_2)^2 + 2L_1L_2\cos\theta_2\,\dot{\theta}_1(\dot{\theta}_1+\dot{\theta}_2)\,}$$</p>
+  <p>The coupling between joints lives entirely inside that $\cos\theta_2$ term — when $\theta_2 = \pi/2$ the arm is folded square and the cross-coupling vanishes.</p>
+  <div class="voice">This collapse is the heart of the derivation. Memorise the two identities; everything else is bookkeeping.</div>
+  <div class="callout green"><strong>The angle-difference identity.</strong> $\sin\alpha\sin\beta + \cos\alpha\cos\beta = \cos(\alpha-\beta)$ is the workhorse. Without it the cross terms stay ugly.</div>
+  <div class="callout purple"><strong>Physical meaning of $\cos\theta_2$.</strong> It measures how much the second link's motion projects onto the first link's swing direction. At $\theta_2 = 0$ the links are aligned and the coupling is maximal; at $\theta_2 = \pi/2$ they are perpendicular and the coupling is zero.</div>
 
   <div class="widget">
     <div class="widget-header">
-      <h3 class="widget-title">Collapse $v_2^2$ · pick the identity, watch the mess fold</h3>
+      <h3 class="widget-title">Collapse v₂² with two identities</h3>
       <span class="widget-tag tag-violet">activity</span>
     </div>
     <div class="widget-body">
-      <div id="v2-collapse-derivation"></div>
+      <div id="v2-collapse-derive"></div>
+    </div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Pick θ₂ · watch the coupling term</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="coupling-picker"></div>
     </div>
   </div>
 </section>
 
 <section class="card" id="kinetic-energy">
   <h2><span class="badge">6</span> Total kinetic energy $T$</h2>
-  <p>With the squared speeds in hand, the kinetic energy is just $T = \tfrac{1}{2}m_1 v_1^2 + \tfrac{1}{2}m_2 v_2^2$:</p>
-  <p>$$T = \tfrac{1}{2} m_1 L_1^2\dot\theta_1^2 + \tfrac{1}{2} m_2 \left[\,L_1^2\dot\theta_1^2 + L_2^2(\dot\theta_1+\dot\theta_2)^2 + 2L_1L_2\cos\theta_2\,\dot\theta_1(\dot\theta_1+\dot\theta_2)\,\right]$$</p>
-  <p>Note the structure: $T$ is <strong>quadratic in the joint velocities</strong> $\dot\theta_1, \dot\theta_2$ and depends on the configuration only through $\cos\theta_2$. That is the generic form $T = \tfrac12 \dot q^\top M(q) \dot q$ you will see throughout the rest of the course — $M(q)$ is the <strong>mass matrix</strong>, and you can read its entries straight off this expression.</p>
-  <div class="callout teal"><strong>Looking ahead.</strong> The mass matrix here is $\begin{bmatrix} m_1L_1^2 + m_2(L_1^2 + L_2^2 + 2L_1L_2\cos\theta_2) & m_2(L_2^2 + L_1L_2\cos\theta_2) \\ m_2(L_2^2 + L_1L_2\cos\theta_2) & m_2 L_2^2 \end{bmatrix}$ — keep an eye out for it next module.</div>
-
-  <div class="widget">
-    <div class="widget-header">
-      <h3 class="widget-title">Read off the mass matrix · drop coefficients into $M(q)$</h3>
-      <span class="widget-tag tag-violet">activity</span>
-    </div>
-    <div class="widget-body">
-      <div id="mass-matrix-builder"></div>
-    </div>
-  </div>
+  <p>With both squared speeds in hand, the kinetic energy is just $\tfrac{1}{2}\sum m_i v_i^2$:</p>
+  <p>$$T = \tfrac{1}{2}m_1 v_1^2 + \tfrac{1}{2}m_2 v_2^2$$</p>
+  <p>Substituting the explicit expressions:</p>
+  <p>$$T = \tfrac{1}{2}m_1 L_1^2\dot{\theta}_1^2 + \tfrac{1}{2}m_2\!\left[\,L_1^2\dot{\theta}_1^2 + L_2^2(\dot{\theta}_1+\dot{\theta}_2)^2 + 2L_1L_2\cos\theta_2\,\dot{\theta}_1(\dot{\theta}_1+\dot{\theta}_2)\,\right]$$</p>
+  <p>Notice $T$ depends on $\theta_2$ (through $\cos\theta_2$) but <strong>not</strong> on $\theta_1$ — the kinetic energy is invariant under a rigid rotation of the whole arm about the base. That's a hint that $\theta_1$ may be a <em>cyclic coordinate</em> in the gravity-free case.</p>
+  <div class="voice">Whenever a coordinate doesn't appear in $T$ or $V$, the corresponding generalised momentum is conserved. Hold that thought for Module 3.</div>
+  <div class="callout blue"><strong>Mass matrix preview.</strong> Reading $T$ as $\tfrac{1}{2}\dot{\boldsymbol\theta}^T M(\boldsymbol\theta)\dot{\boldsymbol\theta}$, the $\cos\theta_2$ term becomes the off-diagonal entry of the manipulator's <strong>mass matrix</strong> $M$ — configuration-dependent inertia coupling.</div>
 </section>
 
 <section class="card" id="potential-energy">
   <h2><span class="badge">7</span> Potential energy $V$</h2>
-  <p>Take $y$ as the upward direction and gravity $g$ pointing down. Each tip mass contributes $mgy$:</p>
+  <p>Take $y$ increasing upward and gravity $g$ acting downward. Each point mass contributes $m_i g y_i$:</p>
   <p>$$V = m_1 g y_1 + m_2 g y_2$$</p>
-  <p>Substituting the positions:</p>
-  <p>$$V = m_1 g L_1\sin\theta_1 + m_2 g \left[L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)\right]$$</p>
-  <p>Unlike $T$, $V$ depends only on the <em>configuration</em> (the angles), not on the velocities. That is exactly what we expect from a conservative gravitational potential.</p>
-  <div class="voice">You can group the $L_1\sin\theta_1$ terms if you like — $(m_1+m_2)gL_1\sin\theta_1 + m_2 g L_2\sin(\theta_1+\theta_2)$ is the same equation, sometimes easier to differentiate.</div>
-  <div class="callout green"><strong>Reference height.</strong> We measure $y$ from the base joint. The choice is arbitrary — adding a constant to $V$ does not change the equations of motion.</div>
-
-  <div class="widget">
-    <div class="widget-header">
-      <h3 class="widget-title">Potential energy playground · scrub the configuration, see $V$</h3>
-      <span class="widget-tag">live</span>
-    </div>
-    <div class="widget-body">
-      <div id="potential-landscape"></div>
-    </div>
-  </div>
+  <p>Substitute the position expressions from §2:</p>
+  <p>$$V = m_1 g L_1\sin\theta_1 + m_2 g\,[\,L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)\,]$$</p>
+  <p>Unlike $T$, the potential energy depends on <strong>both</strong> angles — $\theta_1$ tells you how high mass 1 has been lifted, and the combination $\theta_1+\theta_2$ tells you how high mass 2 is lifted on top of that.</p>
+  <div class="voice">Gravity is the symmetry-breaker: it's what makes $\theta_1$ a real coordinate and not just a free choice of orientation.</div>
 </section>
 
 <section class="card" id="lagrangian">
-  <h2><span class="badge">8</span> Assemble the Lagrangian $L = T - V$</h2>
-  <p>With $T$ and $V$ in hand, the Lagrangian is simply their difference:</p>
+  <h2><span class="badge">8</span> The Lagrangian $L = T - V$</h2>
+  <p>Putting it all together gives the Lagrangian as an explicit function of $(\theta_1, \theta_2, \dot{\theta}_1, \dot{\theta}_2)$:</p>
   <p>$$L = T - V$$</p>
-  <p>Written out:</p>
-  <p>$$L = \tfrac{1}{2} m_1 L_1^2\dot\theta_1^2 + \tfrac{1}{2} m_2 \left[L_1^2\dot\theta_1^2 + L_2^2(\dot\theta_1+\dot\theta_2)^2 + 2L_1L_2\cos\theta_2\,\dot\theta_1(\dot\theta_1+\dot\theta_2)\right]$$</p>
-  <p>$$\;-\; m_1 g L_1\sin\theta_1 - m_2 g \left[L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)\right]$$</p>
-  <p>This $L$ is the input to Euler-Lagrange in Module 3. From here, the equations of motion come from</p>
-  <p>$$\frac{d}{dt}\!\left(\frac{\partial L}{\partial \dot q_i}\right) - \frac{\partial L}{\partial q_i} = \tau_i$$</p>
-  <p>for $q_i \in \{\theta_1, \theta_2\}$. We will not crank that handle today — but you now have the object you need to do it.</p>
-  <div class="voice">Don't try to simplify $L$ any further. Its current form is the <em>most useful</em> form for taking the partials cleanly — collapse it now and you will regret it when you differentiate.</div>
-  <div class="callout red"><strong>Stop here.</strong> It is tempting to plug straight into Euler-Lagrange. Resist — verify the $L$ you wrote against this lecture before proceeding, because every error in $L$ is multiplied by every partial derivative you take.</div>
+  <p>$$L = \tfrac{1}{2}m_1 L_1^2\dot{\theta}_1^2 + \tfrac{1}{2}m_2\!\left[L_1^2\dot{\theta}_1^2 + L_2^2(\dot{\theta}_1+\dot{\theta}_2)^2 + 2L_1L_2\cos\theta_2\,\dot{\theta}_1(\dot{\theta}_1+\dot{\theta}_2)\right]$$</p>
+  <p>$$\;-\; m_1 g L_1\sin\theta_1 \;-\; m_2 g\,[L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)]$$</p>
+  <p>This is the object Module 3 will feed into the <strong>Euler–Lagrange equations</strong>:</p>
+  <p>$$\frac{d}{dt}\!\left(\frac{\partial L}{\partial \dot{\theta}_i}\right) - \frac{\partial L}{\partial \theta_i} = \tau_i$$</p>
+  <p>for $i = 1, 2$, where $\tau_i$ is the generalised force (joint torque) on coordinate $\theta_i$.</p>
+  <div class="voice">You've now got the dynamics-in-waiting. Two partial derivatives, one time derivative each, and you'll have the equations of motion of the arm.</div>
+  <div class="callout green"><strong>Recap — the recipe.</strong> $T_i \to (x_i, y_i) \to (\dot{x}_i, \dot{y}_i) \to v_i^2 \to T \to V \to L$. Same six steps for any serial manipulator; only the algebra grows.</div>
+  <div class="callout red"><strong>Common pitfall.</strong> Students often forget to differentiate the <em>inner</em> angle when applying the chain rule, dropping the $(\dot{\theta}_1+\dot{\theta}_2)$ factor. That single error breaks every later step — double-check §3.</div>
 
   <div class="widget">
     <div class="widget-header">
-      <h3 class="widget-title">Assemble the Lagrangian · drag $T$ and $V$ pieces into $L$</h3>
+      <h3 class="widget-title">Assemble L = T − V</h3>
       <span class="widget-tag tag-violet">activity</span>
     </div>
     <div class="widget-body">
-      <div id="lagrangian-assembler"></div>
+      <div id="lagrangian-builder"></div>
+    </div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · the six-step recipe</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="recipe-self-check"></div>
+    </div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Sandbox · simulate the arm from your L</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="euler-lagrange-playground"></div>
     </div>
   </div>
 </section>
 
-<section class="card" id="recap">
-  <h2><span class="badge">9</span> Recap & what to take into Module 3</h2>
-  <p>You have walked the full pipeline:</p>
-  <ol>
-    <li><strong>Transforms</strong> $T_1, T_2$ — encode geometry of the arm.</li>
-    <li><strong>Positions</strong> $(x_1,y_1), (x_2,y_2)$ — read off the translation column.</li>
-    <li><strong>Velocities</strong> — chain rule, with the $(\dot\theta_1+\dot\theta_2)$ bracket on link 2.</li>
-    <li><strong>Squared speeds</strong> — Pythagorean and cosine-of-difference identities collapse the mess.</li>
-    <li><strong>Kinetic energy</strong> $T$ — quadratic in velocities, encodes the mass matrix $M(q)$.</li>
-    <li><strong>Potential energy</strong> $V$ — only depends on configuration.</li>
-    <li><strong>Lagrangian</strong> $L = T - V$ — the input to Euler-Lagrange.</li>
-  </ol>
-  <p>Next module we feed this $L$ into the Euler-Lagrange equations and read off the equations of motion — the mass matrix, Coriolis/centrifugal terms, and gravity vector all fall out of the partials we are about to take.</p>
-  <div class="voice">Same problem, same arm — next time we just turn the Euler-Lagrange handle.</div>
-</section>
-
 <section class="homework" id="homework">
-  <h2><span class="badge">★</span> Homework</h2>
-  <p class="hw-intro">Four short exercises to lock in the pipeline before Module 3.</p>
+  <h2><span class="badge">HW</span> Homework</h2>
+  <p class="hw-intro">Three exercises to lock in the recipe. Bring your work to next lecture — we'll use the Euler–Lagrange equations from §8 directly.</p>
   <div class="deliverables">
     <div class="deliverable">
-      <h4>1 · Re-derive $v_2^2$ from scratch</h4>
-      <p>Without looking at the lecture notes, expand $(\dot x_2)^2 + (\dot y_2)^2$ and reduce it to the boxed form using only the Pythagorean and cosine-of-difference identities. Show every line.</p>
-      <span class="due">due next lecture</span>
+      <h4>1 · Repeat for centre-of-mass at link midpoints</h4>
+      <p>Redo the derivation but place each mass at the <em>centre</em> of its link instead of the tip ($L_i \to L_i/2$ in the position equations of that link only). Report the new $T$, $V$ and $L$.</p>
+      <span class="due">Due · next lecture</span>
     </div>
     <div class="deliverable">
-      <h4>2 · Identify the mass matrix</h4>
-      <p>From the expression for $T$ derived in section 6, write the $2\times 2$ mass matrix $M(\theta_2)$ such that $T = \tfrac{1}{2} \dot q^\top M(\theta_2) \dot q$ with $q=(\theta_1,\theta_2)$. Confirm that $M$ is symmetric.</p>
-      <span class="due">due next lecture</span>
+      <h4>2 · Compute the Euler–Lagrange equations</h4>
+      <p>Using the Lagrangian from §8, compute $\frac{\partial L}{\partial \dot\theta_i}$, $\frac{\partial L}{\partial \theta_i}$ and $\frac{d}{dt}\frac{\partial L}{\partial \dot\theta_i}$ for $i=1,2$. Write the two equations of motion in the form $M(\boldsymbol\theta)\ddot{\boldsymbol\theta} + C(\boldsymbol\theta,\dot{\boldsymbol\theta})\dot{\boldsymbol\theta} + g(\boldsymbol\theta) = \boldsymbol\tau$.</p>
+      <span class="due">Due · next lecture</span>
     </div>
     <div class="deliverable">
-      <h4>3 · Special-case sanity check</h4>
-      <p>Set $m_1 = 0$ and check that your $T, V, L$ reduce to those of a single pendulum of length $L_1+L_2 \cdot$… careful, you will need to think about the geometry. Sketch what configuration you are reducing to and confirm the answer matches.</p>
-      <span class="due">due next lecture</span>
-    </div>
-    <div class="deliverable">
-      <h4>4 · Prepare for Euler-Lagrange</h4>
-      <p>Compute $\partial L / \partial \dot\theta_1$ and $\partial L / \partial \dot\theta_2$ from the Lagrangian assembled in section 8. Do <em>not</em> take the time derivative yet — we will do that together next class.</p>
-      <span class="due">due next lecture</span>
+      <h4>3 · Sanity checks</h4>
+      <p>Verify two limits: (a) when $m_2 = 0$, your $L$ collapses to that of a single pendulum of mass $m_1$ length $L_1$; (b) when $\theta_2 = \pi/2$, the inertial coupling term vanishes. Show both algebraically.</p>
+      <span class="due">Due · next lecture</span>
     </div>
   </div>
 </section>
@@ -492,16 +475,15 @@
     <p class="toc-eyebrow">On this page</p>
     <ol>
       <li><a href="#overview">0 · What this lecture covers</a></li>
-      <li><a href="#transforms">1 · Homogeneous transformations</a></li>
-      <li><a href="#positions">2 · Cartesian positions</a></li>
-      <li><a href="#velocities">3 · Velocities by chain rule</a></li>
-      <li><a href="#v1-squared">4 · Squared speed of $m_1$</a></li>
-      <li><a href="#v2-squared">5 · Squared speed of $m_2$</a></li>
-      <li><a href="#kinetic-energy">6 · Total kinetic energy $T$</a></li>
-      <li><a href="#potential-energy">7 · Potential energy $V$</a></li>
-      <li><a href="#lagrangian">8 · Assemble $L = T - V$</a></li>
-      <li><a href="#recap">9 · Recap</a></li>
-      <li><a href="#homework">★ Homework</a></li>
+      <li><a href="#transformations">1 · Transformation matrices</a></li>
+      <li><a href="#positions">2 · Tip positions</a></li>
+      <li><a href="#velocities">3 · Velocities via chain rule</a></li>
+      <li><a href="#v-squared-m1">4 · Squared speed of m₁</a></li>
+      <li><a href="#v-squared-m2">5 · Squared speed of m₂</a></li>
+      <li><a href="#kinetic-energy">6 · Kinetic energy T</a></li>
+      <li><a href="#potential-energy">7 · Potential energy V</a></li>
+      <li><a href="#lagrangian">8 · The Lagrangian L = T − V</a></li>
+      <li><a href="#homework">HW · Homework</a></li>
     </ol>
   </nav>
 </aside>
@@ -509,846 +491,720 @@
 </article>
 
 <footer class="lecture-footer">
-  TSI · Robotics: Dynamics & Control · Lecture 07 · <a href="../">all lectures</a>
+  TSI · Robotics &amp; Dynamics · Lecture 07 · <a href="../">all lectures</a>
 </footer>
 
 <script type="text/babel" data-presets="env,react">
 const { useState, useEffect, useRef, useMemo } = React;
 
-function Tex({ tex, displayMode = false }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    if (ref.current && window.katex) {
-      try {
-        window.katex.render(tex, ref.current, { displayMode, throwOnError: false });
-      } catch (e) {
-        ref.current.textContent = tex;
-      }
-    }
-  }, [tex, displayMode]);
-  return <span ref={ref} />;
-}
-
-// ───────────────────────── Transform Poser (picker) ─────────────────────────
-function TransformPoser() {
-  const POSES = [
-    { label: 'Straight out',  t1: 0,  t2: 0   },
-    { label: 'Elbow up 90°',  t1: 0,  t2: 90  },
-    { label: 'Folded back',   t1: 0,  t2: 180 },
-    { label: 'Reaching up',   t1: 90, t2: 0   },
-    { label: 'L-shape',       t1: 45, t2: -45 }
-  ];
-  const [idx, setIdx] = useState(0);
-  const [highlight, setHighlight] = useState(false);
-  const L1 = 1, L2 = 0.8;
-  const p = POSES[idx];
-  const t1 = p.t1 * Math.PI / 180;
-  const t2 = p.t2 * Math.PI / 180;
-  const c1 = Math.cos(t1), s1 = Math.sin(t1);
-  const c12 = Math.cos(t1 + t2), s12 = Math.sin(t1 + t2);
-  const x1 = L1 * c1, y1 = L1 * s1;
-  const x2 = x1 + L2 * c12, y2 = y1 + L2 * s12;
-
-  const fmt = (v) => (Math.abs(v) < 1e-10 ? '0.000' : v.toFixed(3));
-
-  // SVG: y is flipped (positive up)
-  const W = 320, H = 240, scale = 80;
-  const cx = (x) => W/2 + x * scale;
-  const cy = (y) => H/2 + 30 - y * scale;
-
-  return (
-    <div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-        {POSES.map((pose, i) => (
-          <button key={i}
-                  className={'pose-btn ' + (i === idx ? 'is-active' : '')}
-                  onClick={() => setIdx(i)}>
-            {pose.label} <span style={{opacity:0.7, marginLeft:4}}>({pose.t1}°, {pose.t2}°)</span>
-          </button>
-        ))}
-        <button className="btn secondary"
-                style={{ marginLeft: 'auto', padding: '5px 10px', fontSize: '0.8rem' }}
-                onClick={() => setHighlight(h => !h)}>
-          {highlight ? '✓ Tip cells highlighted' : 'Highlight tip coords'}
-        </button>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 18, alignItems: 'start' }}>
-        <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 6 }}>
-          {/* grid */}
-          {[-2,-1,0,1,2].map(g => (
-            <g key={'gx'+g}>
-              <line x1={cx(g)} y1={0} x2={cx(g)} y2={H} stroke="#eee" strokeWidth={0.5} />
-              <line x1={0} y1={cy(g)} x2={W} y2={cy(g)} stroke="#eee" strokeWidth={0.5} />
-            </g>
-          ))}
-          {/* axes */}
-          <line x1={0} y1={cy(0)} x2={W} y2={cy(0)} stroke="#dc2626" strokeWidth={1} />
-          <line x1={cx(0)} y1={0} x2={cx(0)} y2={H} stroke="#16a34a" strokeWidth={1} />
-          <text x={W-12} y={cy(0)-4} fill="#dc2626" fontSize="11" fontFamily="serif">x</text>
-          <text x={cx(0)+5} y={12} fill="#16a34a" fontSize="11" fontFamily="serif">y</text>
-          {/* link 1 */}
-          <line x1={cx(0)} y1={cy(0)} x2={cx(x1)} y2={cy(y1)} stroke="#2F5496" strokeWidth={4} strokeLinecap="round" />
-          {/* link 2 */}
-          <line x1={cx(x1)} y1={cy(y1)} x2={cx(x2)} y2={cy(y2)} stroke="#7c3aed" strokeWidth={4} strokeLinecap="round" />
-          {/* base */}
-          <circle cx={cx(0)} cy={cy(0)} r={5} fill="#1a1d24" />
-          {/* m1 */}
-          <circle cx={cx(x1)} cy={cy(y1)} r={6} fill="#2F5496" stroke="white" strokeWidth={2} />
-          <text x={cx(x1)+10} y={cy(y1)-6} fontSize="11" fill="#2F5496" fontWeight="700" fontFamily="serif">m₁</text>
-          {/* m2 */}
-          <circle cx={cx(x2)} cy={cy(y2)} r={6} fill="#7c3aed" stroke="white" strokeWidth={2} />
-          <text x={cx(x2)+10} y={cy(y2)-6} fontSize="11" fill="#7c3aed" fontWeight="700" fontFamily="serif">m₂</text>
-          {/* angle arc θ1 */}
-          <path d={`M ${cx(0.3)} ${cy(0)} A 0.3 0.3 0 ${p.t1>180?1:0} ${p.t1<0?1:0} ${cx(0.3*c1)} ${cy(0.3*s1)}`}
-                fill="none" stroke="#dc2626" strokeWidth={1.2} transform="" />
-          <text x={cx(0.4*Math.cos(t1/2))} y={cy(0.4*Math.sin(t1/2))} fontSize="10" fill="#dc2626" fontFamily="serif">θ₁</text>
-        </svg>
-
-        <div>
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontFamily: 'serif', fontSize: '0.92rem', color: '#4b515c', marginBottom: 4 }}>T₁ =</div>
-            <div className="matrix-grid">
-              <div className="matrix-cell">{fmt(c1)}</div><div className="matrix-cell">{fmt(-s1)}</div><div className={'matrix-cell' + (highlight ? ' highlight' : '')}>{fmt(x1)}</div>
-              <div className="matrix-cell">{fmt(s1)}</div><div className="matrix-cell">{fmt(c1)}</div><div className={'matrix-cell' + (highlight ? ' highlight' : '')}>{fmt(y1)}</div>
-              <div className="matrix-cell">0</div><div className="matrix-cell">0</div><div className="matrix-cell">1</div>
-            </div>
-          </div>
-          <div>
-            <div style={{ fontFamily: 'serif', fontSize: '0.92rem', color: '#4b515c', marginBottom: 4 }}>T₂ =</div>
-            <div className="matrix-grid">
-              <div className="matrix-cell">{fmt(c12)}</div><div className="matrix-cell">{fmt(-s12)}</div><div className={'matrix-cell' + (highlight ? ' highlight' : '')}>{fmt(x2)}</div>
-              <div className="matrix-cell">{fmt(s12)}</div><div className="matrix-cell">{fmt(c12)}</div><div className={'matrix-cell' + (highlight ? ' highlight' : '')}>{fmt(y2)}</div>
-              <div className="matrix-cell">0</div><div className="matrix-cell">0</div><div className="matrix-cell">1</div>
-            </div>
-          </div>
-          <div style={{ marginTop: 10, fontFamily: 'monospace', fontSize: '0.82rem', color: '#1e3a73' }}>
-            (x₁, y₁) = ({fmt(x1)}, {fmt(y1)})<br/>
-            (x₂, y₂) = ({fmt(x2)}, {fmt(y2)})
-          </div>
-        </div>
-      </div>
-      <div className="callout teal" style={{ marginTop: 14, marginBottom: 0 }}>
-        <strong>What changes when you switch poses?</strong>
-        Watch the (1,3) and (2,3) entries — those are the tip coordinates. T₂'s rotation block uses θ₁+θ₂, not θ₂ alone.
-      </div>
-    </div>
-  );
-}
-
-// ───────────────────────── Forward Kinematics Walker (animator) ─────────────
-function ForwardKinematicsWalker() {
-  const PRESETS = [
-    { name: 'reach-right', t1: 20,  t2: 35  },
-    { name: 'elbow-up',    t1: 60,  t2: 90  },
-    { name: 'fold-back',   t1: 30,  t2: 150 }
-  ];
-  const STAGES = [
-    { label: 'Draw base frame',           caption: 'Place the world axes. Joint 1 sits at the origin.' },
-    { label: 'Apply T₁ → place m₁',       caption: '(x₁, y₁) = (L₁cosθ₁, L₁sinθ₁) — the translation column of T₁.' },
-    { label: 'Compose T₁·T_{1→2}',        caption: 'Link 2\'s frame is link 1\'s frame rotated by θ₂ and shifted by L₂.' },
-    { label: 'Place m₂',                  caption: '(x₂, y₂) = (L₁cosθ₁ + L₂cos(θ₁+θ₂), L₁sinθ₁ + L₂sin(θ₁+θ₂)).' },
-    { label: 'Reveal full equations',     caption: 'Both joint angles drive m₂ — that\'s the coupling.' }
-  ];
-  const [presetIdx, setPresetIdx] = useState(0);
-  const [step, setStep] = useState(0);
+/* ─── Widget 1 · Forward Kinematics Animator ──────────────────────────── */
+function ForwardKinematicsAnimator() {
+  const [t1, setT1] = useState(0.4);
+  const [t2, setT2] = useState(0.7);
+  const [L1, setL1] = useState(1.2);
+  const [L2, setL2] = useState(1.0);
+  const [stage, setStage] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const L1 = 1.1, L2 = 0.9;
-  const p = PRESETS[presetIdx];
-  const t1 = p.t1 * Math.PI / 180;
-  const t2 = p.t2 * Math.PI / 180;
-  const c1 = Math.cos(t1), s1 = Math.sin(t1);
-  const c12 = Math.cos(t1 + t2), s12 = Math.sin(t1 + t2);
-  const x1 = L1 * c1, y1 = L1 * s1;
-  const x2 = x1 + L2 * c12, y2 = y1 + L2 * s12;
+
+  const STAGES = [
+    { label: '0 · base', desc: 'Start at the shoulder. We will compose two homogeneous transforms.' },
+    { label: '1 · T₁', desc: 'Apply T₁ : rotate by θ₁, translate L₁ along the rotated x-axis.' },
+    { label: '2 · m₁', desc: 'Tip of link 1 is the third column of T₁ : (L₁ cos θ₁, L₁ sin θ₁).' },
+    { label: '3 · T₂', desc: 'Compose with rotation by θ₂ — angles add to θ₁+θ₂.' },
+    { label: '4 · m₂', desc: 'Third column of T₂ is the tip position in the BASE frame.' },
+    { label: '5 · column', desc: 'No matrix multiply needed: the position IS the third column.' },
+  ];
 
   useEffect(() => {
     if (!playing) return;
-    const t = setTimeout(() => {
-      setStep(s => {
-        if (s >= STAGES.length - 1) { setPlaying(false); return s; }
-        return s + 1;
-      });
-    }, 1400);
+    const t = setTimeout(() => setStage(s => (s + 1) % STAGES.length), 1300);
     return () => clearTimeout(t);
-  }, [playing, step]);
+  }, [playing, stage]);
 
-  const W = 360, H = 260, scale = 70;
-  const cx = (x) => W/2 + x * scale;
-  const cy = (y) => H/2 + 30 - y * scale;
+  const SCALE = 60;
+  const CX = 200, CY = 240;
+  const j1x = CX + L1 * SCALE * Math.cos(t1);
+  const j1y = CY - L1 * SCALE * Math.sin(t1);
+  const j2x = j1x + L2 * SCALE * Math.cos(t1 + t2);
+  const j2y = j1y - L2 * SCALE * Math.sin(t1 + t2);
+  const f = v => (Math.abs(v) < 0.005 ? '0.00' : v.toFixed(2));
+  const c1 = Math.cos(t1), s1 = Math.sin(t1);
+  const c12 = Math.cos(t1+t2), s12 = Math.sin(t1+t2);
+  const px2 = L1*c1 + L2*c12, py2 = L1*s1 + L2*s12;
 
-  const showBase = step >= 0;
-  const showLink1 = step >= 1;
-  const showLink2Frame = step >= 2;
-  const showLink2 = step >= 3;
-  const showEqs = step >= 4;
+  const presets = [
+    { name: 'folded',   t1: 0,         t2: Math.PI },
+    { name: 'square',   t1: 0,         t2: Math.PI/2 },
+    { name: 'extended', t1: Math.PI/4, t2: 0 },
+    { name: 'reach-up', t1: Math.PI/2, t2: -Math.PI/4 },
+  ];
+
+  const opacity = (s) => stage >= s ? 1 : 0.18;
+  const armColor1 = stage >= 1 ? '#2F5496' : '#cbd5e1';
+  const armColor2 = stage >= 3 ? '#7c3aed' : '#cbd5e1';
+  const m1Active = stage >= 2;
+  const m2Active = stage >= 4;
+  const colHi = stage >= 5;
 
   return (
     <div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12, alignItems: 'center' }}>
-        <span style={{ fontSize: '0.85rem', color: '#4b515c', marginRight: 4 }}>Preset:</span>
-        {PRESETS.map((pp, i) => (
-          <button key={i}
-                  className={'pose-btn ' + (i === presetIdx ? 'is-active' : '')}
-                  onClick={() => { setPresetIdx(i); setStep(0); setPlaying(false); }}>
-            {pp.name}
-          </button>
+      <div className="stage-list">
+        {STAGES.map((s, i) => (
+          <span key={i} className={'stage-pill' + (i === stage ? ' is-active' : '')}>{s.label}</span>
         ))}
       </div>
+      <div className="stage-text">{STAGES[stage].desc}</div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 18, alignItems: 'start' }}>
-        <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 6 }}>
-          {[-2,-1,0,1,2].map(g => (
-            <g key={'g'+g}>
-              <line x1={cx(g)} y1={0} x2={cx(g)} y2={H} stroke="#eee" strokeWidth={0.5} />
-              <line x1={0} y1={cy(g)} x2={W} y2={cy(g)} stroke="#eee" strokeWidth={0.5} />
-            </g>
-          ))}
-          <line x1={0} y1={cy(0)} x2={W} y2={cy(0)} stroke="#dc2626" strokeWidth={1} opacity={showBase?1:0.2} />
-          <line x1={cx(0)} y1={0} x2={cx(0)} y2={H} stroke="#16a34a" strokeWidth={1} opacity={showBase?1:0.2} />
-          <text x={W-12} y={cy(0)-4} fill="#dc2626" fontSize="11" fontFamily="serif" opacity={showBase?1:0.2}>x</text>
-          <text x={cx(0)+5} y={12} fill="#16a34a" fontSize="11" fontFamily="serif" opacity={showBase?1:0.2}>y</text>
-
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 14, alignItems: 'start' }}>
+        <svg className="arm-svg" viewBox="0 0 420 320" preserveAspectRatio="xMidYMid meet">
+          {/* grid */}
+          <g stroke="#eee5cf" strokeWidth="1">
+            {[0,1,2,3,4,5,6].map(i => <line key={'h'+i} x1="20" x2="400" y1={40+i*40} y2={40+i*40}/>) }
+            {[0,1,2,3,4,5,6,7,8,9].map(i => <line key={'v'+i} y1="40" y2="280" x1={20+i*40} x2={20+i*40}/>) }
+          </g>
+          {/* base */}
+          <circle cx={CX} cy={CY} r="7" fill="#1a1d24"/>
+          <text x={CX-22} y={CY+20} fontSize="11" fill="#4b515c" fontFamily="monospace">base</text>
           {/* link 1 */}
-          <line x1={cx(0)} y1={cy(0)} x2={cx(x1)} y2={cy(y1)}
-                stroke="#2F5496" strokeWidth={4} strokeLinecap="round"
-                opacity={showLink1 ? 1 : 0}
-                style={{ transition: 'opacity 0.5s' }} />
-          {/* link 2 frame indicator */}
-          {showLink2Frame && (
-            <g opacity={showLink2 ? 0.4 : 1} style={{ transition: 'opacity 0.5s' }}>
-              <line x1={cx(x1)} y1={cy(y1)} x2={cx(x1 + 0.4*c12)} y2={cy(y1 + 0.4*s12)} stroke="#dc2626" strokeWidth={1.5} strokeDasharray="3 2" />
-              <line x1={cx(x1)} y1={cy(y1)} x2={cx(x1 - 0.4*s12)} y2={cy(y1 + 0.4*c12)} stroke="#16a34a" strokeWidth={1.5} strokeDasharray="3 2" />
-            </g>
-          )}
+          <line x1={CX} y1={CY} x2={j1x} y2={j1y} stroke={armColor1} strokeWidth="6" strokeLinecap="round" style={{ opacity: opacity(1), transition: 'opacity 0.4s, stroke 0.4s' }}/>
           {/* link 2 */}
-          <line x1={cx(x1)} y1={cy(y1)} x2={cx(x2)} y2={cy(y2)}
-                stroke="#7c3aed" strokeWidth={4} strokeLinecap="round"
-                opacity={showLink2 ? 1 : 0}
-                style={{ transition: 'opacity 0.5s' }} />
-
-          <circle cx={cx(0)} cy={cy(0)} r={5} fill="#1a1d24" opacity={showBase?1:0.3} />
-          {showLink1 && (
-            <g style={{ transition: 'opacity 0.5s' }}>
-              <circle cx={cx(x1)} cy={cy(y1)} r={6} fill="#2F5496" stroke="white" strokeWidth={2} />
-              <text x={cx(x1)+10} y={cy(y1)-6} fontSize="12" fill="#2F5496" fontWeight="700" fontFamily="serif">m₁</text>
+          <line x1={j1x} y1={j1y} x2={j2x} y2={j2y} stroke={armColor2} strokeWidth="6" strokeLinecap="round" style={{ opacity: opacity(3), transition: 'opacity 0.4s, stroke 0.4s' }}/>
+          {/* m1 */}
+          <circle cx={j1x} cy={j1y} r={m1Active ? 9 : 6} fill={m1Active ? '#2F5496' : '#94a3b8'} style={{ transition: 'all 0.35s' }}/>
+          <text x={j1x+12} y={j1y-8} fontSize="13" fill="#1e3a73" fontWeight="700" style={{ opacity: opacity(2), transition: 'opacity 0.4s' }}>m₁</text>
+          {/* m2 */}
+          <circle cx={j2x} cy={j2y} r={m2Active ? 10 : 6} fill={m2Active ? '#7c3aed' : '#94a3b8'} style={{ transition: 'all 0.35s' }}/>
+          <text x={j2x+12} y={j2y-8} fontSize="13" fill="#5b21b6" fontWeight="700" style={{ opacity: opacity(4), transition: 'opacity 0.4s' }}>m₂</text>
+          {/* tip projection lines */}
+          {colHi && (
+            <g stroke="#d97706" strokeDasharray="3 3" strokeWidth="1.2">
+              <line x1={CX} y1={j2y} x2={j2x} y2={j2y}/>
+              <line x1={j2x} y1={CY} x2={j2x} y2={j2y}/>
+              <text x={(CX+j2x)/2-12} y={j2y-4} fontSize="11" fill="#78350f" fontFamily="monospace">x₂</text>
+              <text x={j2x+4} y={(CY+j2y)/2} fontSize="11" fill="#78350f" fontFamily="monospace">y₂</text>
             </g>
           )}
-          {showLink2 && (
-            <g style={{ transition: 'opacity 0.5s' }}>
-              <circle cx={cx(x2)} cy={cy(y2)} r={6} fill="#7c3aed" stroke="white" strokeWidth={2} />
-              <text x={cx(x2)+10} y={cy(y2)-6} fontSize="12" fill="#7c3aed" fontWeight="700" fontFamily="serif">m₂</text>
+          {/* angle arcs */}
+          <path d={'M ' + (CX+25) + ' ' + CY + ' A 25 25 0 0 ' + (t1>0?'0':'1') + ' ' + (CX+25*Math.cos(t1)) + ' ' + (CY-25*Math.sin(t1))} fill="none" stroke="#dc2626" strokeWidth="1.5"/>
+          <text x={CX+30} y={CY-8} fontSize="11" fill="#7f1d1d">θ₁</text>
+          {stage >= 3 && (
+            <g>
+              <line x1={j1x} y1={j1y} x2={j1x + 30*Math.cos(t1)} y2={j1y - 30*Math.sin(t1)} stroke="#cbd5e1" strokeWidth="1" strokeDasharray="2 3"/>
+              <path d={'M ' + (j1x+18*Math.cos(t1)) + ' ' + (j1y-18*Math.sin(t1)) + ' A 18 18 0 0 ' + (t2>0?'0':'1') + ' ' + (j1x+18*Math.cos(t1+t2)) + ' ' + (j1y-18*Math.sin(t1+t2))} fill="none" stroke="#16a34a" strokeWidth="1.5"/>
+              <text x={j1x+22*Math.cos(t1+t2/2)+4} y={j1y-22*Math.sin(t1+t2/2)} fontSize="11" fill="#14532d">θ₂</text>
             </g>
           )}
         </svg>
 
         <div>
-          {STAGES.map((st, i) => (
-            <div key={i}
-                 className={'stage-card ' + (i === step ? 'is-active' : i < step ? 'is-done' : 'is-pending')}
-                 style={{ marginBottom: 6 }}>
-              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#1a1d24' }}>
-                {i < step ? '✓ ' : i === step ? '▸ ' : '○ '}
-                Step {i+1}: {st.label}
-              </div>
-              {i === step && (
-                <div style={{ marginTop: 4, fontSize: '0.84rem', color: '#4b515c' }}>{st.caption}</div>
-              )}
-            </div>
-          ))}
+          <div style={{ fontFamily: 'monospace', fontSize: 11, color: '#4b515c', marginBottom: 4 }}>T₂ (composed)</div>
+          <div className="matrix-mono">
+            {'⎡ ' + f(c12) + '   ' + f(-s12) + '   '}<span className={colHi ? 'col-hi' : ''}>{f(L1*c1+L2*c12)}</span>{' ⎤\n'}
+            {'⎢ ' + f(s12) + '   ' + f(c12) + '   '}<span className={colHi ? 'col-hi' : ''}>{f(L1*s1+L2*s12)}</span>{' ⎥\n'}
+            {'⎣ 0.00   0.00   '}<span className={colHi ? 'col-hi' : ''}>{'1.00'}</span>{' ⎦'}
+          </div>
+          <div className="readout" style={{ marginTop: 10 }}>
+            <div className="readout-item"><div className="lbl">x₂</div><div className="v">{f(px2)}</div></div>
+            <div className="readout-item"><div className="lbl">y₂</div><div className="v">{f(py2)}</div></div>
+            <div className="readout-item"><div className="lbl">θ₁+θ₂</div><div className="v">{f(t1+t2)}</div></div>
+          </div>
         </div>
       </div>
 
-      {showEqs && (
-        <div style={{ marginTop: 14, padding: 12, background: '#e8eef8', borderRadius: 6, fontFamily: 'monospace', fontSize: '0.84rem', color: '#1e3a73' }}>
-          <div>x₂ = L₁cos({p.t1}°) + L₂cos({p.t1}°+{p.t2}°) = {(L1*c1).toFixed(3)} + {(L2*c12).toFixed(3)} = <strong>{x2.toFixed(3)}</strong></div>
-          <div>y₂ = L₁sin({p.t1}°) + L₂sin({p.t1}°+{p.t2}°) = {(L1*s1).toFixed(3)} + {(L2*s12).toFixed(3)} = <strong>{y2.toFixed(3)}</strong></div>
-        </div>
-      )}
+      <div className="slider-row"><label>θ₁</label><input type="range" min="-3.14" max="3.14" step="0.01" value={t1} onChange={e=>setT1(parseFloat(e.target.value))}/><span className="val">{t1.toFixed(2)} rad</span></div>
+      <div className="slider-row"><label>θ₂</label><input type="range" min="-3.14" max="3.14" step="0.01" value={t2} onChange={e=>setT2(parseFloat(e.target.value))}/><span className="val">{t2.toFixed(2)} rad</span></div>
+      <div className="slider-row"><label>L₁</label><input type="range" min="0.5" max="2" step="0.05" value={L1} onChange={e=>setL1(parseFloat(e.target.value))}/><span className="val">{L1.toFixed(2)}</span></div>
+      <div className="slider-row"><label>L₂</label><input type="range" min="0.5" max="2" step="0.05" value={L2} onChange={e=>setL2(parseFloat(e.target.value))}/><span className="val">{L2.toFixed(2)}</span></div>
 
-      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-        <button className="btn purple" onClick={() => setPlaying(p => !p)}>
-          {playing ? '⏸ Pause' : '▶ Auto-play'}
-        </button>
-        <button className="btn secondary" onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}>
-          ◂ Step back
-        </button>
-        <button className="btn secondary" onClick={() => setStep(s => Math.min(STAGES.length - 1, s + 1))} disabled={step === STAGES.length - 1}>
-          Step forward ▸
-        </button>
-        <button className="btn secondary" onClick={() => { setStep(0); setPlaying(false); }}>↺ Reset</button>
+      <div className="preset-row">
+        {presets.map(p => (
+          <button key={p.name} className="btn secondary" onClick={()=>{setT1(p.t1);setT2(p.t2);}}>{p.name}</button>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+        <button className="btn purple" onClick={()=>setPlaying(p=>!p)}>{playing ? '⏸ pause' : '▶ play stages'}</button>
+        <button className="btn secondary" onClick={()=>{setStage(0); setPlaying(false);}}>↺ reset</button>
       </div>
     </div>
   );
 }
 
-// ───────────────────────── Chain-rule MCQ ─────────────────────────
-function ChainRuleQuiz() {
-  const QS = [
-    {
-      q: 'What is \\(\\dfrac{d}{dt}\\cos(\\theta_1+\\theta_2)\\)?',
-      opts: [
-        '\\(-\\sin(\\theta_1+\\theta_2)\\,\\dot\\theta_2\\)',
-        '\\(-\\sin(\\theta_1+\\theta_2)\\,(\\dot\\theta_1+\\dot\\theta_2)\\)',
-        '\\(-\\sin(\\theta_1+\\theta_2)\\,\\dot\\theta_1\\)',
-        '\\(\\sin(\\theta_1+\\theta_2)\\,(\\dot\\theta_1+\\dot\\theta_2)\\)'
-      ],
-      correct: 1,
-      explain: 'The chain rule applies to the whole argument θ₁+θ₂, so the multiplier is its time-derivative: (θ̇₁+θ̇₂).'
-    },
-    {
-      q: 'In \\(\\dot{x}_2\\), the contribution from link 2 is:',
-      opts: [
-        '\\(-L_2\\sin(\\theta_1+\\theta_2)\\,\\dot\\theta_2\\)',
-        '\\(-L_2\\sin(\\theta_1+\\theta_2)\\,\\dot\\theta_1\\)',
-        '\\(-L_2\\sin(\\theta_1+\\theta_2)\\,(\\dot\\theta_1+\\dot\\theta_2)\\)',
-        '\\(-L_2\\cos(\\theta_1+\\theta_2)\\,(\\dot\\theta_1+\\dot\\theta_2)\\)'
-      ],
-      correct: 2,
-      explain: 'Same chain rule. The bracket (θ̇₁+θ̇₂) is link 2\\'s angular velocity in the world frame — you cannot drop the θ̇₁.'
-    },
-    {
-      q: 'Why does \\(\\dot{x}_1\\) depend only on \\(\\dot\\theta_1\\) but \\(\\dot{x}_2\\) depends on both?',
-      opts: [
-        'Because m₁ is lighter than m₂',
-        'Because link 1 only sees one joint, while link 2\\'s orientation is θ₁+θ₂',
-        'Because L₁ ≠ L₂',
-        'It\\'s a sign convention'
-      ],
-      correct: 1,
-      explain: 'Link 2\\'s orientation in the base frame is θ₁+θ₂. Both joints rotate it, so both θ̇₁ and θ̇₂ appear when we differentiate.'
-    },
-    {
-      q: 'A student writes \\(\\dot{y}_2 = L_1\\cos\\theta_1\\,\\dot\\theta_1 + L_2\\cos(\\theta_1+\\theta_2)\\,\\dot\\theta_2\\). What\\'s wrong?',
-      opts: [
-        'The signs on the L₁ term',
-        'The bracket should be (θ̇₁+θ̇₂), not θ̇₂',
-        'Nothing — it\\'s correct',
-        'cos should be −sin'
-      ],
-      correct: 1,
-      explain: 'This is the canonical mistake. Differentiating sin(θ₁+θ₂) gives cos(θ₁+θ₂)·(θ̇₁+θ̇₂) — the inner factor is the full derivative of the argument.'
-    }
+/* ─── Widget 2 · Chain Rule Builder ───────────────────────────────────── */
+function ChainRuleBuilder() {
+  const TILES = [
+    { id: 'A', txt: '−L₁ sin θ₁ · θ̇₁',                      kind: 'ok' },
+    { id: 'B', txt: '+L₁ cos θ₁ · θ̇₁',                      kind: 'ok' },
+    { id: 'C', txt: '−L₂ sin(θ₁+θ₂) · (θ̇₁+θ̇₂)',           kind: 'ok' },
+    { id: 'D', txt: '+L₂ cos(θ₁+θ₂) · (θ̇₁+θ̇₂)',           kind: 'ok' },
+    { id: 'X', txt: '−L₂ sin(θ₁+θ₂) · θ̇₂',                  kind: 'decoy' },
+    { id: 'Y', txt: '+L₂ cos(θ₁+θ₂) · θ̇₁',                  kind: 'decoy' },
+    { id: 'Z', txt: '+L₁ cos θ₁ · (θ̇₁+θ̇₂)',                kind: 'decoy' },
   ];
-  const [picks, setPicks] = useState({});
+  const SLOTS = [
+    { id: 'x1', label: 'ẋ₁ =',          ans: ['A'] },
+    { id: 'y1', label: 'ẏ₁ =',          ans: ['B'] },
+    { id: 'x2a', label: 'ẋ₂ =',         ans: ['A'] },
+    { id: 'x2b', label: '       +',     ans: ['C'] },
+    { id: 'y2a', label: 'ẏ₂ =',         ans: ['B'] },
+    { id: 'y2b', label: '       +',     ans: ['D'] },
+  ];
+  const [filled, setFilled] = useState({});
+  const [active, setActive] = useState(null);
+  const [verified, setVerified] = useState(false);
 
-  const renderTeX = (str) => {
-    // Replace \(...\) inline with KaTeX-rendered spans
-    const parts = str.split(/(\\\(.+?\\\))/);
-    return parts.map((p, i) => {
-      const m = p.match(/^\\\((.+?)\\\)$/);
-      if (m) return <Tex key={i} tex={m[1]} />;
-      return <span key={i}>{p}</span>;
-    });
+  const used = new Set(Object.values(filled));
+  const score = SLOTS.filter(s => filled[s.id] && s.ans.includes(filled[s.id])).length;
+  const allCorrect = score === SLOTS.length;
+
+  const handleSlot = (slotId) => {
+    if (active) {
+      if (used.has(active) && filled[slotId] !== active) return;
+      setFilled(f => ({ ...f, [slotId]: active }));
+      setActive(null);
+      setVerified(false);
+    } else if (filled[slotId]) {
+      setFilled(f => { const n={...f}; delete n[slotId]; return n; });
+      setVerified(false);
+    }
   };
+
+  const tileFor = (tileId) => TILES.find(t => t.id === tileId);
 
   return (
     <div>
-      {QS.map((qq, qi) => {
-        const picked = picks[qi];
-        const answered = picked !== undefined;
+      <p style={{ fontSize: 13, color: '#4b515c', margin: '0 0 8px' }}>Click a tile to pick it up, then click a slot to drop it. Watch out for the dashed decoys — they're missing the inner derivative.</p>
+      <div className="tile-row">
+        {TILES.map(t => (
+          <div key={t.id}
+               className={'tile' + (active===t.id ? ' is-selected' : '') + (t.kind==='decoy' ? ' is-decoy' : '') + (used.has(t.id) ? ' is-used' : '')}
+               onClick={()=>{ if(used.has(t.id)) return; setActive(active===t.id ? null : t.id); }}>
+            {t.txt}
+          </div>
+        ))}
+      </div>
+
+      {SLOTS.map(s => {
+        const fid = filled[s.id];
+        const correct = verified && fid && s.ans.includes(fid);
+        const wrong = verified && fid && !s.ans.includes(fid);
+        const empty = verified && !fid;
         return (
-          <div key={qi} className="quiz-q">
-            <div className="q-text">{qi+1}. {renderTeX(qq.q)}</div>
-            {qq.opts.map((o, oi) => {
-              let cls = 'quiz-opt';
-              if (answered) {
-                cls += ' is-disabled';
-                if (oi === qq.correct) cls += ' is-correct';
-                else if (oi === picked) cls += ' is-wrong';
-              }
-              return (
-                <button key={oi} className={cls}
-                        disabled={answered}
-                        onClick={() => setPicks(p => ({ ...p, [qi]: oi }))}>
-                  {String.fromCharCode(65+oi)}. {renderTeX(o)}
-                </button>
-              );
-            })}
-            {answered && (
-              <div className={'callout ' + (picked === qq.correct ? 'green' : 'amber')} style={{ marginTop: 8, marginBottom: 0 }}>
-                <strong>{picked === qq.correct ? '✓ Correct.' : '✗ Not quite.'}</strong>
-                {qq.explain}
-              </div>
+          <div className="slot-row" key={s.id}>
+            <span className="slot-label">{s.label}</span>
+            <div className={'slot' + (active && !fid ? ' is-target' : '') + (fid ? ' is-filled' : '') + (correct ? ' is-correct' : '') + ((wrong||empty) ? ' is-wrong' : '')}
+                 onClick={()=>handleSlot(s.id)}>
+              {fid ? tileFor(fid).txt : '— click here —'}
+            </div>
+          </div>
+        );
+      })}
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+        <button className="btn purple" onClick={()=>setVerified(true)}>✓ verify</button>
+        <button className="btn secondary" onClick={()=>{setFilled({}); setActive(null); setVerified(false);}}>↺ reset</button>
+        {verified && (
+          <span style={{ fontSize: 13, color: allCorrect ? '#16a34a' : '#dc2626', fontWeight: 600 }}>
+            {allCorrect ? '✓ all six slots correct — that\'s the chain rule done right.' : (score + '/6 correct. Decoys drop the (θ̇₁+θ̇₂) — that\'s the trap.')}
+          </span>
+        )}
+      </div>
+
+      {verified && !allCorrect && (
+        <div className="callout amber" style={{ marginTop: 10 }}>
+          <strong>Hint.</strong> When you differentiate sin(θ₁+θ₂), the chain rule says:
+          <br/>d/dt sin(θ₁+θ₂) = cos(θ₁+θ₂) · d/dt(θ₁+θ₂) = cos(θ₁+θ₂) · (θ̇₁+θ̇₂).
+          Both joint rates appear because both angles depend on time.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Widget 3 · v₂² Collapse Derivation ─────────────────────────────── */
+function V2CollapseDerive() {
+  const [stage, setStage] = useState(0);
+  const [hint, setHint] = useState(null);
+  const ref = useRef(null);
+
+  const TEX = [
+    'v_2^2 = L_1^2 \\sin^2\\theta_1\\,\\dot\\theta_1^2 + L_1^2 \\cos^2\\theta_1\\,\\dot\\theta_1^2 \\;+\\; L_2^2 \\sin^2(\\theta_1{+}\\theta_2)(\\dot\\theta_1{+}\\dot\\theta_2)^2 + L_2^2 \\cos^2(\\theta_1{+}\\theta_2)(\\dot\\theta_1{+}\\dot\\theta_2)^2 \\\\[4pt] +\\; 2L_1L_2 \\sin\\theta_1 \\sin(\\theta_1{+}\\theta_2)\\,\\dot\\theta_1(\\dot\\theta_1{+}\\dot\\theta_2) + 2L_1L_2 \\cos\\theta_1 \\cos(\\theta_1{+}\\theta_2)\\,\\dot\\theta_1(\\dot\\theta_1{+}\\dot\\theta_2)',
+    'v_2^2 = L_1^2 \\dot\\theta_1^2 \\;+\\; L_2^2 (\\dot\\theta_1{+}\\dot\\theta_2)^2 \\\\[4pt] +\\; 2L_1L_2 \\big[\\sin\\theta_1 \\sin(\\theta_1{+}\\theta_2) + \\cos\\theta_1 \\cos(\\theta_1{+}\\theta_2)\\big]\\,\\dot\\theta_1(\\dot\\theta_1{+}\\dot\\theta_2)',
+    '\\boxed{\\,v_2^2 = L_1^2 \\dot\\theta_1^2 + L_2^2 (\\dot\\theta_1{+}\\dot\\theta_2)^2 + 2L_1L_2 \\cos\\theta_2 \\,\\dot\\theta_1(\\dot\\theta_1{+}\\dot\\theta_2)\\,}'
+  ];
+
+  useEffect(() => {
+    if (!ref.current || !window.katex) return;
+    try {
+      window.katex.render(TEX[stage], ref.current, { throwOnError: false, displayMode: true });
+    } catch (e) { ref.current.textContent = TEX[stage]; }
+  }, [stage]);
+
+  const apply = (rule) => {
+    if (rule === 'pythag' && stage === 0) { setStage(1); setHint(null); }
+    else if (rule === 'angdiff' && stage === 1) { setStage(2); setHint(null); }
+    else if (rule === 'pythag' && stage === 1) setHint('Pythagorean already applied — the pure-square pairs are gone. Try the angle-difference identity on the cross terms now.');
+    else if (rule === 'angdiff' && stage === 0) setHint('You need to clean the pure-square pairs first. Apply Pythagorean: sin²α + cos²α = 1.');
+    else if (stage === 2) setHint('You\'re done — the boxed form is the answer.');
+  };
+
+  const stageLabels = ['Step 0 · expanded', 'Step 1 · Pythagorean applied', 'Step 2 · ✓ collapsed'];
+
+  return (
+    <div>
+      <div className="stage-list">
+        {stageLabels.map((s, i) => (
+          <span key={i} className={'stage-pill' + (i === stage ? ' is-active' : '')}>{s}</span>
+        ))}
+      </div>
+
+      <div ref={ref} style={{ background: '#fbfaf5', padding: '14px 16px', borderRadius: 8, border: '1px solid #e6e1d3', minHeight: 100, overflowX: 'auto' }}/>
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+        <button className="btn purple" onClick={()=>apply('pythag')} disabled={stage>=2}>apply sin²α + cos²α = 1</button>
+        <button className="btn purple" onClick={()=>apply('angdiff')} disabled={stage>=2}>apply cos(α−β) identity</button>
+        <button className="btn secondary" onClick={()=>{setStage(0); setHint(null);}}>↺ reset</button>
+      </div>
+
+      {hint && <div className="callout amber" style={{ marginTop: 10 }}><strong>Hint.</strong>{hint}</div>}
+
+      {stage === 2 && (
+        <div className="callout green" style={{ marginTop: 10 }}>
+          <strong>✓ derived.</strong> Setting α = θ₁ and β = θ₁+θ₂ in the angle-difference identity gives α−β = −θ₂, and cos is even so cos(−θ₂) = cos θ₂. The cross-coupling now lives in a single term.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Widget 4 · Coupling Picker ──────────────────────────────────────── */
+function CouplingPicker() {
+  const [t2, setT2] = useState(0);
+  const [t1, setT1] = useState(0.6);
+  const PRESETS = [
+    { lbl: '0',    v: 0,            cap: 'cos θ₂ = 1 — coupling at maximum' },
+    { lbl: 'π/4',  v: Math.PI/4,    cap: 'cos θ₂ ≈ 0.707 — partial coupling' },
+    { lbl: 'π/2',  v: Math.PI/2,    cap: 'cos θ₂ = 0 — coupling vanishes' },
+    { lbl: '3π/4', v: 3*Math.PI/4,  cap: 'cos θ₂ ≈ −0.707 — coupling reverses sign' },
+    { lbl: 'π',    v: Math.PI,      cap: 'cos θ₂ = −1 — strongest negative coupling' },
+  ];
+
+  const closestPreset = useMemo(() => {
+    let best = PRESETS[0], d = Math.abs(t2 - PRESETS[0].v);
+    for (const p of PRESETS) {
+      const dd = Math.abs(t2 - p.v);
+      if (dd < d) { d = dd; best = p; }
+    }
+    return d < 0.05 ? best : null;
+  }, [t2]);
+
+  const L1 = 1.1, L2 = 1.0;
+  const SCALE = 60;
+  const CX = 200, CY = 220;
+  const j1x = CX + L1 * SCALE * Math.cos(t1);
+  const j1y = CY - L1 * SCALE * Math.sin(t1);
+  const j2x = j1x + L2 * SCALE * Math.cos(t1 + t2);
+  const j2y = j1y - L2 * SCALE * Math.sin(t1 + t2);
+
+  // Use representative angular rates θ̇₁=θ̇₂=1 to visualise the coupling-term magnitude
+  const w1 = 1, w2 = 0.5;
+  const term1 = L1*L1*w1*w1;
+  const term2 = L2*L2*(w1+w2)*(w1+w2);
+  const cosT2 = Math.cos(t2);
+  const term3 = 2*L1*L2*cosT2*w1*(w1+w2);
+  const total = term1 + term2 + term3;
+
+  const couplingHue = (cosT2 + 1) / 2;
+  const couplingColor = 'rgba(124, 58, 237, ' + (Math.abs(cosT2) * 0.6 + 0.1) + ')';
+
+  return (
+    <div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+        {PRESETS.map((p, i) => (
+          <button key={i}
+                  className={'btn ' + (closestPreset === p ? '' : 'secondary')}
+                  style={{ padding: '5px 12px', fontSize: 13 }}
+                  onClick={()=>setT2(p.v)}>θ₂ = {p.lbl}</button>
+        ))}
+      </div>
+      <div className="slider-row"><label>θ₂</label><input type="range" min="-3.14" max="3.14" step="0.01" value={t2} onChange={e=>setT2(parseFloat(e.target.value))}/><span className="val">{t2.toFixed(2)} rad</span></div>
+      <div className="slider-row"><label>θ₁</label><input type="range" min="-3.14" max="3.14" step="0.01" value={t1} onChange={e=>setT1(parseFloat(e.target.value))}/><span className="val">{t1.toFixed(2)} rad</span></div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 14, alignItems: 'start' }}>
+        <svg className="arm-svg" viewBox="0 0 420 320">
+          <g stroke="#eee5cf" strokeWidth="1">
+            {[0,1,2,3,4,5,6].map(i => <line key={'h'+i} x1="20" x2="400" y1={40+i*40} y2={40+i*40}/>)}
+            {[0,1,2,3,4,5,6,7,8,9].map(i => <line key={'v'+i} y1="40" y2="280" x1={20+i*40} x2={20+i*40}/>)}
+          </g>
+          {/* coupling halo on m₂ proportional to |cos θ₂| */}
+          <circle cx={j2x} cy={j2y} r={6 + Math.abs(cosT2)*22} fill={couplingColor} style={{ transition: 'all 0.3s' }}/>
+          <line x1={CX} y1={CY} x2={j1x} y2={j1y} stroke="#2F5496" strokeWidth="6" strokeLinecap="round"/>
+          <line x1={j1x} y1={j1y} x2={j2x} y2={j2y} stroke="#7c3aed" strokeWidth="6" strokeLinecap="round"/>
+          <circle cx={CX} cy={CY} r="7" fill="#1a1d24"/>
+          <circle cx={j1x} cy={j1y} r="8" fill="#2F5496"/>
+          <circle cx={j2x} cy={j2y} r="9" fill="#7c3aed"/>
+          <text x={j2x+12} y={j2y-8} fontSize="12" fontWeight="700" fill="#5b21b6">m₂</text>
+        </svg>
+        <div>
+          <div style={{ marginBottom: 6, color: '#4b515c', fontSize: 12 }}>v₂² (with θ̇₁ = 1, θ̇₂ = 0.5)</div>
+          <span className="term-box term-1">L₁²θ̇₁² = {term1.toFixed(3)}</span>
+          <span className="term-box term-2">L₂²(θ̇₁+θ̇₂)² = {term2.toFixed(3)}</span>
+          <span className="term-box term-3">2L₁L₂ cos θ₂ θ̇₁(θ̇₁+θ̇₂) = {term3.toFixed(3)}</span>
+          <div className="readout">
+            <div className="readout-item"><div className="lbl">cos θ₂</div><div className="v">{cosT2.toFixed(3)}</div></div>
+            <div className="readout-item"><div className="lbl">coupling</div><div className="v">{term3.toFixed(2)}</div></div>
+            <div className="readout-item"><div className="lbl">total v₂²</div><div className="v">{total.toFixed(2)}</div></div>
+          </div>
+          {closestPreset && (
+            <div className="callout purple" style={{ marginTop: 8, fontSize: 13 }}>
+              <strong>{closestPreset.cap.split(' — ')[0]}.</strong>
+              {closestPreset.cap.split(' — ')[1]}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Widget 5 · Lagrangian Builder ──────────────────────────────────── */
+function LagrangianBuilder() {
+  const PARTS = [
+    { id: 'T1', kind: 'T', txt: '½ m₁ L₁² θ̇₁²', correct: true },
+    { id: 'T2', kind: 'T', txt: '½ m₂ [L₁²θ̇₁² + L₂²(θ̇₁+θ̇₂)² + 2L₁L₂ cos θ₂ · θ̇₁(θ̇₁+θ̇₂)]', correct: true },
+    { id: 'V1', kind: 'V', txt: 'm₁ g L₁ sin θ₁', correct: true },
+    { id: 'V2', kind: 'V', txt: 'm₂ g [L₁ sin θ₁ + L₂ sin(θ₁+θ₂)]', correct: true },
+    { id: 'V2bad', kind: 'V', txt: 'm₂ g [L₁ cos θ₁ + L₂ cos(θ₁+θ₂)]', correct: false },
+    { id: 'T1bad', kind: 'T', txt: '½ m₁ L₁ θ̇₁ (linear, not squared)', correct: false },
+  ];
+  const [chosenT, setChosenT] = useState([]);
+  const [chosenV, setChosenV] = useState([]);
+  const [verified, setVerified] = useState(false);
+  const [showPartial, setShowPartial] = useState(false);
+
+  const toggle = (id, kind) => {
+    const list = kind === 'T' ? chosenT : chosenV;
+    const setter = kind === 'T' ? setChosenT : setChosenV;
+    if (list.includes(id)) setter(list.filter(x => x !== id));
+    else setter([...list, id]);
+    setVerified(false); setShowPartial(false);
+  };
+
+  const expectedT = ['T1','T2'].sort().join(',');
+  const expectedV = ['V1','V2'].sort().join(',');
+  const gotT = [...chosenT].sort().join(',');
+  const gotV = [...chosenV].sort().join(',');
+  const tOK = gotT === expectedT;
+  const vOK = gotV === expectedV;
+  const allOK = tOK && vOK;
+
+  return (
+    <div>
+      <p style={{ fontSize: 13, color: '#4b515c', margin: '0 0 6px' }}>Click each block that belongs in T (kinetic) and V (potential), then read off L = T − V. Two of the blocks are decoys.</p>
+
+      <h4 style={{ margin: '10px 0 4px', color: '#1e3a73' }}>Kinetic energy T (drop pieces here)</h4>
+      <div className="build-row">
+        {chosenT.length === 0 && <span style={{ color: '#94a3b8', fontFamily: 'monospace', fontSize: 13 }}>— empty —</span>}
+        {chosenT.map(id => {
+          const p = PARTS.find(x => x.id === id);
+          return <span key={id} className="build-chip">{p.txt}<span className="x" onClick={()=>toggle(id,'T')}>×</span></span>;
+        })}
+      </div>
+      <div className="tile-row">
+        {PARTS.filter(p => p.kind === 'T').map(p => (
+          <div key={p.id}
+               className={'tile' + (chosenT.includes(p.id) ? ' is-used' : '') + (!p.correct ? ' is-decoy' : '')}
+               onClick={()=>{ if (chosenT.includes(p.id)) return; toggle(p.id,'T'); }}>{p.txt}</div>
+        ))}
+      </div>
+
+      <h4 style={{ margin: '14px 0 4px', color: '#1e3a73' }}>Potential energy V (drop pieces here)</h4>
+      <div className="build-row">
+        {chosenV.length === 0 && <span style={{ color: '#94a3b8', fontFamily: 'monospace', fontSize: 13 }}>— empty —</span>}
+        {chosenV.map(id => {
+          const p = PARTS.find(x => x.id === id);
+          return <span key={id} className="build-chip">{p.txt}<span className="x" onClick={()=>toggle(id,'V')}>×</span></span>;
+        })}
+      </div>
+      <div className="tile-row">
+        {PARTS.filter(p => p.kind === 'V').map(p => (
+          <div key={p.id}
+               className={'tile' + (chosenV.includes(p.id) ? ' is-used' : '') + (!p.correct ? ' is-decoy' : '')}
+               onClick={()=>{ if (chosenV.includes(p.id)) return; toggle(p.id,'V'); }}>{p.txt}</div>
+        ))}
+      </div>
+
+      <div style={{ background: '#f4f1e8', padding: '10px 14px', borderRadius: 8, marginTop: 14, fontFamily: 'monospace', fontSize: 14, color: '#1a1d24', borderLeft: '4px solid #2F5496' }}>
+        L = T − V
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+        <button className="btn purple" onClick={()=>setVerified(true)}>✓ verify</button>
+        <button className="btn secondary" onClick={()=>{setChosenT([]); setChosenV([]); setVerified(false); setShowPartial(false);}}>↺ reset</button>
+        {allOK && <button className="btn secondary" onClick={()=>setShowPartial(true)}>show ∂L/∂θ̇₁ (teaser)</button>}
+      </div>
+
+      {verified && (
+        <div className={'callout ' + (allOK ? 'green' : 'amber')} style={{ marginTop: 10 }}>
+          <strong>{allOK ? '✓ correct.' : 'Not yet.'}</strong>
+          {allOK
+            ? ' Notice θ₁ never appears in T — it is cyclic in the gravity-free case. That is the symmetry hint Module 3 will exploit.'
+            : (' Kinetic: ' + (tOK ? '✓' : '✗') + '. Potential: ' + (vOK ? '✓' : '✗') + '. The decoy V swaps sin for cos — gravity acts on heights (y), and y = L sin θ here.')}
+        </div>
+      )}
+
+      {showPartial && (
+        <div className="callout blue" style={{ marginTop: 10 }}>
+          <strong>Module 3 preview.</strong> Differentiating with respect to θ̇₁ gives:<br/>
+          ∂L/∂θ̇₁ = m₁ L₁² θ̇₁ + m₂ [L₁² θ̇₁ + L₂²(θ̇₁+θ̇₂) + L₁L₂ cos θ₂ · (2θ̇₁+θ̇₂)].
+          Take d/dt of that, subtract ∂L/∂θ₁, and set equal to τ₁ — that's one of the two equations of motion.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Widget 6 · MCQ Self-check ──────────────────────────────────────── */
+function RecipeSelfCheck() {
+  const QUESTIONS = [
+    {
+      q: 'When differentiating sin(θ₁+θ₂) with respect to time, which factor is the one students most commonly drop?',
+      opts: ['cos(θ₁+θ₂)', '(θ̇₁+θ̇₂)', '½', 'sin(θ₁+θ₂)'],
+      correct: 1,
+      explain: 'The outer derivative gives cos(θ₁+θ₂); the chain rule then multiplies by the derivative of the inner argument, which is (θ̇₁+θ̇₂). That second factor is what gets forgotten.'
+    },
+    {
+      q: 'Which identity collapses sin θ₁ sin(θ₁+θ₂) + cos θ₁ cos(θ₁+θ₂) into cos θ₂?',
+      opts: ['Pythagorean: sin²+cos²=1', 'Double-angle: cos 2α = 1 − 2 sin²α', 'Angle-difference: cos(α−β) = cos α cos β + sin α sin β', 'Product-to-sum'],
+      correct: 2,
+      explain: 'Setting α=θ₁ and β=θ₁+θ₂ gives α−β = −θ₂, and cos is even so cos(−θ₂)=cos θ₂. Pythagorean kills the pure-square pairs separately.'
+    },
+    {
+      q: 'Why does the kinetic energy T depend on θ₂ but not on θ₁?',
+      opts: ['Because θ₁ is small and can be neglected', 'Because rigidly rotating the whole arm about the base does not change any speed', 'Because θ₁ is measured from a fixed axis', 'Because gravity acts on θ₁ instead'],
+      correct: 1,
+      explain: 'The squared speeds v₁² and v₂² are invariant under a uniform rotation of the entire arm — that rotation just relabels base orientation. So θ₁ is cyclic in T (and only enters L through V).'
+    },
+    {
+      q: 'At θ₂ = π/2, what happens to the inertial cross-coupling 2L₁L₂ cos θ₂ θ̇₁(θ̇₁+θ̇₂)?',
+      opts: ['It doubles', 'It vanishes', 'It changes sign', 'It becomes purely gravitational'],
+      correct: 1,
+      explain: 'cos(π/2)=0, so the off-diagonal entry of the mass matrix is zero in that pose — link 2 swing direction is perpendicular to link 1, so neither motion projects onto the other.'
+    }
+  ];
+  const [picked, setPicked] = useState({});
+
+  return (
+    <div>
+      {QUESTIONS.map((q, qi) => {
+        const choice = picked[qi];
+        return (
+          <div className="mcq-q" key={qi}>
+            <div className="q-text">{qi+1}. {q.q}</div>
+            <div className="mcq-opts">
+              {q.opts.map((opt, oi) => {
+                let cls = 'mcq-opt';
+                if (choice !== undefined) {
+                  if (oi === q.correct) cls += ' is-correct';
+                  else if (oi === choice) cls += ' is-wrong';
+                }
+                return (
+                  <div key={oi} className={cls} onClick={()=>{ if(choice===undefined) setPicked(p=>({...p,[qi]:oi})); }}>
+                    {String.fromCharCode(65+oi)}. {opt}
+                  </div>
+                );
+              })}
+            </div>
+            {choice !== undefined && (
+              <div className="mcq-explain"><strong>{choice === q.correct ? '✓ correct.' : '✗ not quite.'}</strong> {q.explain}</div>
             )}
           </div>
         );
       })}
-      <button className="btn secondary" onClick={() => setPicks({})} style={{ marginTop: 6 }}>↺ Reset all</button>
+      <button className="btn secondary" onClick={()=>setPicked({})}>↺ reset</button>
     </div>
   );
 }
 
-// ───────────────────────── v₂² Collapse Derivation ─────────────────────────
-function V2CollapseDerivation() {
-  // Stages of the derivation, gated by which rules have been applied
-  // rule keys: 'pyth1' (L1 pair), 'pyth2' (L2 pair), 'cosdiff', 'simplify'
-  const [applied, setApplied] = useState({ pyth1: false, pyth2: false, cosdiff: false, simplify: false });
-  const allDone = applied.pyth1 && applied.pyth2 && applied.cosdiff && applied.simplify;
-
-  const rule = (k) => () => setApplied(a => ({ ...a, [k]: true }));
-  const reset = () => setApplied({ pyth1: false, pyth2: false, cosdiff: false, simplify: false });
-
-  // Build the current form as TeX
-  const term_L1 = applied.pyth1
-    ? 'L_1^2 \\dot\\theta_1^2'
-    : 'L_1^2 \\sin^2\\theta_1\\,\\dot\\theta_1^2 + L_1^2 \\cos^2\\theta_1\\,\\dot\\theta_1^2';
-  const term_L2 = applied.pyth2
-    ? 'L_2^2 (\\dot\\theta_1+\\dot\\theta_2)^2'
-    : 'L_2^2 \\sin^2(\\theta_1+\\theta_2)(\\dot\\theta_1+\\dot\\theta_2)^2 + L_2^2 \\cos^2(\\theta_1+\\theta_2)(\\dot\\theta_1+\\dot\\theta_2)^2';
-  let term_cross;
-  if (!applied.cosdiff) {
-    term_cross = '2L_1L_2\\dot\\theta_1(\\dot\\theta_1+\\dot\\theta_2)\\bigl[\\sin\\theta_1\\sin(\\theta_1+\\theta_2)+\\cos\\theta_1\\cos(\\theta_1+\\theta_2)\\bigr]';
-  } else if (!applied.simplify) {
-    term_cross = '2L_1L_2\\cos(-\\theta_2)\\,\\dot\\theta_1(\\dot\\theta_1+\\dot\\theta_2)';
-  } else {
-    term_cross = '2L_1L_2\\cos\\theta_2\\,\\dot\\theta_1(\\dot\\theta_1+\\dot\\theta_2)';
-  }
-  const fullTex = 'v_2^2 = ' + term_L1 + ' + ' + term_L2 + ' + ' + term_cross;
-
-  return (
-    <div>
-      <div style={{ marginBottom: 12, fontSize: '0.9rem', color: '#4b515c' }}>
-        Apply the identities one at a time. The form rewrites itself as you click. Goal: reduce to the boxed three-term result.
-      </div>
-
-      <div style={{ padding: 14, background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 8, marginBottom: 14, overflowX: 'auto' }}>
-        <Tex tex={fullTex} displayMode={true} />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8, marginBottom: 12 }}>
-        <button className="btn"
-                onClick={rule('pyth1')}
-                disabled={applied.pyth1}>
-          {applied.pyth1 ? '✓ ' : ''}Pythagoras on L₁² pair
-        </button>
-        <button className="btn"
-                onClick={rule('pyth2')}
-                disabled={applied.pyth2}>
-          {applied.pyth2 ? '✓ ' : ''}Pythagoras on L₂² pair
-        </button>
-        <button className="btn purple"
-                onClick={rule('cosdiff')}
-                disabled={applied.cosdiff}>
-          {applied.cosdiff ? '✓ ' : ''}Cosine-of-difference on cross-term
-        </button>
-        <button className="btn purple"
-                onClick={rule('simplify')}
-                disabled={applied.simplify || !applied.cosdiff}>
-          {applied.simplify ? '✓ ' : ''}cos(−θ₂) = cosθ₂  (cosine is even)
-        </button>
-      </div>
-
-      <div style={{ fontSize: '0.85rem', color: '#4b515c', marginBottom: 10, fontFamily: 'monospace' }}>
-        rule 1: sin²α + cos²α → 1<br/>
-        rule 2: sinα·sinβ + cosα·cosβ → cos(α − β)<br/>
-        rule 3: cos(−θ₂) → cos(θ₂)
-      </div>
-
-      {allDone && (
-        <div className="callout green">
-          <strong>✓ Derived!</strong>
-          Six terms collapsed to three. The cross-term carries a cosθ₂ — that's the joint coupling that drives the dynamics.
-        </div>
-      )}
-
-      <button className="btn secondary" onClick={reset}>↺ Reset</button>
-    </div>
-  );
-}
-
-// ───────────────────────── Mass Matrix Builder ─────────────────────────
-function MassMatrixBuilder() {
-  const COEFFS = [
-    { id: 'a', tex: 'm_1 L_1^2 + m_2(L_1^2 + L_2^2 + 2 L_1 L_2 \\cos\\theta_2)', isFor: 'M11' },
-    { id: 'b', tex: 'm_2(L_2^2 + L_1 L_2 \\cos\\theta_2)',                       isFor: 'M12' },
-    { id: 'c', tex: 'm_2 L_2^2',                                                  isFor: 'M22' },
-    { id: 'd', tex: '2 m_2 L_1 L_2 \\cos\\theta_2',                               isFor: null  },
-    { id: 'e', tex: 'm_2 L_1^2',                                                  isFor: null  },
-    { id: 'f', tex: 'm_1 L_1^2',                                                  isFor: null  },
-    { id: 'g', tex: '0',                                                          isFor: null  }
-  ];
-  // For symmetry: M21 also accepts the M12 coefficient
-  const SLOTS = ['M11', 'M12', 'M21', 'M22'];
-  const SLOT_TARGET = { M11: 'a', M12: 'b', M21: 'b', M22: 'c' };
-
-  const [filled, setFilled] = useState({ M11: null, M12: null, M21: null, M22: null });
-  const [active, setActive] = useState(null);
-
-  const placeIn = (slot) => {
-    if (!active) return;
-    setFilled(f => ({ ...f, [slot]: active }));
-    setActive(null);
-  };
-  const clearSlot = (slot) => setFilled(f => ({ ...f, [slot]: null }));
-  const reset = () => { setFilled({ M11: null, M12: null, M21: null, M22: null }); setActive(null); };
-
-  const usedIds = Object.values(filled).filter(Boolean);
-  const allFilled = SLOTS.every(s => filled[s]);
-  const allCorrect = SLOTS.every(s => filled[s] === SLOT_TARGET[s]);
-  const isSymmetric = filled.M12 && filled.M21 && filled.M12 === filled.M21;
-
-  return (
-    <div>
-      <div style={{ marginBottom: 12, fontSize: '0.9rem', color: '#4b515c' }}>
-        From <Tex tex={'T = \\tfrac12 \\dot q^\\top M(\\theta_2) \\dot q'} />, build the symmetric 2×2 mass matrix.
-        Click a coefficient below, then click the slot you want to drop it into.
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 14 }}>
-        {SLOTS.map(slot => {
-          const id = filled[slot];
-          const co = COEFFS.find(c => c.id === id);
-          let cls = 'builder-slot';
-          if (id) {
-            cls += ' is-filled';
-            if (allFilled) {
-              if (id === SLOT_TARGET[slot]) cls += ' is-correct';
-              else cls += ' is-wrong';
-            }
-          }
-          return (
-            <div key={slot} onClick={() => active ? placeIn(slot) : (id && clearSlot(slot))}
-                 style={{ cursor: active ? 'copy' : (id ? 'pointer' : 'default') }}>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: '#4b515c', marginBottom: 4 }}>{slot}</div>
-              <div className={cls}>
-                {co ? <Tex tex={co.tex} /> : <span style={{ color: '#9aa3af', fontStyle: 'italic' }}>{active ? 'click to drop here' : 'empty'}</span>}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div style={{ marginBottom: 10, fontSize: '0.85rem', color: '#4b515c' }}>
-        Coefficient palette ({active ? <strong style={{color:'#7c3aed'}}>selected — now click a slot above</strong> : 'click one to pick it up'}):
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        {COEFFS.map(c => (
-          <span key={c.id}
-                className={'palette-chip ' + (active === c.id ? 'is-active' : '') + (c.isFor === null ? ' distractor' : '')}
-                style={{
-                  background: active === c.id ? '#ede9fe' : (usedIds.includes(c.id) ? '#f1f5f9' : 'white'),
-                  borderColor: active === c.id ? '#7c3aed' : undefined,
-                  opacity: usedIds.includes(c.id) ? 0.4 : 1,
-                  pointerEvents: usedIds.includes(c.id) ? 'none' : 'auto'
-                }}
-                onClick={() => setActive(active === c.id ? null : c.id)}>
-            <Tex tex={c.tex} />
-          </span>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button className="btn secondary" onClick={reset}>↺ Reset</button>
-      </div>
-
-      {allFilled && (
-        allCorrect ? (
-          <div className="callout green" style={{ marginTop: 12, marginBottom: 0 }}>
-            <strong>✓ Correct mass matrix.</strong>
-            Symmetry holds: M₁₂ = M₂₁. The (1,1) entry carries m₁'s contribution plus m₂'s entire kinetic riding on link 1; (2,2) is m₂'s own L₂² term.
-          </div>
-        ) : (
-          <div className="callout amber" style={{ marginTop: 12, marginBottom: 0 }}>
-            <strong>Not quite.</strong>
-            {!isSymmetric && ' Mass matrices are always symmetric — M₁₂ should equal M₂₁.'}
-            {' '}Re-read T in section 6: the 2L₁L₂cosθ₂ cross-term splits evenly between M₁₂ and M₂₁ (the ½ in T absorbs the factor of 2).
-          </div>
-        )
-      )}
-    </div>
-  );
-}
-
-// ───────────────────────── Potential Landscape Playground ─────────────────────────
-function PotentialLandscape() {
-  const [t1, setT1] = useState(45);   // degrees
-  const [t2, setT2] = useState(30);
+/* ─── Widget 7 · Euler–Lagrange Playground ───────────────────────────── */
+function EulerLagrangePlayground() {
   const [m1, setM1] = useState(1);
   const [m2, setM2] = useState(1);
-  const [L1v, setL1] = useState(1);
-  const [L2v, setL2] = useState(0.8);
+  const [L1, setL1] = useState(1);
+  const [L2, setL2] = useState(1);
   const [g, setG] = useState(9.81);
+  const [t1_0, setT1_0] = useState(Math.PI/2);
+  const [t2_0, setT2_0] = useState(Math.PI/2);
+  const [w1_0, setW1_0] = useState(0);
+  const [w2_0, setW2_0] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [showTrace, setShowTrace] = useState(true);
+  const [tick, setTick] = useState(0);
 
-  const canvasRef = useRef(null);
+  const stateRef = useRef({ t1: Math.PI/2, t2: Math.PI/2, w1: 0, w2: 0 });
+  const traceRef = useRef([]);
+  const paramsRef = useRef({ m1, m2, L1, L2, g });
+  paramsRef.current = { m1, m2, L1, L2, g };
 
-  const t1r = t1 * Math.PI / 180;
-  const t2r = t2 * Math.PI / 180;
-  const y1 = L1v * Math.sin(t1r);
-  const y2 = y1 + L2v * Math.sin(t1r + t2r);
-  const V = m1 * g * y1 + m2 * g * y2;
+  const dyn = (s) => {
+    const P = paramsRef.current;
+    const { t1, t2, w1, w2 } = s;
+    const c2 = Math.cos(t2), s2 = Math.sin(t2);
+    const M11 = (P.m1+P.m2)*P.L1*P.L1 + P.m2*(P.L2*P.L2 + 2*P.L1*P.L2*c2);
+    const M12 = P.m2*(P.L2*P.L2 + P.L1*P.L2*c2);
+    const M22 = P.m2*P.L2*P.L2;
+    const det = M11*M22 - M12*M12;
+    const h = P.m2*P.L1*P.L2*s2;
+    const C1 = -h*(2*w1*w2 + w2*w2);
+    const C2 = h*w1*w1;
+    const G1 = (P.m1+P.m2)*P.g*P.L1*Math.cos(t1) + P.m2*P.g*P.L2*Math.cos(t1+t2);
+    const G2 = P.m2*P.g*P.L2*Math.cos(t1+t2);
+    const r1 = -C1 - G1, r2 = -C2 - G2;
+    const a1 = ( M22*r1 - M12*r2)/det;
+    const a2 = (-M12*r1 + M11*r2)/det;
+    return { dt1: w1, dt2: w2, dw1: a1, dw2: a2 };
+  };
 
-  // Render heatmap
+  const step = (s, dt) => {
+    const k1 = dyn(s);
+    const s2 = { t1: s.t1+dt/2*k1.dt1, t2: s.t2+dt/2*k1.dt2, w1: s.w1+dt/2*k1.dw1, w2: s.w2+dt/2*k1.dw2 };
+    const k2 = dyn(s2);
+    const s3 = { t1: s.t1+dt/2*k2.dt1, t2: s.t2+dt/2*k2.dt2, w1: s.w1+dt/2*k2.dw1, w2: s.w2+dt/2*k2.dw2 };
+    const k3 = dyn(s3);
+    const s4 = { t1: s.t1+dt*k3.dt1, t2: s.t2+dt*k3.dt2, w1: s.w1+dt*k3.dw1, w2: s.w2+dt*k3.dw2 };
+    const k4 = dyn(s4);
+    return {
+      t1: s.t1 + dt/6*(k1.dt1+2*k2.dt1+2*k3.dt1+k4.dt1),
+      t2: s.t2 + dt/6*(k1.dt2+2*k2.dt2+2*k3.dt2+k4.dt2),
+      w1: s.w1 + dt/6*(k1.dw1+2*k2.dw1+2*k3.dw1+k4.dw1),
+      w2: s.w2 + dt/6*(k1.dw2+2*k2.dw2+2*k3.dw2+k4.dw2)
+    };
+  };
+
+  const reset = () => {
+    stateRef.current = { t1: t1_0, t2: t2_0, w1: w1_0, w2: w2_0 };
+    traceRef.current = [];
+    setRunning(false);
+    setTick(t => t+1);
+  };
+
   useEffect(() => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    const W = c.width, H = c.height;
-    const data = ctx.createImageData(W, H);
-    let vMin = Infinity, vMax = -Infinity;
-    const grid = [];
-    for (let py = 0; py < H; py++) {
-      const row = [];
-      for (let px = 0; px < W; px++) {
-        const a1 = (px / W - 0.5) * 2 * Math.PI;
-        const a2 = (0.5 - py / H) * 2 * Math.PI;
-        const yy1 = L1v * Math.sin(a1);
-        const yy2 = yy1 + L2v * Math.sin(a1 + a2);
-        const VV = m1 * g * yy1 + m2 * g * yy2;
-        row.push(VV);
-        if (VV < vMin) vMin = VV;
-        if (VV > vMax) vMax = VV;
-      }
-      grid.push(row);
-    }
-    const span = vMax - vMin || 1;
-    for (let py = 0; py < H; py++) {
-      for (let px = 0; px < W; px++) {
-        const v = (grid[py][px] - vMin) / span; // 0..1
-        // viridis-ish: low=dark blue, mid=teal, high=yellow
-        const r = Math.round(255 * (0.27 + 0.7 * v * v));
-        const grn = Math.round(255 * (0.1 + 0.85 * Math.sqrt(v)));
-        const b = Math.round(255 * (0.45 - 0.4 * v + 0.1 * v * v));
-        const idx = (py * W + px) * 4;
-        data.data[idx]   = Math.max(0, Math.min(255, r));
-        data.data[idx+1] = Math.max(0, Math.min(255, grn));
-        data.data[idx+2] = Math.max(0, Math.min(255, b));
-        data.data[idx+3] = 255;
-      }
-    }
-    ctx.putImageData(data, 0, 0);
-    // crosshair on current pose
-    const px = ((t1r / (2 * Math.PI)) + 0.5) * W;
-    const py = (0.5 - t2r / (2 * Math.PI)) * H;
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(px, py, 6, 0, 2 * Math.PI);
-    ctx.stroke();
-    ctx.strokeStyle = '#1a1d24';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(px, py, 6, 0, 2 * Math.PI);
-    ctx.stroke();
-  }, [t1, t2, m1, m2, L1v, L2v, g]);
+    if (!running) return;
+    let id;
+    const loop = () => {
+      let s = stateRef.current;
+      for (let i = 0; i < 6; i++) s = step(s, 0.008);
+      stateRef.current = s;
+      const P = paramsRef.current;
+      const j1x = P.L1*Math.cos(s.t1);
+      const j1y = P.L1*Math.sin(s.t1);
+      const j2x = j1x + P.L2*Math.cos(s.t1+s.t2);
+      const j2y = j1y + P.L2*Math.sin(s.t1+s.t2);
+      traceRef.current.push([j2x, j2y]);
+      if (traceRef.current.length > 600) traceRef.current.shift();
+      setTick(t => t+1);
+      id = requestAnimationFrame(loop);
+    };
+    id = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(id);
+  }, [running]);
 
-  // Arm SVG
-  const armW = 220, armH = 200, scale = 50;
-  const cx = (x) => armW/2 + x * scale;
-  const cy = (y) => armH/2 + 40 - y * scale;
-  const c1 = Math.cos(t1r), s1 = Math.sin(t1r);
-  const c12 = Math.cos(t1r + t2r), s12 = Math.sin(t1r + t2r);
-  const x1 = L1v * c1, y1d = L1v * s1;
-  const x2 = x1 + L2v * c12, y2d = y1d + L2v * s12;
+  // viz
+  const SCALE = 65;
+  const CX = 220, CY = 200;
+  const s = stateRef.current;
+  const j1x = CX + L1 * SCALE * Math.cos(s.t1);
+  const j1y = CY - L1 * SCALE * Math.sin(s.t1);
+  const j2x = j1x + L2 * SCALE * Math.cos(s.t1 + s.t2);
+  const j2y = j1y - L2 * SCALE * Math.sin(s.t1 + s.t2);
+
+  // energies
+  const v1sq = L1*L1*s.w1*s.w1;
+  const v2sq = L1*L1*s.w1*s.w1 + L2*L2*(s.w1+s.w2)*(s.w1+s.w2) + 2*L1*L2*Math.cos(s.t2)*s.w1*(s.w1+s.w2);
+  const T = 0.5*m1*v1sq + 0.5*m2*v2sq;
+  const V = m1*g*L1*Math.sin(s.t1) + m2*g*(L1*Math.sin(s.t1) + L2*Math.sin(s.t1+s.t2));
+  const E = T + V;
+  // generalised momentum p_θ₁ = ∂L/∂θ̇₁
+  const p1 = m1*L1*L1*s.w1 + m2*(L1*L1*s.w1 + L2*L2*(s.w1+s.w2) + L1*L2*Math.cos(s.t2)*(2*s.w1+s.w2));
+
+  const tracePath = traceRef.current.map(([x,y], i) => (i===0?'M':'L') + ' ' + (CX + x*SCALE) + ' ' + (CY - y*SCALE)).join(' ');
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
-        {/* Arm and V readout */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr)', gap: 14, alignItems: 'start' }}>
+        <svg className="arm-svg" viewBox="0 0 440 380">
+          <g stroke="#eee5cf" strokeWidth="1">
+            {[0,1,2,3,4,5,6,7,8].map(i => <line key={'h'+i} x1="20" x2="420" y1={20+i*40} y2={20+i*40}/>)}
+            {[0,1,2,3,4,5,6,7,8,9,10].map(i => <line key={'v'+i} y1="20" y2="340" x1={20+i*40} x2={20+i*40}/>)}
+          </g>
+          {showTrace && tracePath && <path d={tracePath} fill="none" stroke="#7c3aed" strokeWidth="1.2" opacity="0.45"/>}
+          <line x1={CX} y1={CY} x2={j1x} y2={j1y} stroke="#2F5496" strokeWidth="6" strokeLinecap="round"/>
+          <line x1={j1x} y1={j1y} x2={j2x} y2={j2y} stroke="#7c3aed" strokeWidth="6" strokeLinecap="round"/>
+          <circle cx={CX} cy={CY} r="7" fill="#1a1d24"/>
+          <circle cx={j1x} cy={j1y} r={4 + m1*2.5} fill="#2F5496"/>
+          <circle cx={j2x} cy={j2y} r={4 + m2*2.5} fill="#7c3aed"/>
+        </svg>
+
         <div>
-          <svg width={armW} height={armH} viewBox={`0 0 ${armW} ${armH}`} style={{ background: '#fbfaf5', border: '1px solid #e6e1d3', borderRadius: 6 }}>
-            <line x1={0} y1={cy(0)} x2={armW} y2={cy(0)} stroke="#dc2626" strokeWidth={1} opacity={0.4} />
-            <line x1={cx(0)} y1={0} x2={cx(0)} y2={armH} stroke="#16a34a" strokeWidth={1} opacity={0.4} />
-            <line x1={cx(0)} y1={cy(0)} x2={cx(x1)} y2={cy(y1d)} stroke="#2F5496" strokeWidth={4} strokeLinecap="round" />
-            <line x1={cx(x1)} y1={cy(y1d)} x2={cx(x2)} y2={cy(y2d)} stroke="#7c3aed" strokeWidth={4} strokeLinecap="round" />
-            <circle cx={cx(0)} cy={cy(0)} r={5} fill="#1a1d24" />
-            <circle cx={cx(x1)} cy={cy(y1d)} r={6} fill="#2F5496" stroke="white" strokeWidth={2} />
-            <circle cx={cx(x2)} cy={cy(y2d)} r={6} fill="#7c3aed" stroke="white" strokeWidth={2} />
-            {/* y reference */}
-            <line x1={cx(x1)} y1={cy(y1d)} x2={cx(x1)} y2={cy(0)} stroke="#16a34a" strokeWidth={1} strokeDasharray="3 3" opacity={0.6} />
-            <line x1={cx(x2)} y1={cy(y2d)} x2={cx(x2)} y2={cy(0)} stroke="#16a34a" strokeWidth={1} strokeDasharray="3 3" opacity={0.6} />
-          </svg>
-          <div style={{ marginTop: 10, fontFamily: 'monospace', fontSize: '0.85rem', color: '#1e3a73' }}>
-            y₁ = {y1.toFixed(3)}<br/>
-            y₂ = {y2.toFixed(3)}<br/>
-            <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>V = {V.toFixed(3)} J</span>
+          <div className="readout">
+            <div className="readout-item"><div className="lbl">θ₁</div><div className="v">{s.t1.toFixed(2)}</div></div>
+            <div className="readout-item"><div className="lbl">θ₂</div><div className="v">{s.t2.toFixed(2)}</div></div>
+            <div className="readout-item"><div className="lbl">θ̇₁</div><div className="v">{s.w1.toFixed(2)}</div></div>
+            <div className="readout-item"><div className="lbl">θ̇₂</div><div className="v">{s.w2.toFixed(2)}</div></div>
+            <div className="readout-item"><div className="lbl">T</div><div className="v">{T.toFixed(2)}</div></div>
+            <div className="readout-item"><div className="lbl">V</div><div className="v">{V.toFixed(2)}</div></div>
+            <div className="readout-item"><div className="lbl">E = T+V</div><div className="v">{E.toFixed(2)}</div></div>
+            <div className="readout-item"><div className="lbl">p<sub>θ₁</sub></div><div className="v">{p1.toFixed(2)}</div></div>
           </div>
-        </div>
-        {/* Heatmap */}
-        <div>
-          <div style={{ fontSize: '0.78rem', color: '#4b515c', marginBottom: 4, fontFamily: 'monospace' }}>
-            V(θ₁, θ₂) heatmap · θ₁ →,  θ₂ ↑
-          </div>
-          <canvas ref={canvasRef} width={220} height={200} className="heatmap-canvas" />
-          <div style={{ fontSize: '0.78rem', color: '#4b515c', marginTop: 4 }}>
-            ○ marks current pose · dark = low V, bright = high V
-          </div>
+          {g === 0 && (
+            <div className="callout green" style={{ marginTop: 8, fontSize: 12 }}>
+              <strong>Gravity off.</strong> p<sub>θ₁</sub> should stay flat — θ₁ is cyclic.
+            </div>
+          )}
         </div>
       </div>
 
-      <div style={{ marginTop: 14, padding: 12, background: '#f7f5ee', borderRadius: 6 }}>
-        <div className="slider-row">
-          <label>θ₁ (deg)</label>
-          <input type="range" min="-180" max="180" value={t1} onChange={e => setT1(+e.target.value)} />
-          <span className="val">{t1}°</span>
-        </div>
-        <div className="slider-row">
-          <label>θ₂ (deg)</label>
-          <input type="range" min="-180" max="180" value={t2} onChange={e => setT2(+e.target.value)} />
-          <span className="val">{t2}°</span>
-        </div>
-        <div className="slider-row">
-          <label>m₁ (kg)</label>
-          <input type="range" min="0" max="3" step="0.1" value={m1} onChange={e => setM1(+e.target.value)} />
-          <span className="val">{m1.toFixed(1)}</span>
-        </div>
-        <div className="slider-row">
-          <label>m₂ (kg)</label>
-          <input type="range" min="0" max="3" step="0.1" value={m2} onChange={e => setM2(+e.target.value)} />
-          <span className="val">{m2.toFixed(1)}</span>
-        </div>
-        <div className="slider-row">
-          <label>L₁ (m)</label>
-          <input type="range" min="0.2" max="1.5" step="0.05" value={L1v} onChange={e => setL1(+e.target.value)} />
-          <span className="val">{L1v.toFixed(2)}</span>
-        </div>
-        <div className="slider-row">
-          <label>L₂ (m)</label>
-          <input type="range" min="0.2" max="1.5" step="0.05" value={L2v} onChange={e => setL2(+e.target.value)} />
-          <span className="val">{L2v.toFixed(2)}</span>
-        </div>
-        <div className="slider-row">
-          <label>g (m/s²)</label>
-          <input type="range" min="0" max="20" step="0.1" value={g} onChange={e => setG(+e.target.value)} />
-          <span className="val">{g.toFixed(2)}</span>
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 6, marginTop: 12 }}>
+        <div className="slider-row"><label>m₁</label><input type="range" min="0.1" max="5" step="0.1" value={m1} onChange={e=>setM1(parseFloat(e.target.value))}/><span className="val">{m1.toFixed(1)}</span></div>
+        <div className="slider-row"><label>m₂</label><input type="range" min="0.1" max="5" step="0.1" value={m2} onChange={e=>setM2(parseFloat(e.target.value))}/><span className="val">{m2.toFixed(1)}</span></div>
+        <div className="slider-row"><label>L₁</label><input type="range" min="0.3" max="2" step="0.05" value={L1} onChange={e=>setL1(parseFloat(e.target.value))}/><span className="val">{L1.toFixed(2)}</span></div>
+        <div className="slider-row"><label>L₂</label><input type="range" min="0.3" max="2" step="0.05" value={L2} onChange={e=>setL2(parseFloat(e.target.value))}/><span className="val">{L2.toFixed(2)}</span></div>
+        <div className="slider-row"><label>g</label><input type="range" min="0" max="15" step="0.1" value={g} onChange={e=>setG(parseFloat(e.target.value))}/><span className="val">{g.toFixed(1)}</span></div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 6 }}>
+        <div className="slider-row"><label>θ₁(0)</label><input type="range" min="-3.14" max="3.14" step="0.05" value={t1_0} onChange={e=>setT1_0(parseFloat(e.target.value))}/><span className="val">{t1_0.toFixed(2)}</span></div>
+        <div className="slider-row"><label>θ₂(0)</label><input type="range" min="-3.14" max="3.14" step="0.05" value={t2_0} onChange={e=>setT2_0(parseFloat(e.target.value))}/><span className="val">{t2_0.toFixed(2)}</span></div>
+        <div className="slider-row"><label>θ̇₁(0)</label><input type="range" min="-3" max="3" step="0.1" value={w1_0} onChange={e=>setW1_0(parseFloat(e.target.value))}/><span className="val">{w1_0.toFixed(1)}</span></div>
+        <div className="slider-row"><label>θ̇₂(0)</label><input type="range" min="-3" max="3" step="0.1" value={w2_0} onChange={e=>setW2_0(parseFloat(e.target.value))}/><span className="val">{w2_0.toFixed(1)}</span></div>
       </div>
 
-      <div style={{ marginTop: 12, fontSize: '0.88rem', color: '#4b515c' }}>
-        <strong>Try:</strong> push θ₁ toward −90° to find the minimum (arm hanging down). Notice V doesn't depend on any joint <em>velocity</em>.
+      <div className="preset-row">
+        <button className="btn secondary" onClick={()=>{setM1(1);setM2(1);setL1(1);setL2(1);setG(9.81);setT1_0(Math.PI/2);setT2_0(Math.PI/2);setW1_0(0);setW2_0(0);}}>chaotic</button>
+        <button className="btn secondary" onClick={()=>{setG(0);setW1_0(1);setW2_0(0);setT1_0(0.4);setT2_0(0.7);}}>g=0 (cyclic θ₁)</button>
+        <button className="btn secondary" onClick={()=>{setT2_0(Math.PI/2);setW1_0(0);setW2_0(0);setT1_0(Math.PI/2);setG(9.81);}}>decoupled start</button>
       </div>
-      <button className="btn secondary" style={{ marginTop: 8 }}
-              onClick={() => { setT1(45); setT2(30); setM1(1); setM2(1); setL1(1); setL2(0.8); setG(9.81); }}>
-        ↺ Reset to defaults
-      </button>
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+        <button className="btn purple" onClick={()=>{ if(!running){ stateRef.current = { t1: t1_0, t2: t2_0, w1: w1_0, w2: w2_0 }; traceRef.current = []; } setRunning(r=>!r); }}>{running ? '⏸ pause' : '▶ run'}</button>
+        <button className="btn secondary" onClick={reset}>↺ reset</button>
+        <label style={{ fontSize: 13, color: '#4b515c', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <input type="checkbox" checked={showTrace} onChange={e=>setShowTrace(e.target.checked)}/>
+          tip trace
+        </label>
+        <span style={{ fontSize: 12, color: '#94a3b8' }}>integrating with RK4 · {tick} frames</span>
+      </div>
     </div>
   );
 }
 
-// ───────────────────────── Lagrangian Assembler ─────────────────────────
-function LagrangianAssembler() {
-  const FRAGS = [
-    { id: 'T1', tex: '\\tfrac{1}{2} m_1 L_1^2 \\dot\\theta_1^2',                                                          kind: 'T', correct: true  },
-    { id: 'T2', tex: '\\tfrac{1}{2} m_2 L_1^2 \\dot\\theta_1^2',                                                          kind: 'T', correct: true  },
-    { id: 'T3', tex: '\\tfrac{1}{2} m_2 L_2^2 (\\dot\\theta_1+\\dot\\theta_2)^2',                                          kind: 'T', correct: true  },
-    { id: 'T4', tex: 'm_2 L_1 L_2 \\cos\\theta_2 \\,\\dot\\theta_1 (\\dot\\theta_1+\\dot\\theta_2)',                       kind: 'T', correct: true  },
-    { id: 'V1', tex: 'm_1 g L_1 \\sin\\theta_1',                                                                          kind: 'V', correct: true  },
-    { id: 'V2', tex: 'm_2 g L_1 \\sin\\theta_1',                                                                          kind: 'V', correct: true  },
-    { id: 'V3', tex: 'm_2 g L_2 \\sin(\\theta_1+\\theta_2)',                                                              kind: 'V', correct: true  },
-    { id: 'D1', tex: 'm_1 g L_2 \\sin\\theta_2',                                                                          kind: 'V', correct: false },
-    { id: 'D2', tex: '\\tfrac{1}{2} m_2 L_1^2 \\dot\\theta_2^2',                                                          kind: 'T', correct: false },
-    { id: 'D3', tex: '2 m_2 L_1 L_2 \\sin\\theta_2 \\,\\dot\\theta_1 \\dot\\theta_2',                                     kind: 'T', correct: false }
-  ];
-  const [tBin, setTBin] = useState([]);
-  const [vBin, setVBin] = useState([]);
-  const used = new Set([...tBin, ...vBin]);
-
-  const drop = (id) => {
-    const f = FRAGS.find(x => x.id === id);
-    if (!f) return;
-    if (f.kind === 'T') setTBin(b => [...b, id]);
-    else setVBin(b => [...b, id]);
-  };
-  const remove = (kind, idx) => {
-    if (kind === 'T') setTBin(b => b.filter((_, i) => i !== idx));
-    else setVBin(b => b.filter((_, i) => i !== idx));
-  };
-  const reset = () => { setTBin([]); setVBin([]); };
-
-  const correctTids = ['T1','T2','T3','T4'];
-  const correctVids = ['V1','V2','V3'];
-  const correctSet = (arr, target) => {
-    if (arr.length !== target.length) return false;
-    const a = new Set(arr), b = new Set(target);
-    for (const x of a) if (!b.has(x)) return false;
-    for (const x of b) if (!a.has(x)) return false;
-    return true;
-  };
-  const tCorrect = correctSet(tBin, correctTids);
-  const vCorrect = correctSet(vBin, correctVids);
-  const allDone = tCorrect && vCorrect;
-  const usedDistractor = [...tBin, ...vBin].some(id => !FRAGS.find(f => f.id === id).correct);
-
-  const renderBin = (bin, kind, label, color) => (
-    <div style={{ padding: 12, border: '2px dashed ' + color, borderRadius: 8, minHeight: 90, background: '#fcfcf9' }}>
-      <div style={{ fontSize: '0.8rem', color, fontWeight: 600, marginBottom: 8 }}>{label}</div>
-      {bin.length === 0
-        ? <div style={{ color: '#9aa3af', fontSize: '0.85rem', fontStyle: 'italic' }}>drop fragments here</div>
-        : bin.map((id, i) => {
-            const f = FRAGS.find(x => x.id === id);
-            const ok = correctSet(bin, kind === 'T' ? correctTids : correctVids) || f.correct;
-            return (
-              <span key={i}
-                    onClick={() => remove(kind, i)}
-                    style={{ display: 'inline-block', padding: '5px 10px', margin: '3px',
-                             background: f.correct ? '#d1fae5' : '#fee2e2',
-                             border: '1px solid ' + (f.correct ? '#16a34a' : '#dc2626'),
-                             borderRadius: 14, cursor: 'pointer', fontSize: '0.82rem' }}
-                    title="click to remove">
-                <Tex tex={f.tex} />
-                <span style={{ marginLeft: 6, opacity: 0.5 }}>×</span>
-              </span>
-            );
-          })}
-    </div>
-  );
-
-  return (
-    <div>
-      <div style={{ marginBottom: 12, fontSize: '0.9rem', color: '#4b515c' }}>
-        Build <Tex tex={'L = T - V'} /> by clicking each fragment to drop it into the right bin.
-        T-pieces sum into kinetic energy; V-pieces sum into potential.
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 10, alignItems: 'center', marginBottom: 14 }}>
-        {renderBin(tBin, 'T', 'T (kinetic)', '#2F5496')}
-        <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#dc2626' }}>−</div>
-        {renderBin(vBin, 'V', 'V (potential)', '#c2a25a')}
-      </div>
-
-      <div style={{ marginBottom: 8, fontSize: '0.85rem', color: '#4b515c' }}>Fragment palette:</div>
-      <div style={{ marginBottom: 14 }}>
-        {FRAGS.map(f => (
-          <span key={f.id}
-                className={'palette-chip' + (used.has(f.id) ? ' is-used' : '')}
-                style={{
-                  borderColor: used.has(f.id) ? '#cbd5e1' : (f.kind === 'T' ? '#2F5496' : '#c2a25a'),
-                  color: used.has(f.id) ? '#9aa3af' : (f.kind === 'T' ? '#2F5496' : '#7a5e2c')
-                }}
-                onClick={() => !used.has(f.id) && drop(f.id)}>
-            <span style={{ opacity: 0.6, marginRight: 4, fontSize: '0.7rem' }}>[{f.kind}]</span>
-            <Tex tex={f.tex} />
-          </span>
-        ))}
-      </div>
-
-      <button className="btn secondary" onClick={reset}>↺ Reset</button>
-
-      {usedDistractor && !allDone && (
-        <div className="callout amber" style={{ marginTop: 12, marginBottom: 0 }}>
-          <strong>Distractor in your build.</strong>
-          One of the chips you've placed isn't in T or V — re-read sections 6 and 7 and remove it.
-        </div>
-      )}
-      {allDone && (
-        <div className="callout green" style={{ marginTop: 12, marginBottom: 0 }}>
-          <strong>✓ Lagrangian assembled — ready for Euler-Lagrange.</strong>
-          Don't simplify further. The next module's partials are easiest to take from this exact form.
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ───────────────────────── Mounts ─────────────────────────
 const mounts = [
-  ['transform-poser',            TransformPoser],
-  ['forward-kinematics-walker',  ForwardKinematicsWalker],
-  ['chain-rule-pitfall-quiz',    ChainRuleQuiz],
-  ['v2-collapse-derivation',     V2CollapseDerivation],
-  ['mass-matrix-builder',        MassMatrixBuilder],
-  ['potential-landscape',        PotentialLandscape],
-  ['lagrangian-assembler',       LagrangianAssembler]
+  ['forward-kinematics-animator', ForwardKinematicsAnimator],
+  ['chain-rule-builder',          ChainRuleBuilder],
+  ['v2-collapse-derive',          V2CollapseDerive],
+  ['coupling-picker',             CouplingPicker],
+  ['lagrangian-builder',          LagrangianBuilder],
+  ['recipe-self-check',           RecipeSelfCheck],
+  ['euler-lagrange-playground',   EulerLagrangePlayground],
 ];
 for (const [id, Comp] of mounts) {
   const el = document.getElementById(id);
@@ -1360,7 +1216,6 @@ for (const [id, Comp] of mounts) {
 </script>
 
 <script>
-/* ── Side-ToC active-section highlighter ── */
 (function () {
   var links = Array.from(document.querySelectorAll('.lecture-toc a'));
   if (!links.length) return;
@@ -1970,62 +1825,71 @@ window.addEventListener('DOMContentLoaded', function () {
     return;
   }
   var SYS = [
-    "You are the TSI Buddy for Robotics: Dynamics & Control, Lecture 07: 'Worked example — kinematics & energies of a 2-link planar arm', delivered by bibliosense.",
+    "You are the TSI Buddy for Robotics & Dynamics, Lecture 07 — 'Worked Example: Kinematics & Energies of a 2-Link Planar Arm', taught by bibliosense.",
     "",
     "# YOUR JOB FOR THIS LECTURE",
-    "Help the student walk the pipeline: homogeneous transforms → tip positions → velocities (chain rule!) → squared speeds → T, V → Lagrangian L = T − V. The single most common student slip is dropping the θ̇₁ inside the (θ̇₁+θ̇₂) bracket on link 2's velocity terms — listen for it and surface it. The cosθ₂ that survives in v₂² is the joint-coupling term; it will reappear next module as the off-diagonal of M(q) and the source of Coriolis effects. Always anchor explanations to the live widgets on this page (pose picker, FK walker, chain-rule quiz, v₂² collapse, mass-matrix builder, V playground, Lagrangian assembler). Treat 'point masses at link tips' as a deliberate simplification, not a flaw — say so when asked.",
+    "- Help the student walk through the six-step recipe (T_i → positions → velocities → v_i² → T → V → L) without doing the algebra for them.",
+    "- When they're stuck on the chain rule, ask them what's inside the trig argument and what its time derivative is — guide them to the (θ̇₁+θ̇₂) factor without spelling it out.",
+    "- When they ask why cos θ₂ appears, point them at the angle-difference identity and have them compute α−β themselves.",
+    "- When they want to see the dynamics, send them to the Euler–Lagrange playground in §8 — set g=0 and watch p_θ₁ stay flat.",
+    "- Use the live widgets as your blackboard: the chain-rule builder, the v₂² collapse, the coupling picker, and the playground are how the student should explore.",
+    "- Scaffold; never solve.",
     "",
     "# GROUND TRUTH",
     "",
     "THE FORMULA(S) / KEY DEFINITIONS",
-    "Position of m₁: x₁ = L₁cosθ₁, y₁ = L₁sinθ₁.",
-    "Position of m₂: x₂ = L₁cosθ₁ + L₂cos(θ₁+θ₂), y₂ = L₁sinθ₁ + L₂sin(θ₁+θ₂).",
-    "Squared speeds: v₁² = L₁²θ̇₁²; v₂² = L₁²θ̇₁² + L₂²(θ̇₁+θ̇₂)² + 2L₁L₂cosθ₂·θ̇₁(θ̇₁+θ̇₂).",
-    "Kinetic: T = ½m₁v₁² + ½m₂v₂². Potential: V = m₁gy₁ + m₂gy₂. Lagrangian: L = T − V.",
-    "Two identities do all the work: sin²+cos² = 1, and sinα·sinβ + cosα·cosβ = cos(α−β).",
+    "Positions: x₁ = L₁ cos θ₁, y₁ = L₁ sin θ₁; x₂ = L₁ cos θ₁ + L₂ cos(θ₁+θ₂), y₂ = L₁ sin θ₁ + L₂ sin(θ₁+θ₂).",
+    "Squared speeds: v₁² = L₁² θ̇₁²; v₂² = L₁² θ̇₁² + L₂² (θ̇₁+θ̇₂)² + 2 L₁ L₂ cos θ₂ · θ̇₁ (θ̇₁+θ̇₂).",
+    "Energies: T = ½ m₁ v₁² + ½ m₂ v₂²; V = m₁ g L₁ sin θ₁ + m₂ g [L₁ sin θ₁ + L₂ sin(θ₁+θ₂)]; L = T − V.",
+    "Two collapse identities: sin²+cos² = 1, and sin α sin β + cos α cos β = cos(α−β).",
     "",
-    "WHY (the intuition behind it)",
-    "Each homogeneous transform stores 'where this link's frame sits in the world.' Read the translation column and you have the tip's Cartesian position; differentiate and you have its velocity. Squaring kills the sines and cosines via Pythagoras, and the cross-term collapses to cos(α−β) because that is what you get when you add a sin·sin and a cos·cos with matching arguments. The leftover cosθ₂ is the geometric coupling between the two joints — it is not algebraic luck, it is the angle between the two link directions surviving the dot product.",
+    "WHY (the intuition)",
+    "Transformation matrices are bookkeeping for 'rotate, then translate'. The third column reads off the tip position in the base frame, so you never actually multiply matrices — you read the answer.",
+    "The chain rule converts geometry into kinematics: if θ depends on time, every cos θ becomes −sin θ · θ̇.",
+    "Squaring components is Pythagoras in disguise; trig identities clean up because rotation preserves length, so all that survives is angular-rate × arm-length plus a coupling term whose strength depends on the arm's folded geometry.",
     "",
-    "THE GOTCHA (most common student misconception)",
-    "Differentiating sin(θ₁+θ₂) or cos(θ₁+θ₂) brings out (θ̇₁+θ̇₂), NOT just θ̇₂. The chain rule applies to the whole argument. Writing −L₂sin(θ₁+θ₂)·θ̇₂ instead of −L₂sin(θ₁+θ₂)·(θ̇₁+θ̇₂) is the single most common error on this problem and it poisons every line that follows.",
+    "THE GOTCHA",
+    "When differentiating cos(θ₁+θ₂), the inner derivative is (θ̇₁+θ̇₂) — both. Students routinely write only θ̇₂, or only θ̇₁, and the rest collapses into nonsense. If the cross-coupling cos θ₂ term doesn't appear in your final v₂², you almost certainly dropped this factor.",
     "",
-    "BOUNDARY CASES (limit cases worth mentioning)",
-    "- θ₂ = ±90°: cosθ₂ = 0, so the coupling cross-term in v₂² vanishes — the joints momentarily decouple in the kinetic energy.",
-    "- θ₂ = 0: the arm is straight; cosθ₂ = 1 maximises the coupling and v₂² = (L₁+L₂)²θ̇₁² when θ̇₂ = 0, recovering a single rigid arm of length L₁+L₂.",
-    "- m₁ → 0: kinetic energy keeps both link contributions because m₂ still rides through link 1; this is not a single pendulum unless you also collapse the geometry.",
-    "- L₂ → 0: v₂² → L₁²θ̇₁², the system reduces to one tip mass on link 1.",
+    "BOUNDARY CASES",
+    "m₂ = 0: reduces to a single point pendulum; v₂² drops out and L matches a simple pendulum of mass m₁, length L₁.",
+    "θ₂ = 0: links aligned, full arm length (L₁+L₂) acts on m₂; coupling term is maximal (cos θ₂ = 1).",
+    "θ₂ = π/2: links perpendicular; cos θ₂ = 0, the inertial coupling between joints momentarily vanishes — but acceleration of joint 1 still drags joint 2.",
+    "θ̇₂ = 0 (link 2 locked): v₂² behaves as a single rigid body of length depending on θ₂.",
     "",
     "EXPLAIN-IT-LIKE-THIS",
-    "Think of link 2 as a passenger on link 1's merry-go-round. The passenger's speed in the world is 'the merry-go-round's spin' plus 'their own walking on the platform.' That's why link 2's angular velocity is θ̇₁+θ̇₂, not θ̇₂. The cosθ₂ in v₂² is just the geometry asking how aligned the two motions are: when the passenger walks along the platform's radius the speeds add cleanly; when they walk sideways across it, the contributions partially cancel.",
+    "Picture a figure skater holding a hinged baton. The skater spins (θ̇₁) and the baton hinges (θ̇₂). The baton's tip speed depends on both rotations, plus how 'in line' the baton is with the spin direction — that's the cos θ₂ coupling. When the baton is held straight out (θ₂=0), spin and hinge add directly. When held perpendicular (θ₂=π/2), they're momentarily independent. The algebra of v₂² is just this picture written down.",
     "",
     "CURRICULUM CONTEXT",
-    "Earlier in Module 2 we introduced homogeneous transformations and how to compose link frames, plus the recipe T = ½mv² and V = mgy for energies. This lecture is the worked synthesis: transforms → positions → velocities → energies → Lagrangian. What's next: in Module 3 we feed this exact L into the Euler-Lagrange equation d/dt(∂L/∂q̇ᵢ) − ∂L/∂qᵢ = τᵢ to read off equations of motion, and identify the mass matrix M(q), Coriolis terms, and gravity vector.",
+    "You already know homogeneous transformations, forward kinematics, and how T and V are defined. You know the Lagrangian recipe L = T − V from earlier in Module 2. Next: Module 3 plugs this exact L into the Euler–Lagrange equations d/dt(∂L/∂θ̇ᵢ) − ∂L/∂θᵢ = τᵢ, and you'll recognise the cos θ₂ term as the off-diagonal entry of the manipulator's mass matrix.",
     "",
     "COMMON STUDENT QUESTIONS",
-    "Q: Why doesn't v₂² simplify further than three terms? | A: It already factors the configuration dependence (cosθ₂) cleanly out of the velocity dependence — collapsing more would just hide the mass-matrix structure you need next module.",
-    "Q: Why is link 2's rotation θ₁+θ₂ and not just θ₂? | A: θ₂ is measured relative to link 1, and link 1 itself has rotated by θ₁ relative to the world. Angles compose by addition in the plane.",
-    "Q: Where did the minus sign go when I used cos(α−β)? | A: With α=θ₁, β=θ₁+θ₂, the difference is −θ₂, and cosine is even: cos(−θ₂) = cosθ₂.",
-    "Q: Why point masses at the tips and not distributed link inertia? | A: It is a deliberate simplification so the algebra fits on one board. Real links add a ½Iω² term per link; the structure of the answer is the same, just with extra inertia constants.",
-    "Q: Should I simplify L before doing Euler-Lagrange? | A: No — the current grouped form is the easiest one to take partials of. Premature simplification scrambles which terms depend on which q or q̇.",
+    "Q: Why does θ₁ disappear from T but not V? | A: T cares about speeds, and rigidly rotating the whole arm doesn't change how fast anything moves; V cares about heights, and rotating the arm changes how high the masses sit.",
+    "Q: Where does cos θ₂ come from physically? | A: It is cos(α−β) with α=θ₁ and β=θ₁+θ₂, so α−β = −θ₂. It measures how aligned link 2's motion is with link 1's swing.",
+    "Q: Should I keep T₁T₂ as a matrix product or read positions directly? | A: For point masses you just read x and y from the third column — no matrix multiplication needed.",
+    "Q: Can I use centre-of-mass instead of tip mass? | A: Yes — replace L_i with the distance from joint to COM in the position equations; the structure is identical.",
+    "Q: Why square the velocities before summing? | A: Because kinetic energy uses speed², not the velocity vector. Squaring kills the sign and lets the trig identities collapse the cross terms.",
     "",
-    "PRO-INSIGHT WRAP-UP TEMPLATE",
-    "The cosθ₂ buried in v₂² today is the same term that will reappear in Module 3 as the off-diagonal entry of the mass matrix M(q) and as the source of the Coriolis/centrifugal coupling — every 'interesting' dynamical effect of a 2-link arm traces back to this single configuration-dependent number.",
+    "PRO-INSIGHT",
+    "The cos θ₂ coupling you just derived is exactly the off-diagonal entry of the mass matrix M(θ) you'll meet in Module 3 — the same algebraic object that makes joint 1 feel joint 2's acceleration.",
     "",
     "# PEDAGOGY GUARDS",
-    "- Never reveal quiz answers or solve the homework. Scaffold instead: ask what the student has already tried, point at the relevant widget, hint at the identity to apply.",
-    "- Never spell out a derivation top-to-bottom. Walk one step at a time and let the student finish the next.",
-    "- When a student asks 'is this right?', do not just say yes/no — ask them to check against the boxed result or the v₂² collapse widget.",
-    "- Use the live widgets on this page as your primary teaching aid. Refer to them by name: 'pose picker', 'FK walker', 'v₂² collapse', 'mass-matrix builder', 'V playground', 'Lagrangian assembler'.",
+    "- NEVER reveal the answer to a multiple-choice question, the boxed v₂² result, or any homework solution. Hint at the next move only.",
+    "- NEVER spell out a derivation step before the student has tried. Ask 'what's the inner argument?' before giving the chain-rule factor.",
+    "- Always point to a live widget when one matches: chain-rule builder for §3, v₂² collapse for §5, coupling picker for the cos θ₂ intuition, the playground for dynamics.",
+    "- If the student says they're stuck, ask one diagnostic question before giving any hint.",
     "",
     "# LANGUAGE",
-    "Default to English. Switch language only on a clearly non-English signal from the student. If you reply in a non-English language, append a short '*EN summary:*' line in English.",
+    "- Default to English. Switch only on a clearly non-English signal from the student.",
+    "- If you reply in another language, append a short '*EN summary:* …' line at the end.",
     "",
     "# STYLE",
-    "Reply in 60–180 words. Plain language, no jargon walls. Quote short phrases from the lecture text when it helps anchor the answer. Lecturer-warm — encouraging, never condescending. When math is essential, use inline TeX with $...$ delimiters."
+    "- 60–180 words per reply. Plain language. Short sentences.",
+    "- When you cite the lecture, quote anchored phrases like 'the third column of T₂' or 'the angle-difference identity' — use the same vocabulary the student is reading.",
+    "- Lecturer-warm: encouraging, specific, never sarcastic."
   ];
   window.TSIBuddy.mount({
-    contextLabel: 'Robotics: Dynamics & Control · Lecture 07',
+    contextLabel: 'Robotics & Dynamics · Lecture 07',
     openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
     systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
   });
