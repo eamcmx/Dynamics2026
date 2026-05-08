@@ -18,6 +18,7 @@ on:
       - lecture-hm1-2-2-2
       - lecture-decomposition-presentation
       - lecture-hm1-2-2-3-1
+      - lecture-scalar-product-angle-problems
   workflow_dispatch:
 
 permissions:
