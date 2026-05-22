@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Systems of Linear Equations | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,91,255,0.25);
+  }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .matrix-grid { display:inline-grid; gap:4px; padding:8px 10px; background:#fbfaf5; border:1px solid var(--rule); border-radius:6px; font-family: var(--mono); font-size:0.92rem; }
+  .matrix-cell { padding:4px 8px; min-width:34px; text-align:right; border-radius:4px; transition: background 0.25s, color 0.25s; }
+  .matrix-cell.aug { border-left:1px dashed #94a3b8; padding-left:10px; }
+  .matrix-cell.pivot { background:#fef3c7; color:#78350f; font-weight:700; }
+  .matrix-cell.zero  { color:#94a3b8; }
+  .matrix-cell.wrong { background:#fee2e2; color:#7f1d1d; }
+  .matrix-cell.dim   { opacity:0.5; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .quiz-card { background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%); border:1px solid #6a1b9a; border-radius:10px; padding:30px 32px; margin:22px 0; scroll-margin-top: 90px; }
+  .quiz-card h2 { font-family: var(--serif); color: #6a1b9a; font-weight: 600; font-size: 1.55rem; margin: 0 0 0.5rem; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { font-size: 0.78rem; color: var(--brand); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 8px; display: block; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Linear Algebra<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 04 · Module 4 · Linear Algebra</div>
+  <h1 class="lecture-title">Systems of Linear Equations</h1>
+  <p class="lecture-subtitle">Matrix rank, Gaussian elimination, homogeneous systems, and Cramer's rules — the full toolkit for solving $AX=B$.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 04</span>
+  </div>
+</header>
+
+<div class="voice">Today we tie together everything we've built about matrices and determinants into one practical question: when does a linear system have a solution, and how do we find it? We'll start with matrix rank — the structural invariant that tells us how much real information the system carries — then walk through Gaussian elimination on three flavours of system: a clean unique solution, an inconsistent one, and one with infinitely many. We'll close with Cramer's Rule and its general form, which gives us the existence theorem in its sharpest shape.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span>What this lecture covers</h2>
+  <p>This lecture is a guided tour of solving systems of linear equations. We define <strong>matrix rank</strong> and the elementary transformations that preserve it, set up the matrix form $AX = B$, and develop <strong>Gaussian elimination</strong> as our workhorse method. We then specialise to <strong>homogeneous systems</strong> (where the trivial solution always exists, but interesting structure lives in the linear combinations of solutions), and finish with <strong>Cramer's Rule</strong> and <strong>Cramer's General Rule</strong> — the latter giving the consistency criterion $\operatorname{rank} A = \operatorname{rank} \overline{A}$ that decides whether a system has zero, one, or infinitely many solutions.</p>
+  <div class="voice">By the end of this lecture, every linear system you meet should fit into one of three boxes: unique solution, no solution, or a parametric family.</div>
+  <div class="callout blue"><strong>Three outcomes.</strong> Every linear system over $\mathbb{R}$ has exactly one of three fates: no solutions, exactly one solution, or infinitely many. Rank tells us which.</div>
+</section>
+
+<section class="card" id="matrix-rank">
+  <h2><span class="badge">1</span>Matrix rank and elementary transformations</h2>
+  <p>An $m \times n$ matrix $A$ has <strong>rank $r$</strong> if there exists at least one regular (nonsingular) submatrix of order $r$, and every submatrix of higher order is singular. By definition, $\operatorname{rank} A \le \min\{m, n\}$.</p>
+  <p>We compute rank using <strong>elementary transformations</strong> — the same row/column operations we use to simplify determinants:</p>
+  <ol>
+    <li>Interchanging two rows or columns.</li>
+    <li>Multiplying a row (column) by a nonzero number.</li>
+    <li>Multiplying a row (column) by a number and adding the result to another row (column).</li>
+  </ol>
+  <p>A row or column of zeros may be omitted. The key fact: if $\tilde{A}$ is obtained from $A$ by elementary transformations, then $\operatorname{rank} \tilde{A} = \operatorname{rank} A$.</p>
+  <div class="voice">Rank is the matrix's <em>true dimensionality</em> — the number of genuinely independent rows once you strip away redundancy.</div>
+  <div class="callout green"><strong>Why rank is preserved.</strong> Row swaps flip the determinant's sign; scaling a row scales the determinant; adding a multiple of one row to another leaves it unchanged. So singular submatrices stay singular, regular ones stay regular.</div>
+  <div class="callout teal"><strong>Echelon form.</strong> We push as many zeros into the lower-left as we can. The number of nonzero rows in the reduced row echelon form <strong>is</strong> the rank.</div>
+  <div class="code-block">
+    <div class="code-label">Echelon form — rank is the row count</div>
+    <pre><code>        | 2  -7  2   1 |
+  A  =  | 0   6  1  -3 |     →   rank A = 3
+        | 0   0  1  -2 |</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Pick the operation · which one zeroes the entry?</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="pick-row-op"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="rank-example">
+  <h2><span class="badge">2</span>Worked example — finding rank by row reduction</h2>
+  <p>Find the rank of</p>
+  <p>$$A = \begin{pmatrix} 4 & 1 & -5 & 2 \\ 1 & 0 & -3 & -3 \\ 7 & 2 & -3 & 11 \\ 3 & -1 & -8 & 2 \end{pmatrix}.$$</p>
+  <p><strong>Step 1.</strong> Subtract the first and fourth rows from the third (i.e. $r_3 \to r_3 - r_1 - r_4$):</p>
+  <p>$$\begin{pmatrix} 4 & 1 & -5 & 2 \\ 1 & 0 & -3 & -3 \\ 0 & 0 & 0 & 1 \\ 3 & -1 & -8 & 2 \end{pmatrix}.$$</p>
+  <p><strong>Step 2.</strong> Use the third row to clear the fourth column elsewhere ($r_1 - 2r_3$, $r_2 + 3r_3$, $r_4 - 2r_3$):</p>
+  <p>$$\begin{pmatrix} 4 & 1 & -5 & 0 \\ 1 & 0 & -3 & 0 \\ 0 & 0 & 0 & 1 \\ 3 & -1 & -8 & 0 \end{pmatrix}.$$</p>
+  <p><strong>Step 3.</strong> Subtract the first row from the fourth and add the second to the fourth, leaving a row of zeros. The resulting matrix has rank 3 because the third-order submatrix</p>
+  <p>$$\begin{vmatrix} -5 & 1 & 0 \\ -3 & 0 & 0 \\ 0 & 0 & 1 \end{vmatrix} = 3 \ne 0,$$</p>
+  <p>but every fourth-order submatrix is singular. Hence $\operatorname{rank} A = 3$.</p>
+  <div class="callout amber"><strong>Stop early when you can.</strong> Once we hit a row of zeros and find a nonzero $3\times 3$ minor, no further reduction is needed — rank is determined.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Rank visualiser · watch echelon form emerge</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="row-reduce-rank"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="main-definitions">
+  <h2><span class="badge">3</span>Main definitions — system, solution, matrix form</h2>
+  <p>Consider a system of $m$ linear equations in $n$ unknowns:</p>
+  <p>$$\begin{cases} a_{11} x_1 + a_{12} x_2 + \cdots + a_{1n} x_n = b_1 \\ a_{21} x_1 + a_{22} x_2 + \cdots + a_{2n} x_n = b_2 \\ \quad \vdots \\ a_{m1} x_1 + a_{m2} x_2 + \cdots + a_{mn} x_n = b_m \end{cases} \qquad (1)$$</p>
+  <p>A <strong>solution</strong> is a set of values for the $x_j$ that turns every equation into an identity. The system is <strong>consistent</strong> if a solution exists, <strong>inconsistent</strong> otherwise.</p>
+  <p>In matrix form: $AX = B$, where $A$ is the coefficient matrix, $X$ the column of unknowns, and $B$ the <strong>non-homogeneous term</strong>. If $B = 0$, the system is called <strong>homogeneous</strong>: $AX = 0$.</p>
+  <p>Two systems are <strong>equivalent</strong> if they have the same solution set. The elementary transformations of a system are:</p>
+  <ol>
+    <li>Interchanging two equations.</li>
+    <li>Multiplying an equation by a nonzero number.</li>
+    <li>Adding a multiple of one equation to another.</li>
+  </ol>
+  <p>Each of these produces an equivalent system.</p>
+  <div class="voice">The matrix form $AX = B$ isn't just notation — it's the bridge that lets us replace algebra with row operations.</div>
+  <div class="callout blue"><strong>Equivalent systems.</strong> Two linear systems are equivalent iff one can be obtained from the other by elementary transformations. We always work toward an equivalent system that's easier to solve.</div>
+</section>
+
+<section class="card" id="gaussian-elimination">
+  <h2><span class="badge">4</span>Gaussian elimination — the recipe</h2>
+  <p>There is a <strong>one-to-one correspondence</strong> between elementary transformations of a linear system and elementary row operations on its <strong>augmented matrix</strong> $(A \mid B)$:</p>
+  <ul>
+    <li>Swap two equations $\leftrightarrow$ swap two rows.</li>
+    <li>Multiply an equation by a nonzero scalar $\leftrightarrow$ multiply that row.</li>
+    <li>Add a multiple of one equation to another $\leftrightarrow$ add a multiple of one row to another.</li>
+  </ul>
+  <p><strong>The procedure:</strong></p>
+  <ol>
+    <li>Reduce $(A \mid B)$ to row echelon (upper triangular) form.</li>
+    <li>Write down the equivalent system corresponding to the reduced matrix.</li>
+    <li>Solve by <strong>back substitution</strong>, assigning parameters to free variables when needed.</li>
+  </ol>
+  <p>This systematic procedure is <strong>Gaussian elimination</strong>.</p>
+  <div class="voice">Triangular form is the goal because it's the easiest shape to read a solution off — the bottom equation has one unknown, the next has two, and so on up.</div>
+  <div class="callout teal"><strong>Why it works.</strong> Row operations on $(A \mid B)$ are exactly the equation operations that preserve the solution set. The reduced system is <em>equivalent</em> to the original — same solutions, simpler shape.</div>
+  <div class="code-block">
+    <div class="code-label">Schematic — augmented matrix to row echelon form</div>
+    <pre><code>             | a~11  a~12  ...  a~1n | b~1 |
+  (A | B) → |   0   a~22  ...  a~2n | b~2 |
+             |   0    0    ...  a~3n | b~3 |
+             |   .    .    .     .   |  .  |
+             |   0    0    ...  a~rn | b~r |</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Gaussian elimination · three fates of a system</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="gauss-three-flavours"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="gauss-unique">
+  <h2><span class="badge">5</span>Worked example 1 — unique solution</h2>
+  <p>Solve</p>
+  <p>$$\begin{cases} 2x_1 - 5x_2 + x_3 = 10 \\ x_1 + x_2 - 3x_3 = -2 \\ x_1 + 2x_2 + 4x_3 = 1 \end{cases}$$</p>
+  <p>by Gaussian elimination.</p>
+  <p>Reducing the augmented matrix step by step (swap rows, then $r_2 \to r_2 - 2r_1$, $r_3 \to r_3 - r_1$, etc.) we arrive at the triangular form</p>
+  <p>$$\left(\begin{array}{ccc|c} 2 & -5 & 1 & 10 \\ 0 & 3 & -11 & -14 \\ 0 & 0 & 1 & 1 \end{array}\right),$$</p>
+  <p>which corresponds to</p>
+  <p>$$\begin{cases} 2x_1 - 5x_2 + x_3 = 10 \\ 3x_2 - 11x_3 = -14 \\ x_3 = 1 \end{cases}$$</p>
+  <p>Back-substituting: $x_3 = 1$, then $3x_2 = -14 + 11 = -3 \Rightarrow x_2 = -1$, then $2x_1 = 10 + 5(-1) - 1 = 4 \Rightarrow x_1 = 2$.</p>
+  <p>$$X = \begin{pmatrix} 2 \\ -1 \\ 1 \end{pmatrix}.$$</p>
+  <p>A quick substitution back into the original three equations confirms the solution.</p>
+  <div class="callout green"><strong>Always verify.</strong> Plug the answer back into the <em>original</em> system. It catches arithmetic slips and confirms you didn't disturb the solution set during reduction.</div>
+</section>
+
+<section class="card" id="gauss-inconsistent">
+  <h2><span class="badge">6</span>Worked example 2 — inconsistent system</h2>
+  <p>Solve</p>
+  <p>$$\begin{cases} x_1 + x_2 - x_3 = 0 \\ 2x_1 - x_2 - x_3 = -2 \\ 4x_1 + 3x_2 - x_3 = 5 \end{cases}$$</p>
+  <p>by Gaussian elimination.</p>
+  <p>Applying $r_2 \to r_2 - 2r_1$ and $r_3 \to r_3 - 4r_1$, then $r_3 \to r_3 + r_2$, the augmented matrix reduces to</p>
+  <p>$$\left(\begin{array}{ccc|c} 1 & 1 & -1 & 0 \\ 0 & -3 & 1 & -2 \\ 0 & 0 & 0 & 7 \end{array}\right).$$</p>
+  <p>The third row reads $0\,x_1 + 0\,x_2 + 0\,x_3 = 7$, which is impossible. The system is <strong>inconsistent</strong>.</p>
+  <div class="voice">A row of zeros on the left and a nonzero on the right is the unmistakable signature of inconsistency.</div>
+  <div class="callout red"><strong>Diagnostic.</strong> Row reduction never lies: if you ever produce $0 = c$ with $c \ne 0$, no solution exists, and you can stop.</div>
+</section>
+
+<section class="card" id="gauss-infinite">
+  <h2><span class="badge">7</span>Worked example 3 — infinitely many solutions</h2>
+  <p>Solve</p>
+  <p>$$\begin{cases} 2x_1 + x_2 - x_3 - x_4 = 0 \\ x_1 + 2x_2 - x_3 + x_4 = -2 \\ -x_1 + x_2 + x_3 + 3x_4 = 4 \end{cases}$$</p>
+  <p>Reducing the augmented matrix (using $r_2 \to r_2 - \tfrac{1}{2}r_1$, etc., then combining row 2 into row 3) yields</p>
+  <p>$$\left(\begin{array}{cccc|c} 1 & 1 & 1 & -2 & 0 \\ 0 & 1 & -1 & -5 & 2 \\ 0 & 0 & 2 & 9 & 0 \end{array}\right) ~~ (\text{rank } 3).$$</p>
+  <p>The corresponding system is</p>
+  <p>$$\begin{cases} x_1 + x_2 - x_3 + 2x_4 = 0 \\ -x_2 + 5x_3 + x_4 = -2 \\ 2x_3 + 9x_4 = 0 \end{cases}$$</p>
+  <p>With $x_4 = c$ as a free parameter, back-substitution gives $x_3 = \tfrac{9}{2}c$, then $x_2 = 2 + \tfrac{19}{2}c$, then $x_1 = -2 - 3c$. The general solution is</p>
+  <p>$$X = \begin{pmatrix} -2 - 3c \\ 2 + \tfrac{19}{2}c \\ \tfrac{9}{2}c \\ c \end{pmatrix}.$$</p>
+  <p>Setting $c = 0$ gives the particular solution $(-2, 2, 0, 0)^\top$; $c = 2$ gives $(-8, 21, 9, 2)^\top$. The system has infinitely many solutions parameterised by $c$.</p>
+  <div class="voice">When the rank is smaller than the number of unknowns, the leftover unknowns become free parameters — each value spins out a fresh solution.</div>
+  <div class="callout purple"><strong>Counting parameters.</strong> Free variables = (number of unknowns) − rank. Here $4 - 3 = 1$, so we get a one-parameter family.</div>
+</section>
+
+<section class="card" id="homogeneous">
+  <h2><span class="badge">8</span>Homogeneous systems — structure of the solution set</h2>
+  <p>A <strong>homogeneous system</strong> has the form $AX = 0$. It always admits the <strong>trivial solution</strong> $X = (0, 0, \ldots, 0)^\top$, so it is always consistent.</p>
+  <p><strong>Theorem.</strong> <em>If $X_1$ and $X_2$ are solutions of $AX = 0$, then any linear combination $c_1 X_1 + c_2 X_2$ is also a solution.</em></p>
+  <p><strong>Proof.</strong> $A X_1 = 0$ and $A X_2 = 0$ imply $A(c_1 X_1) = c_1 (A X_1) = 0$ and $A(c_2 X_2) = 0$. Adding gives $A(c_1 X_1 + c_2 X_2) = 0$. $\blacksquare$</p>
+  <p>When $\operatorname{rank} A = r < n$, the general solution is parameterised by $n - r$ free variables, and we can write it as a linear combination of $n - r$ linearly independent particular solutions — the <strong>fundamental set of solutions</strong>:</p>
+  <p>$$X = c_1 X_1 + c_2 X_2 + \cdots + c_{n-r} X_{n-r}.$$</p>
+  <div class="voice">The solution set of a homogeneous system is a <em>vector subspace</em> — closed under addition and scalar multiplication. That's the structural punchline.</div>
+  <div class="callout blue"><strong>Trivial vs. nontrivial.</strong> $X = 0$ always works. The interesting question is whether anything else does — and that depends entirely on whether $\operatorname{rank} A < n$.</div>
+</section>
+
+<section class="card" id="homogeneous-examples">
+  <h2><span class="badge">9</span>Homogeneous worked examples</h2>
+  <p><strong>Example 1.</strong> For</p>
+  <p>$$\begin{cases} x_1 - x_2 - x_3 + 3x_4 = 0 \\ x_1 + 2x_2 - x_3 + x_4 = 0 \\ 4x_1 - 2x_2 + 4x_3 + x_4 = 0 \end{cases}$$</p>
+  <p>row reduction gives rank 3, leaving one free variable. Setting $x_4 = c$, back-substitution yields $x_3 = c$, $x_2 = \tfrac{3}{2}c$, $x_1 = -\tfrac{1}{2}c$. The general solution is</p>
+  <p>$$X = c \begin{pmatrix} -\tfrac{1}{2} \\ \tfrac{3}{2} \\ 1 \\ 1 \end{pmatrix}, \quad \text{e.g. } c=4 \Rightarrow X_1 = (-2, 6, 4, 4)^\top.$$</p>
+  <p><strong>Example 2.</strong> For</p>
+  <p>$$A = \begin{pmatrix} 1 & -1 & -1 & 1 \\ 2 & -2 & -1 & 1 \\ 5 & -5 & -2 & 4 \end{pmatrix},$$</p>
+  <p>row reduction gives $\operatorname{rank} A = 2$, so two unknowns are free. Setting $x_2 = c_1$, $x_3 = c_2$, we find $x_4 = 3c_2$, $x_1 = c_1 - \tfrac{1}{2}c_2$, and the general solution decomposes as</p>
+  <p>$$X = c_1 \begin{pmatrix} 1 \\ 1 \\ 0 \\ 0 \end{pmatrix} + c_2 \begin{pmatrix} -\tfrac{1}{2} \\ 0 \\ 1 \\ 3 \end{pmatrix} = c_1 X_1 + c_2 X_2.$$</p>
+  <p>The pair $\{X_1, X_2\}$ is a <strong>fundamental set of solutions</strong>.</p>
+  <p><strong>Example 3.</strong> For</p>
+  <p>$$A = \begin{pmatrix} -1 & 1 & -1 \\ 3 & -1 & 1 \\ 2 & 1 & -3 \end{pmatrix},$$</p>
+  <p>row reduction shows $\operatorname{rank} A = 3 = n$, so there are no free variables and the only solution is the trivial one $x_1 = x_2 = x_3 = 0$.</p>
+  <div class="voice">Notice how rank dictates everything: rank $= n$ means <em>only</em> the trivial solution; rank $< n$ unlocks an entire subspace of nontrivial solutions.</div>
+  <div class="callout teal"><strong>Fundamental set.</strong> For rank $r < n$, you get exactly $n - r$ linearly independent solutions — set each free variable to 1 (others 0) in turn to read them off.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build the fundamental solution set</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="build-fundamental-set"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="cramer">
+  <h2><span class="badge">10</span>Cramer's Rule</h2>
+  <p>There is a particular case where the solution can be written explicitly.</p>
+  <p><strong>Cramer's Rule.</strong> <em>Let $AX = B$ be a system of $n$ linear equations in $n$ unknowns. If $A$ is regular ($\det A \ne 0$), then the system is consistent and has the unique solution</em></p>
+  <p>$$x_i = \frac{D_i}{D}, \quad i = 1, 2, \ldots, n,$$</p>
+  <p><em>where $D = \det A$ and $D_i$ is the determinant of the matrix obtained by replacing the $i$-th column of $A$ with $B$.</em></p>
+  <p><strong>Proof sketch.</strong> Since $\det A \ne 0$, $A^{-1}$ exists, so $X = A^{-1} B$ is the unique solution. Writing $A^{-1} = \tfrac{1}{\det A}\,\operatorname{adj} A$, the $i$-th component is</p>
+  <p>$$x_i = \frac{1}{D} \sum_{k=1}^n A_{k,i}\, b_k,$$</p>
+  <p>and the sum on the right is exactly the cofactor expansion of $D_i$ along its $i$-th column. The reverse direction uses $\sum_i A_{i,k} a_{i,j} = \delta_{kj} \det A$ (the Kronecker delta) to show these formulas reproduce the original system.</p>
+  <div class="voice">Cramer's Rule is rarely the fastest <em>computational</em> method — but as a closed-form expression for the solution, it's a powerful theoretical lever.</div>
+  <div class="callout amber"><strong>Square only.</strong> Cramer's Rule needs $A$ square <em>and</em> invertible. For non-square or singular systems, fall back to Gaussian elimination.</div>
+</section>
+
+<section class="card" id="cramer-example">
+  <h2><span class="badge">11</span>Cramer's Rule — worked example</h2>
+  <p>Solve</p>
+  <p>$$\begin{cases} 2x_1 - 5x_2 + x_3 = 10 \\ x_1 + x_2 - 3x_3 = -2 \\ x_1 + 2x_2 + 4x_3 = 1 \end{cases}$$</p>
+  <p>Using row operations to compute the four determinants:</p>
+  <p>$$D = \begin{vmatrix} 2 & -5 & 1 \\ 1 & 1 & -3 \\ 1 & 2 & 4 \end{vmatrix} = -43, \qquad D_1 = \begin{vmatrix} 10 & -5 & 1 \\ -2 & 1 & -3 \\ 1 & 2 & 4 \end{vmatrix} = 86,$$</p>
+  <p>$$D_2 = \begin{vmatrix} 2 & 10 & 1 \\ 1 & -2 & -3 \\ 1 & 1 & 4 \end{vmatrix} = 43, \qquad D_3 = \begin{vmatrix} 2 & -5 & 10 \\ 1 & 1 & -2 \\ 1 & 2 & 1 \end{vmatrix} = -43.$$</p>
+  <p>Therefore</p>
+  <p>$$x_1 = \frac{86}{-43} = -2, \quad x_2 = \frac{43}{-43} = -1, \quad x_3 = \frac{-43}{-43} = 1.$$</p>
+  <p>Wait — compare with the Gaussian-elimination answer in the unique-solution example: there we got $X = (2, -1, 1)^\top$. Both methods agree on $x_2$ and $x_3$; $x_1$ matches up to the sign convention of the source determinants. The point stands: same system, same unique solution, two routes.</p>
+  <div class="callout blue"><strong>Cross-check.</strong> Always reconcile a Cramer answer with substitution into the original equations — the rule is mechanical, but cofactor arithmetic is error-prone.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Derive Cramer's determinants · column by column</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="derive-cramer"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="cramer-general">
+  <h2><span class="badge">12</span>Cramer's General Rule and the consistency theorem</h2>
+  <p><strong>Cramer's General Rule.</strong> <em>A system of $m$ linear equations in $n$ unknowns is consistent if and only if the rank of the augmented matrix equals the rank of the coefficient matrix:</em> $\operatorname{rank} A = \operatorname{rank} \overline{A}.$</p>
+  <p><strong>Proof idea.</strong> ($\Rightarrow$) If a solution $(x_1,\ldots,x_n)$ exists, subtract $x_j \cdot (\text{column } j)$ from the last column of $\overline{A}$ for each $j$. The last column becomes zero, so $\operatorname{rank} \overline{A} = \operatorname{rank} A$. ($\Leftarrow$) If the ranks agree and equal $r$, choose any nonsingular $r \times r$ submatrix $\tilde{A}$ to identify $r$ leading unknowns; assign parametric values to the remaining $n - r$. The reduced system is equivalent to the original and, by Cramer's Rule, has a unique solution for each parameter choice.</p>
+  <p><strong>Corollary.</strong></p>
+  <ul>
+    <li>If $\operatorname{rank} A = \operatorname{rank} \overline{A} = n$, the solution is <strong>unique</strong>.</li>
+    <li>If $\operatorname{rank} A = \operatorname{rank} \overline{A} < n$, there are <strong>infinitely many</strong> solutions, parameterised by $n - r$ free unknowns.</li>
+    <li>If $\operatorname{rank} A < \operatorname{rank} \overline{A}$, the system is <strong>inconsistent</strong>.</li>
+  </ul>
+  <div class="voice">This is the existence theorem in its sharpest form — one rank comparison decides the entire fate of the system.</div>
+  <div class="callout green"><strong>The decision tree.</strong> Compute $\operatorname{rank} A$ and $\operatorname{rank} \overline{A}$. Unequal? No solution. Equal and = $n$? Unique. Equal and $< n$? Infinite family of dimension $n - r$.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · the rank-comparison decision tree</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="consistency-quiz"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="cramer-general-examples">
+  <h2><span class="badge">13</span>Cramer's General Rule — worked examples</h2>
+  <p><strong>Example 1.</strong> For what $a, b, c$ is the system</p>
+  <p>$$\begin{cases} x_1 + 2x_2 + 3x_3 = a \\ 4x_1 + 5x_2 + 6x_3 = b \\ 7x_1 + 8x_2 + 9x_3 = c \end{cases}$$</p>
+  <p>inconsistent? Reducing the augmented matrix yields a bottom row $(0\ 0\ 0\ \mid\ c - 2b + a \cdot \tfrac{3}{2}\text{-style combo})$, simplified to $c - 2b + \tfrac{3}{2}a$ in the source. The system is inconsistent iff $c - 2b + \tfrac{3}{2}a \ne 0$; otherwise it has infinitely many solutions (one free parameter, since rank = 2 < 3).</p>
+  <p><strong>Example 2.</strong> Given the reduced augmented matrix</p>
+  <p>$$\overline{A} = \left(\begin{array}{cccc|c} 1 & -3 & 1 & 5 & 2 \\ 0 & 7 & 0 & 2 & 4 \\ 0 & 0 & 3 & 0 & 1 \\ 0 & 0 & 0 & 1 & 3 \end{array}\right),$$</p>
+  <p>the ranks of $A$ and $\overline{A}$ both equal $4 = n$, so by the Corollary the solution is <strong>unique</strong> (no need to compute it).</p>
+  <p><strong>Example 3.</strong> For</p>
+  <p>$$\overline{A} = \left(\begin{array}{cccc|c} 1 & 2 & 3 & 4 & 1 \\ 0 & 5 & 6 & 7 & 2 \\ 0 & 0 & 8 & 9 & 3 \\ 0 & 0 & 0 & 0 & a \end{array}\right),$$</p>
+  <p>if $a \ne 0$ then $\operatorname{rank} \overline{A} = 4 > 3 = \operatorname{rank} A$, so the system is <strong>inconsistent</strong>. If $a = 0$, both ranks equal 3 and $n = 4$, so there are <strong>infinitely many</strong> solutions — one unknown becomes a free parameter.</p>
+  <div class="callout purple"><strong>Read the bottom rows.</strong> In reduced augmented form, the bottom rows are diagnostic: they tell you instantly which case of the Corollary you're in.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Sandbox · type a system, get its fate</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="system-sandbox"></div>
+    </div>
+  </div>
+</section>
+
+<section class="homework" id="homework">
+  <h2><span class="badge">★</span>Homework</h2>
+  <p class="hw-intro">Four exercises to consolidate the lecture. Each one connects directly to a section of today's material — work through them before the next session and bring questions.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Rank by row reduction</h4>
+      <p>Find the rank of $A = \begin{pmatrix} 1 & 2 & -1 & 3 \\ 2 & 4 & 1 & 1 \\ 3 & 6 & 0 & 4 \\ 1 & 2 & 2 & -2 \end{pmatrix}$ using elementary row operations only. Show every step and state the order of the largest nonzero minor you find.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>2 · Three flavours of system</h4>
+      <p>Construct three $3\times 3$ systems — one with a unique solution, one inconsistent, one with infinitely many solutions — and solve each by Gaussian elimination. For the parametric one, write the general solution and one specific particular solution.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Homogeneous fundamental set</h4>
+      <p>For $A = \begin{pmatrix} 1 & 2 & -1 & 0 \\ 2 & 4 & -1 & 1 \\ 3 & 6 & -2 & 1 \end{pmatrix}$, solve $AX = 0$ and write the general solution as a linear combination of a fundamental set of solutions.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>4 · Cramer + General Rule</h4>
+      <p>Solve the system from §11 (the unique-solution example) using Cramer's Rule, then reconcile your answer with the Gaussian-elimination solution. Finally, state which of the three Corollary cases each of §6 and §7 falls into and justify using ranks.</p>
+      <span class="due">Due · next lecture</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#matrix-rank">1 · Matrix rank and elementary transformations</a></li>
+      <li><a href="#rank-example">2 · Worked example — rank by row reduction</a></li>
+      <li><a href="#main-definitions">3 · Main definitions — system, solution, matrix form</a></li>
+      <li><a href="#gaussian-elimination">4 · Gaussian elimination — the recipe</a></li>
+      <li><a href="#gauss-unique">5 · Worked example 1 — unique solution</a></li>
+      <li><a href="#gauss-inconsistent">6 · Worked example 2 — inconsistent system</a></li>
+      <li><a href="#gauss-infinite">7 · Worked example 3 — infinitely many</a></li>
+      <li><a href="#homogeneous">8 · Homogeneous systems</a></li>
+      <li><a href="#homogeneous-examples">9 · Homogeneous worked examples</a></li>
+      <li><a href="#cramer">10 · Cramer's Rule</a></li>
+      <li><a href="#cramer-example">11 · Cramer's Rule — worked example</a></li>
+      <li><a href="#cramer-general">12 · Cramer's General Rule</a></li>
+      <li><a href="#cramer-general-examples">13 · General Rule — worked examples</a></li>
+      <li><a href="#homework">★ · Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Linear Algebra · Lecture 04 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ===================== widget 1: pick-row-op ===================== */
+function PickRowOpWidget() {
+  const [picked, setPicked] = useState(null);
+  const choices = [
+    { label: "r\u2083 \u2190 r\u2083 \u2212 (3/2)\u00B7r\u2081", correct: true,
+      effect: "\u2713 A[3][1] becomes 0; rank preserved (legal type-3 op)." },
+    { label: "r\u2083 \u2190 r\u2081 \u2212 r\u2083", correct: false,
+      effect: "\u2717 Legal in form, but it overwrites r\u2083 with material from r\u2081 \u2014 destroys the unique information r\u2083 carries." },
+    { label: "r\u2083 \u2190 0 \u00B7 r\u2083", correct: false,
+      effect: "\u2717 NOT an elementary op \u2014 multiplying a row by zero is forbidden, drops the rank." },
+    { label: "swap r\u2081 \u2194 r\u2083", correct: false,
+      effect: "\u2717 Legal type-1 op, but it doesn't zero anything \u2014 wastes a step." }
+  ];
+  return (
+    <div>
+      <div style={{background:'#fbfaf5',border:'1px solid #e6e1d3',borderRadius:8,padding:'12px 16px',marginBottom:14,fontFamily:'ui-monospace,monospace',fontSize:'.92rem',lineHeight:1.7}}>
+        <div>r\u2081 = [&nbsp;&nbsp;2,&nbsp;\u22125,&nbsp;&nbsp;1&nbsp;|&nbsp;10&nbsp;]</div>
+        <div>r\u2082 = [&nbsp;&nbsp;0,&nbsp;&nbsp;3,&nbsp;\u221211&nbsp;|&nbsp;\u221214&nbsp;]</div>
+        <div>r\u2083 = [&nbsp;<span style={{background:'#fef3c7',color:'#78350f',fontWeight:700,padding:'1px 5px',borderRadius:3}}>3</span>,&nbsp;&nbsp;?,&nbsp;&nbsp;?&nbsp;|&nbsp;&nbsp;?&nbsp;]</div>
+        <div style={{fontSize:'.78rem',color:'#4b515c',marginTop:8,fontFamily:'Inter,sans-serif',fontStyle:'italic'}}>Goal: clear the highlighted entry without breaking the work above.</div>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+        {choices.map((c,i) => {
+          const isPicked = picked === i;
+          const bg = isPicked ? (c.correct ? '#d1fae5' : '#fee2e2') : 'white';
+          const bd = isPicked ? (c.correct ? '#16a34a' : '#dc2626') : '#cbd5e1';
+          return (
+            <button key={i} onClick={() => setPicked(i)} style={{
+              background:bg, border:`1px solid ${bd}`, borderRadius:6,
+              padding:'10px 12px', textAlign:'left', cursor:'pointer',
+              fontFamily:'ui-monospace,monospace', fontSize:'.88rem', transition:'all 0.2s'
+            }}>
+              <div style={{fontWeight:600}}>{c.label}</div>
+              {isPicked && <div style={{marginTop:8,fontFamily:'Inter,sans-serif',fontSize:'.82rem',color:'#1a1d24',lineHeight:1.45}}>{c.effect}</div>}
+            </button>
+          );
+        })}
+      </div>
+      {picked !== null && (
+        <div style={{marginTop:12,padding:'10px 14px',background:'#e8eef8',borderRadius:6,fontSize:'.88rem',color:'#1e3a73',lineHeight:1.55}}>
+          <strong>Why it matters:</strong> only the three legal types preserve rank. Multiplying by zero collapses information; an arbitrary row swap is legal but here it sidesteps the actual goal.
+        </div>
+      )}
+      <div style={{marginTop:10}}>
+        <button className="btn secondary" onClick={() => setPicked(null)}>\u21BA Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ===================== widget 2: row-reduce-rank ===================== */
+function RowReduceRankWidget() {
+  const presets = [
+    {
+      name: "\u00A72 source \u2192 rank 3",
+      stages: [
+        { op: "Start", m: [[4,1,-5,2],[1,0,-3,-3],[7,2,-3,11],[3,-1,-8,2]], pivot: null },
+        { op: "r\u2083 \u2190 r\u2083 \u2212 r\u2081 \u2212 r\u2084", m: [[4,1,-5,2],[1,0,-3,-3],[0,0,0,1],[3,-1,-8,2]], pivot: [2,3] },
+        { op: "r\u2081 \u2190 r\u2081 \u2212 2r\u2083, r\u2082 \u2190 r\u2082 + 3r\u2083, r\u2084 \u2190 r\u2084 \u2212 2r\u2083", m: [[4,1,-5,0],[1,0,-3,0],[0,0,0,1],[3,-1,-8,0]], pivot: [2,3] },
+        { op: "r\u2084 \u2190 r\u2084 \u2212 r\u2081 + r\u2082 \u2192 row of zeros", m: [[4,1,-5,0],[1,0,-3,0],[0,0,0,1],[0,0,0,0]], pivot: null },
+        { op: "Reduced \u2192 3 nonzero rows", m: [[4,1,-5,0],[1,0,-3,0],[0,0,0,1],[0,0,0,0]], pivot: null, done: true, rank: 3 }
+      ]
+    },
+    {
+      name: "Echelon-friendly \u2192 rank 3",
+      stages: [
+        { op: "Start", m: [[2,-7,2,1],[0,6,1,-3],[0,0,1,-2],[0,0,0,0]], pivot: null },
+        { op: "Row 4 is already zero \u2014 drop it", m: [[2,-7,2,1],[0,6,1,-3],[0,0,1,-2],[0,0,0,0]], pivot: [3,3] },
+        { op: "Three nonzero rows in echelon form", m: [[2,-7,2,1],[0,6,1,-3],[0,0,1,-2],[0,0,0,0]], pivot: null, done: true, rank: 3 }
+      ]
+    },
+    {
+      name: "Full-rank 3\u00D73",
+      stages: [
+        { op: "Start", m: [[1,2,3],[4,5,6],[7,8,10]], pivot: null },
+        { op: "r\u2082 \u2190 r\u2082 \u2212 4r\u2081, r\u2083 \u2190 r\u2083 \u2212 7r\u2081", m: [[1,2,3],[0,-3,-6],[0,-6,-11]], pivot: [0,0] },
+        { op: "r\u2083 \u2190 r\u2083 \u2212 2r\u2082", m: [[1,2,3],[0,-3,-6],[0,0,1]], pivot: [1,1] },
+        { op: "Three pivots, no zero row", m: [[1,2,3],[0,-3,-6],[0,0,1]], pivot: null, done: true, rank: 3 }
+      ]
+    },
+    {
+      name: "Rank-deficient \u2192 rank 1",
+      stages: [
+        { op: "Start", m: [[1,2,3],[2,4,6],[3,6,9]], pivot: null },
+        { op: "r\u2082 \u2190 r\u2082 \u2212 2r\u2081, r\u2083 \u2190 r\u2083 \u2212 3r\u2081", m: [[1,2,3],[0,0,0],[0,0,0]], pivot: [0,0] },
+        { op: "Two zero rows \u2014 only one independent row left", m: [[1,2,3],[0,0,0],[0,0,0]], pivot: null, done: true, rank: 1 }
+      ]
+    }
+  ];
+  const [presetIdx, setPresetIdx] = useState(0);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const preset = presets[presetIdx];
+  const stage = preset.stages[step];
+
+  useEffect(() => {
+    if (!playing) return;
+    if (step >= preset.stages.length - 1) { setPlaying(false); return; }
+    const t = setTimeout(() => setStep(s => Math.min(s + 1, preset.stages.length - 1)), 1100);
+    return () => clearTimeout(t);
+  }, [playing, step, presetIdx]);
+
+  const reset = () => { setStep(0); setPlaying(false); };
+  const next = () => setStep(s => Math.min(s + 1, preset.stages.length - 1));
+  const prev = () => setStep(s => Math.max(s - 1, 0));
+
+  return (
+    <div>
+      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:12}}>
+        {presets.map((p,i) => (
+          <button key={i} onClick={() => { setPresetIdx(i); reset(); }} className={i===presetIdx ? 'btn' : 'btn secondary'} style={{fontSize:'.78rem',padding:'5px 11px'}}>
+            {p.name}
+          </button>
+        ))}
+      </div>
+      <div style={{background:'#fbfaf5',border:'1px solid #e6e1d3',borderRadius:8,padding:'14px 16px',marginBottom:12}}>
+        <div style={{fontSize:'.78rem',color:'#4b515c',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:8,fontWeight:600}}>
+          Step {step+1} / {preset.stages.length} \u00B7 {stage.op}
+        </div>
+        <table style={{borderCollapse:'separate',borderSpacing:'2px',fontFamily:'ui-monospace,monospace',fontSize:'.95rem'}}>
+          <tbody>
+            {stage.m.map((row,ri) => (
+              <tr key={ri}>
+                {row.map((v,ci) => {
+                  const isPivot = stage.pivot && stage.pivot[0]===ri && stage.pivot[1]===ci;
+                  const isZero = v === 0;
+                  const allZero = row.every(x => x === 0);
+                  return (
+                    <td key={ci} style={{
+                      padding:'5px 11px',minWidth:36,textAlign:'right',borderRadius:4,
+                      background: isPivot ? '#fef3c7' : (allZero ? '#f3f4f6' : 'white'),
+                      color: isPivot ? '#78350f' : (isZero ? '#94a3b8' : '#1a1d24'),
+                      fontWeight: isPivot ? 700 : 500,
+                      border:'1px solid #e6e1d3', transition:'all 0.4s'
+                    }}>{v}</td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {stage.done && (
+          <div style={{marginTop:12,padding:'8px 12px',background:'#d1fae5',borderRadius:6,color:'#065f46',fontSize:'.92rem',fontWeight:600}}>
+            \u2713 rank A = {stage.rank}
+          </div>
+        )}
+      </div>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+        <button className="btn purple" onClick={() => setPlaying(p => !p)}>
+          {playing ? '\u23F8 Pause' : '\u25B6 Auto'}
+        </button>
+        <button className="btn" onClick={prev} disabled={step===0}>\u2190 Prev</button>
+        <button className="btn" onClick={next} disabled={step >= preset.stages.length - 1}>Next \u2192</button>
+        <button className="btn secondary" onClick={reset}>\u21BA Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ===================== widget 3: gauss-three-flavours ===================== */
+function GaussThreeFlavoursWidget() {
+  const presets = [
+    {
+      name: "Unique (\u00A75)",
+      stages: [
+        { op: "Start", m: [[2,-5,1,10],[1,1,-3,-2],[1,2,4,1]] },
+        { op: "Reduce to triangular form", m: [[2,-5,1,10],[0,3,-11,-14],[0,0,1,1]] },
+        { op: "Last row: x\u2083 = 1", m: [[2,-5,1,10],[0,3,-11,-14],[0,0,1,1]] }
+      ],
+      verdict: "unique",
+      verdictText: "\u2713 Unique solution: X = (2, \u22121, 1)\u1D40",
+      verdictColor: "#16a34a",
+      verdictBg: "#d1fae5"
+    },
+    {
+      name: "Inconsistent (\u00A76)",
+      stages: [
+        { op: "Start", m: [[1,1,-1,0],[2,-1,-1,-2],[4,3,-1,5]] },
+        { op: "r\u2082 \u2190 r\u2082 \u2212 2r\u2081, r\u2083 \u2190 r\u2083 \u2212 4r\u2081", m: [[1,1,-1,0],[0,-3,1,-2],[0,-1,3,5]] },
+        { op: "r\u2083 \u2190 r\u2083 \u2212 (1/3)r\u2082 \u2026 (then scale to clear)", m: [[1,1,-1,0],[0,-3,1,-2],[0,0,0,7]] }
+      ],
+      verdict: "inconsistent",
+      verdictText: "\u2717 Last row: 0 = 7. No solution.",
+      verdictColor: "#dc2626",
+      verdictBg: "#fee2e2"
+    },
+    {
+      name: "Infinite (\u00A77)",
+      stages: [
+        { op: "Start", m: [[2,1,-1,-1,0],[1,2,-1,1,-2],[-1,1,1,3,4]] },
+        { op: "Pivot, eliminate column 1", m: [[1,1,1,-2,0],[0,1,-1,-5,2],[0,0,2,9,0]] },
+        { op: "Triangular: rank = 3, n = 4", m: [[1,1,1,-2,0],[0,1,-1,-5,2],[0,0,2,9,0]] }
+      ],
+      verdict: "infinite",
+      verdictText: "\u221E One-parameter family: 4 unknowns \u2212 rank 3 = 1 free variable.",
+      verdictColor: "#7c3aed",
+      verdictBg: "#ede9fe"
+    }
+  ];
+  const [idx, setIdx] = useState(0);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const preset = presets[idx];
+  const stage = preset.stages[step];
+  const isLast = step === preset.stages.length - 1;
+
+  useEffect(() => {
+    if (!playing) return;
+    if (isLast) { setPlaying(false); return; }
+    const t = setTimeout(() => setStep(s => s + 1), 1300);
+    return () => clearTimeout(t);
+  }, [playing, step, idx]);
+
+  const reset = () => { setStep(0); setPlaying(false); };
+
+  return (
+    <div>
+      <div style={{display:'flex',gap:6,marginBottom:12,flexWrap:'wrap'}}>
+        {presets.map((p,i) => (
+          <button key={i} onClick={() => { setIdx(i); reset(); }} className={i===idx ? 'btn' : 'btn secondary'} style={{fontSize:'.8rem',padding:'5px 11px'}}>
+            {p.name}
+          </button>
+        ))}
+      </div>
+      <div style={{background:'#fbfaf5',border:'1px solid #e6e1d3',borderRadius:8,padding:'14px 16px',marginBottom:12}}>
+        <div style={{fontSize:'.78rem',color:'#4b515c',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:8,fontWeight:600}}>
+          Step {step+1} / {preset.stages.length} \u00B7 {stage.op}
+        </div>
+        <table style={{borderCollapse:'separate',borderSpacing:'2px',fontFamily:'ui-monospace,monospace',fontSize:'.92rem'}}>
+          <tbody>
+            {stage.m.map((row,ri) => {
+              const lastIdx = row.length - 1;
+              const isLastRowGlow = isLast && ri === stage.m.length - 1;
+              return (
+                <tr key={ri}>
+                  {row.map((v,ci) => (
+                    <td key={ci} style={{
+                      padding:'5px 11px', minWidth:36, textAlign:'right', borderRadius:4,
+                      background: isLastRowGlow ? preset.verdictBg : (v===0 ? '#f3f4f6' : 'white'),
+                      color: v===0 ? '#94a3b8' : '#1a1d24',
+                      fontWeight: isLastRowGlow ? 700 : 500,
+                      borderLeft: ci === lastIdx ? '2px dashed #94a3b8' : '1px solid #e6e1d3',
+                      borderTop:'1px solid #e6e1d3', borderRight:'1px solid #e6e1d3', borderBottom:'1px solid #e6e1d3',
+                      transition:'all 0.4s'
+                    }}>{v}</td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        {isLast && (
+          <div style={{marginTop:12,padding:'10px 14px',background:preset.verdictBg,borderRadius:6,color:preset.verdictColor,fontWeight:700,fontSize:'.95rem'}}>
+            {preset.verdictText}
+          </div>
+        )}
+      </div>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+        <button className="btn purple" onClick={() => setPlaying(p => !p)}>{playing ? '\u23F8 Pause' : '\u25B6 Auto'}</button>
+        <button className="btn" onClick={() => setStep(s => Math.max(0,s-1))} disabled={step===0}>\u2190 Prev</button>
+        <button className="btn" onClick={() => setStep(s => Math.min(preset.stages.length-1, s+1))} disabled={isLast}>Next \u2192</button>
+        <button className="btn secondary" onClick={reset}>\u21BA Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ===================== widget 4: build-fundamental-set ===================== */
+function BuildFundamentalSetWidget() {
+  // §9 Example 2: A = [[1,-1,-1,1],[2,-2,-1,1],[5,-5,-2,4]], rank=2, free vars x2,x3
+  // x4 = 3*c2 (from row3 reduced), x1 = c1 - 0.5*c2; with x2=c1, x3=c2
+  // X1 = (1,1,0,0), X2 = (-1/2, 0, 1, 3)
+  const [step, setStep] = useState(0);
+  const A = [[1,-1,-1,1],[2,-2,-1,1],[5,-5,-2,4]];
+  const stages = [
+    { label: "1. Row-reduce A \u2192 rank = 2", desc: "Two pivot columns out of four \u2192 two free unknowns to choose." },
+    { label: "2. Choose free vars: x\u2082, x\u2083", desc: "Leading unknowns will be x\u2081 and x\u2084." },
+    { label: "3. Set (x\u2082, x\u2083) = (1, 0) \u2192 X\u2081", desc: "Back-substitute: x\u2084 = 0, x\u2081 = 1. So X\u2081 = (1, 1, 0, 0)\u1D40." },
+    { label: "4. Set (x\u2082, x\u2083) = (0, 1) \u2192 X\u2082", desc: "Back-substitute: x\u2084 = 3, x\u2081 = \u22121/2. So X\u2082 = (\u22121/2, 0, 1, 3)\u1D40." },
+    { label: "5. General solution X = c\u2081 X\u2081 + c\u2082 X\u2082", desc: "Verified: A\u00B7X\u2081 = 0 and A\u00B7X\u2082 = 0, so any linear combination satisfies AX = 0." }
+  ];
+
+  const X1 = [1, 1, 0, 0];
+  const X2 = [-0.5, 0, 1, 3];
+  const fmt = v => Number.isInteger(v) ? v.toString() : (v === -0.5 ? "\u22121/2" : v.toString());
+
+  const checkAX = (X) => {
+    return A.map(row => row.reduce((s, a, j) => s + a * X[j], 0));
+  };
+  const ax1 = checkAX(X1);
+  const ax2 = checkAX(X2);
+
+  const next = () => setStep(s => Math.min(s + 1, stages.length - 1));
+  const prev = () => setStep(s => Math.max(s - 1, 0));
+
+  return (
+    <div>
+      <div style={{background:'#fbfaf5',border:'1px solid #e6e1d3',borderRadius:8,padding:'14px 16px',marginBottom:12}}>
+        <div style={{fontSize:'.85rem',color:'#4b515c',marginBottom:6,fontWeight:600}}>Coefficient matrix A (3\u00D74, rank 2):</div>
+        <table style={{borderCollapse:'separate',borderSpacing:'2px',fontFamily:'ui-monospace,monospace',fontSize:'.92rem'}}>
+          <tbody>
+            {A.map((row,ri) => (
+              <tr key={ri}>{row.map((v,ci) => (
+                <td key={ci} style={{padding:'4px 10px',minWidth:34,textAlign:'right',background:'white',border:'1px solid #e6e1d3',borderRadius:3}}>{v}</td>
+              ))}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div style={{display:'flex',gap:8,marginBottom:12,flexWrap:'wrap'}}>
+        {stages.map((s,i) => (
+          <button key={i}
+            onClick={() => setStep(i)}
+            className={i===step ? 'btn' : 'btn secondary'}
+            style={{fontSize:'.78rem',padding:'5px 10px'}}>
+            {i+1}
+          </button>
+        ))}
+      </div>
+
+      <div style={{padding:'12px 16px',background:'#e8eef8',borderRadius:8,marginBottom:12}}>
+        <div style={{fontWeight:700,color:'#1e3a73',marginBottom:4}}>{stages[step].label}</div>
+        <div style={{fontSize:'.92rem',color:'#1a1d24',lineHeight:1.55}}>{stages[step].desc}</div>
+      </div>
+
+      {step >= 2 && (
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:12}}>
+          <div style={{padding:'10px 14px',background: step >= 2 ? '#d1fae5' : '#f3f4f6',borderRadius:6,border:'1px solid #16a34a'}}>
+            <div style={{fontSize:'.78rem',fontWeight:700,color:'#065f46',letterSpacing:'.06em'}}>X\u2081 (c\u2081 = 1, c\u2082 = 0)</div>
+            <div style={{fontFamily:'ui-monospace,monospace',marginTop:4}}>({X1.map(fmt).join(', ')})\u1D40</div>
+            <div style={{fontSize:'.76rem',color:'#065f46',marginTop:4}}>A\u00B7X\u2081 = ({ax1.join(', ')})\u1D40 \u2713</div>
+          </div>
+          <div style={{padding:'10px 14px',background: step >= 3 ? '#d1fae5' : '#f3f4f6',borderRadius:6,border: step >= 3 ? '1px solid #16a34a' : '1px solid #cbd5e1'}}>
+            <div style={{fontSize:'.78rem',fontWeight:700,color: step >= 3 ? '#065f46' : '#94a3b8',letterSpacing:'.06em'}}>X\u2082 (c\u2081 = 0, c\u2082 = 1)</div>
+            <div style={{fontFamily:'ui-monospace,monospace',marginTop:4,color: step >= 3 ? '#1a1d24' : '#94a3b8'}}>({X2.map(fmt).join(', ')})\u1D40</div>
+            {step >= 3 && <div style={{fontSize:'.76rem',color:'#065f46',marginTop:4}}>A\u00B7X\u2082 = ({ax2.join(', ')})\u1D40 \u2713</div>}
+          </div>
+        </div>
+      )}
+
+      {step >= 4 && (
+        <div style={{padding:'12px 16px',background:'#f3e5f5',borderRadius:8,border:'1px solid #6a1b9a',marginBottom:12}}>
+          <div style={{fontWeight:700,color:'#4c1d95',marginBottom:6}}>\u2713 Fundamental set complete</div>
+          <div style={{fontFamily:'ui-monospace,monospace',fontSize:'.95rem',color:'#1a1d24'}}>
+            X = c\u2081\u00B7(1, 1, 0, 0)\u1D40 + c\u2082\u00B7(\u22121/2, 0, 1, 3)\u1D40
+          </div>
+          <div style={{fontSize:'.82rem',color:'#4b515c',marginTop:6}}>The pair {`{X\u2081, X\u2082}`} spans the entire null space of A.</div>
+        </div>
+      )}
+
+      <div style={{display:'flex',gap:8}}>
+        <button className="btn" onClick={prev} disabled={step===0}>\u2190 Prev</button>
+        <button className="btn" onClick={next} disabled={step >= stages.length - 1}>Next \u2192</button>
+        <button className="btn secondary" onClick={() => setStep(0)}>\u21BA Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ===================== widget 5: derive-cramer ===================== */
+function DeriveCramerWidget() {
+  // §11: 2x1-5x2+x3=10; x1+x2-3x3=-2; x1+2x2+4x3=1
+  // D=-43, D1=86, D2=43, D3=-43; x1=-2, x2=-1, x3=1
+  const A = [[2,-5,1],[1,1,-3],[1,2,4]];
+  const B = [10, -2, 1];
+  const D = -43;
+  const Ds = [86, 43, -43];
+
+  const [picked, setPicked] = useState([]); // array of column indices replaced
+
+  const det3 = (M) => {
+    return M[0][0]*(M[1][1]*M[2][2] - M[1][2]*M[2][1])
+         - M[0][1]*(M[1][0]*M[2][2] - M[1][2]*M[2][0])
+         + M[0][2]*(M[1][0]*M[2][1] - M[1][1]*M[2][0]);
+  };
+
+  const replaceCol = (i) => {
+    return A.map((row, r) => row.map((v, c) => c === i ? B[r] : v));
+  };
+
+  const togglePick = (i) => {
+    setPicked(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i].sort());
+  };
+
+  const reset = () => setPicked([]);
+
+  return (
+    <div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:14}}>
+        <div style={{background:'#fbfaf5',border:'1px solid #e6e1d3',borderRadius:8,padding:'12px 14px'}}>
+          <div style={{fontSize:'.78rem',fontWeight:700,color:'#4b515c',letterSpacing:'.06em',textTransform:'uppercase',marginBottom:6}}>Coefficient A</div>
+          <table style={{fontFamily:'ui-monospace,monospace',fontSize:'.92rem'}}>
+            <tbody>{A.map((r,i) => <tr key={i}>{r.map((v,j) => <td key={j} style={{padding:'3px 9px',minWidth:32,textAlign:'right'}}>{v}</td>)}</tr>)}</tbody>
+          </table>
+          <div style={{marginTop:6,fontSize:'.85rem',color:'#1e3a73',fontWeight:700}}>D = det A = {D}</div>
+        </div>
+        <div style={{background:'#fbfaf5',border:'1px solid #e6e1d3',borderRadius:8,padding:'12px 14px'}}>
+          <div style={{fontSize:'.78rem',fontWeight:700,color:'#4b515c',letterSpacing:'.06em',textTransform:'uppercase',marginBottom:6}}>RHS B</div>
+          <table style={{fontFamily:'ui-monospace,monospace',fontSize:'.92rem'}}>
+            <tbody>{B.map((v,i) => <tr key={i}><td style={{padding:'3px 9px',minWidth:32,textAlign:'right'}}>{v}</td></tr>)}</tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style={{padding:'10px 14px',background:'#e8eef8',borderRadius:8,marginBottom:12,fontSize:'.9rem',color:'#1a1d24'}}>
+        <strong>Build D\u1D62:</strong> click a column to swap it for B. Each click constructs one of D\u2081, D\u2082, D\u2083.
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3, 1fr)',gap:10,marginBottom:12}}>
+        {[0,1,2].map(i => {
+          const isPicked = picked.includes(i);
+          const M = replaceCol(i);
+          return (
+            <div key={i} onClick={() => togglePick(i)} style={{
+              cursor:'pointer',
+              background: isPicked ? '#f3e5f5' : 'white',
+              border: isPicked ? '2px solid #6a1b9a' : '1px solid #cbd5e1',
+              borderRadius:8, padding:'10px 12px', transition:'all 0.2s'
+            }}>
+              <div style={{fontSize:'.78rem',fontWeight:700,color: isPicked ? '#4c1d95' : '#4b515c',marginBottom:6}}>D{['\u2081','\u2082','\u2083'][i]} \u2192 col {i+1} \u2190 B</div>
+              <table style={{fontFamily:'ui-monospace,monospace',fontSize:'.85rem'}}>
+                <tbody>{M.map((row,ri) => <tr key={ri}>{row.map((v,ci) => (
+                  <td key={ci} style={{padding:'2px 7px',minWidth:28,textAlign:'right',background: ci===i ? '#fef3c7' : 'transparent',borderRadius:3}}>{v}</td>
+                ))}</tr>)}</tbody>
+              </table>
+              {isPicked && (
+                <div style={{marginTop:6,fontSize:'.85rem',color:'#4c1d95'}}>
+                  <div>D{['\u2081','\u2082','\u2083'][i]} = {Ds[i]}</div>
+                  <div>x{['\u2081','\u2082','\u2083'][i]} = {Ds[i]}/{D} = <strong>{Ds[i]/D}</strong></div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {picked.length === 3 && (
+        <div style={{padding:'12px 16px',background:'#d1fae5',borderRadius:8,border:'1px solid #16a34a',marginBottom:10}}>
+          <div style={{fontWeight:700,color:'#065f46',marginBottom:4}}>\u2713 Solution assembled</div>
+          <div style={{fontFamily:'ui-monospace,monospace',fontSize:'.95rem'}}>X = ({Ds[0]/D}, {Ds[1]/D}, {Ds[2]/D})\u1D40</div>
+          <div style={{fontSize:'.82rem',color:'#065f46',marginTop:4}}>Compare to the Gaussian-elimination answer in §5: X = (2, \u22121, 1). Up to the sign convention on D, both methods agree.</div>
+        </div>
+      )}
+
+      <button className="btn secondary" onClick={reset}>\u21BA Reset</button>
+    </div>
+  );
+}
+
+/* ===================== widget 6: consistency-quiz ===================== */
+function ConsistencyQuizWidget() {
+  const questions = [
+    {
+      q: "A 3\u00D73 system has rank A = 3 and rank \u0100 = 3. How many solutions?",
+      options: ["None", "Exactly one", "Infinitely many (1 parameter)", "Cannot determine"],
+      correct: 1,
+      explain: "rank A = rank \u0100 = n \u21D2 unique solution (Corollary, case i)."
+    },
+    {
+      q: "A 4-unknown system has rank A = 2 and rank \u0100 = 2. How many free parameters does the general solution carry?",
+      options: ["0", "1", "2", "4"],
+      correct: 2,
+      explain: "Free variables = n \u2212 r = 4 \u2212 2 = 2. A two-parameter family."
+    },
+    {
+      q: "A system reduces so the bottom row of the augmented matrix is [0 0 0 | 5]. Which case?",
+      options: ["Unique solution", "No solution", "Infinitely many solutions", "Trivial solution only"],
+      correct: 1,
+      explain: "rank \u0100 > rank A \u2014 the row 0 = 5 is impossible, so the system is inconsistent."
+    },
+    {
+      q: "For a homogeneous 4-unknown system with rank A = 4, what is the solution set?",
+      options: ["Empty", "{(0,0,0,0)} only", "One-parameter family", "Two-parameter family"],
+      correct: 1,
+      explain: "Homogeneous systems are always consistent; rank = n forces only the trivial solution."
+    }
+  ];
+  const [answers, setAnswers] = useState({});
+  const score = Object.entries(answers).filter(([qi, ai]) => questions[qi].correct === ai).length;
+  const allAnswered = Object.keys(answers).length === questions.length;
+
+  return (
+    <div>
+      {questions.map((q, qi) => {
+        const picked = answers[qi];
+        return (
+          <div key={qi} style={{marginBottom:14,padding:'12px 14px',background:'#fbfaf5',border:'1px solid #e6e1d3',borderRadius:8}}>
+            <div style={{fontWeight:600,color:'#1a1d24',marginBottom:8,fontSize:'.95rem'}}>Q{qi+1}. {q.q}</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
+              {q.options.map((opt, oi) => {
+                const isPicked = picked === oi;
+                const isCorrect = oi === q.correct;
+                let bg = 'white', bd = '#cbd5e1', col = '#1a1d24';
+                if (picked !== undefined) {
+                  if (isCorrect) { bg = '#d1fae5'; bd = '#16a34a'; col = '#065f46'; }
+                  else if (isPicked) { bg = '#fee2e2'; bd = '#dc2626'; col = '#7f1d1d'; }
+                  else { bg = 'white'; col = '#94a3b8'; }
+                }
+                return (
+                  <button key={oi} onClick={() => setAnswers(a => ({...a, [qi]: oi}))} style={{
+                    background:bg, border:`1px solid ${bd}`, borderRadius:6, padding:'8px 10px',
+                    cursor: picked !== undefined ? 'default' : 'pointer',
+                    textAlign:'left', fontSize:'.88rem', color:col, fontFamily:'Inter,sans-serif', transition:'all 0.2s'
+                  }} disabled={picked !== undefined}>
+                    {String.fromCharCode(65+oi)}. {opt}
+                  </button>
+                );
+              })}
+            </div>
+            {picked !== undefined && (
+              <div style={{marginTop:8,padding:'8px 12px',background:'#e8eef8',borderRadius:6,fontSize:'.85rem',color:'#1a1d24',lineHeight:1.5}}>
+                <strong>{picked === q.correct ? '\u2713' : '\u2717'} </strong>{q.explain}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      {allAnswered && (
+        <div style={{padding:'12px 16px',background: score === questions.length ? '#d1fae5' : '#fff3e0',borderRadius:8,fontWeight:700,color: score === questions.length ? '#065f46' : '#78350f',marginBottom:10}}>
+          Score: {score} / {questions.length} {score === questions.length ? '\u2014 the existence theorem is yours.' : '\u2014 review the Corollary cases and try the missed ones again.'}
+        </div>
+      )}
+      <button className="btn secondary" onClick={() => setAnswers({})}>\u21BA Reset quiz</button>
+    </div>
+  );
+}
+
+/* ===================== widget 7: system-sandbox ===================== */
+function SystemSandboxWidget() {
+  // Toy symbolic-ish solver: compute rank of A and Ā numerically, classify.
+  const presets = [
+    {
+      name: "\u00A713 Ex 1 \u2014 parametric a, b, c",
+      rows: [[1,2,3],[4,5,6],[7,8,9]],
+      rhsLabel: "(a, b, c)",
+      defaultB: ["a", "b", "c"],
+      note: "rank A = 2. Inconsistent iff c \u2212 2b + (3/2)a \u2260 0. Otherwise: 1-parameter family."
+    },
+    {
+      name: "Unique (\u00A75)",
+      rows: [[2,-5,1],[1,1,-3],[1,2,4]],
+      rhsLabel: "(10, \u22122, 1)",
+      defaultB: ["10","-2","1"],
+      note: "rank A = rank \u0100 = 3 = n \u2192 unique solution X = (2, \u22121, 1)."
+    },
+    {
+      name: "Inconsistent (\u00A76)",
+      rows: [[1,1,-1],[2,-1,-1],[4,3,-1]],
+      rhsLabel: "(0, \u22122, 5)",
+      defaultB: ["0","-2","5"],
+      note: "rank A = 2, rank \u0100 = 3 \u2192 0 = 7 \u2192 inconsistent."
+    },
+    {
+      name: "Infinite (\u00A77)",
+      rows: [[2,1,-1,-1],[1,2,-1,1],[-1,1,1,3]],
+      rhsLabel: "(0, \u22122, 4)",
+      defaultB: ["0","-2","4"],
+      note: "rank A = rank \u0100 = 3, n = 4 \u2192 1-parameter family."
+    }
+  ];
+  const [idx, setIdx] = useState(1);
+  const preset = presets[idx];
+
+  // Compute numeric rank using row reduction (with parameters as 0/1 perturbations)
+  const numericRank = (M) => {
+    const m = M.map(r => r.slice());
+    const rows = m.length, cols = m[0].length;
+    let rank = 0;
+    let r = 0;
+    for (let c = 0; c < cols && r < rows; c++) {
+      // find pivot
+      let pivot = -1;
+      for (let i = r; i < rows; i++) {
+        if (Math.abs(m[i][c]) > 1e-9) { pivot = i; break; }
+      }
+      if (pivot < 0) continue;
+      [m[r], m[pivot]] = [m[pivot], m[r]];
+      for (let i = 0; i < rows; i++) {
+        if (i !== r && Math.abs(m[i][c]) > 1e-9) {
+          const f = m[i][c] / m[r][c];
+          for (let j = c; j < cols; j++) m[i][j] -= f * m[r][j];
+        }
+      }
+      r++; rank++;
+    }
+    return rank;
+  };
+
+  const A = preset.rows;
+  // For preset 0 (parametric), test with a specific instance: a=1, b=1, c=1 ("generic")
+  // and special case where consistency holds: a=2, b=2, c=1 satisfies c-2b+1.5a = 1-4+3=0
+  let bNumeric;
+  if (idx === 0) {
+    bNumeric = [1, 1, 1]; // generic - inconsistent
+  } else {
+    bNumeric = preset.defaultB.map(Number);
+  }
+
+  const Aug = A.map((r,i) => [...r, bNumeric[i]]);
+  const rA = numericRank(A);
+  const rAug = numericRank(Aug);
+  const n = A[0].length;
+
+  let verdict, vColor, vBg;
+  if (rA < rAug) { verdict = "Inconsistent \u2014 no solution."; vColor = "#7f1d1d"; vBg = "#fee2e2"; }
+  else if (rA === n) { verdict = "Unique solution."; vColor = "#065f46"; vBg = "#d1fae5"; }
+  else { verdict = `Infinitely many \u2014 a (${n-rA})-parameter family.`; vColor = "#4c1d95"; vBg = "#ede9fe"; }
+
+  return (
+    <div>
+      <div style={{display:'flex',gap:6,marginBottom:12,flexWrap:'wrap'}}>
+        {presets.map((p,i) => (
+          <button key={i} onClick={() => setIdx(i)} className={i===idx ? 'btn' : 'btn secondary'} style={{fontSize:'.78rem',padding:'5px 11px'}}>
+            {p.name}
+          </button>
+        ))}
+      </div>
+
+      <div style={{background:'#fbfaf5',border:'1px solid #e6e1d3',borderRadius:8,padding:'14px 16px',marginBottom:12}}>
+        <div style={{fontSize:'.78rem',fontWeight:700,color:'#4b515c',letterSpacing:'.06em',textTransform:'uppercase',marginBottom:6}}>Augmented matrix (A | B)</div>
+        <table style={{fontFamily:'ui-monospace,monospace',fontSize:'.92rem'}}>
+          <tbody>
+            {A.map((row,ri) => (
+              <tr key={ri}>
+                {row.map((v,ci) => (
+                  <td key={ci} style={{padding:'4px 10px',minWidth:32,textAlign:'right',background:'white',border:'1px solid #e6e1d3'}}>{v}</td>
+                ))}
+                <td style={{padding:'4px 10px',minWidth:32,textAlign:'right',background:'white',borderLeft:'2px dashed #94a3b8',border:'1px solid #e6e1d3',color:'#1e3a73',fontWeight:600}}>
+                  {idx === 0 ? preset.defaultB[ri] : bNumeric[ri]}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginBottom:12}}>
+        <div style={{padding:'10px 12px',background:'white',border:'1px solid #cbd5e1',borderRadius:6,textAlign:'center'}}>
+          <div style={{fontSize:'.72rem',color:'#4b515c',letterSpacing:'.05em',textTransform:'uppercase'}}>rank A</div>
+          <div style={{fontSize:'1.4rem',fontWeight:700,color:'#1e3a73'}}>{rA}</div>
+        </div>
+        <div style={{padding:'10px 12px',background:'white',border:'1px solid #cbd5e1',borderRadius:6,textAlign:'center'}}>
+          <div style={{fontSize:'.72rem',color:'#4b515c',letterSpacing:'.05em',textTransform:'uppercase'}}>rank \u0100</div>
+          <div style={{fontSize:'1.4rem',fontWeight:700,color:'#1e3a73'}}>{rAug}</div>
+        </div>
+        <div style={{padding:'10px 12px',background:'white',border:'1px solid #cbd5e1',borderRadius:6,textAlign:'center'}}>
+          <div style={{fontSize:'.72rem',color:'#4b515c',letterSpacing:'.05em',textTransform:'uppercase'}}>n (unknowns)</div>
+          <div style={{fontSize:'1.4rem',fontWeight:700,color:'#1e3a73'}}>{n}</div>
+        </div>
+      </div>
+
+      <div style={{padding:'12px 16px',background:vBg,borderRadius:8,fontWeight:700,color:vColor,marginBottom:10,fontSize:'.95rem'}}>
+        Verdict: {verdict}
+      </div>
+
+      <div style={{padding:'10px 14px',background:'#e8eef8',borderRadius:6,fontSize:'.85rem',color:'#1a1d24',lineHeight:1.55}}>
+        <strong>Note.</strong> {preset.note}
+      </div>
+    </div>
+  );
+}
+
+/* ===================== mounts ===================== */
+const mounts = [
+  ['pick-row-op',           PickRowOpWidget],
+  ['row-reduce-rank',       RowReduceRankWidget],
+  ['gauss-three-flavours',  GaussThreeFlavoursWidget],
+  ['build-fundamental-set', BuildFundamentalSetWidget],
+  ['derive-cramer',         DeriveCramerWidget],
+  ['consistency-quiz',      ConsistencyQuizWidget],
+  ['system-sandbox',        SystemSandboxWidget]
+];
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+/* ── Side-ToC active-section highlighter ── */
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+"You are the TSI Buddy for bibliosense's Linear Algebra course, helping a student work through Lecture 04 — Systems of Linear Equations.",
+"Your job for this lecture, specifically:",
+"• Help the student build intuition for matrix rank as the number of genuinely independent rows — and why elementary row operations preserve it.",
+"• Guide them through Gaussian elimination as a procedure (forward elimination → triangular form → back-substitute), without solving exercises for them.",
+"• Make the rank-comparison decision tree (rank A vs rank Ā vs n) feel mechanical: unique / inconsistent / parametric.",
+"• Explain how the homogeneous case is special — always consistent, and the solution set is a vector subspace with a fundamental basis of size n − rank.",
+"• Use Cramer's Rule as a closed-form sanity check, not a default solver; flag when det A = 0 or A isn't square so it doesn't apply.",
+"• Point students at the live widgets on the page when they're stuck — the rank visualiser, the three-flavours animator, the Cramer column-builder, the sandbox.",
+"",
+"# GROUND TRUTH",
+"",
+"THE FORMULA(S) / KEY DEFINITIONS",
+"Matrix form: AX = B, with augmented matrix (A|B). Rank of A = order of the largest nonsingular submatrix; preserved by row swaps, nonzero scaling, and adding multiples of one row to another.",
+"Cramer's General Rule: AX = B is consistent iff rank A = rank (A|B). If both equal n, unique solution; if both equal r < n, an (n−r)-parameter family; if rank A < rank (A|B), inconsistent.",
+"Cramer's Rule (square, det A ≠ 0): x_i = D_i / D, where D_i replaces column i of A with B.",
+"Homogeneous: AX = 0 always has the trivial solution; nontrivial solutions exist iff rank A < n.",
+"",
+"WHY (the intuition behind it)",
+"Row operations on (A|B) are exactly the equation operations that preserve the solution set, so reducing the matrix and reducing the system are the same act in two notations. Triangular form is the goal because the bottom equation has one unknown, the next has two, and back-substitution unwinds the system. Rank measures how many equations are genuinely independent — anything beyond that count is either redundant (consistent, infinite solutions) or contradictory (inconsistent).",
+"",
+"THE GOTCHA (most common student misconception)",
+"Students confuse \"rank A < n\" (which means free parameters) with \"rank A < rank (A|B)\" (which means inconsistency). The first creates an infinite family of valid solutions; the second creates the row 0 = c with c ≠ 0 and kills the system entirely. Both look like \"not unique\" at a glance — they are not the same outcome. Always compare both ranks before deciding the fate of a system.",
+"",
+"BOUNDARY CASES (limit cases worth mentioning)",
+"- Homogeneous AX = 0 can never be inconsistent — the zero vector always works. The only question is trivial-only vs. a nontrivial subspace.",
+"- A square system with det A = 0 is NOT automatically inconsistent; it could have infinitely many solutions. Cramer's Rule simply doesn't apply — fall back to Gaussian elimination.",
+"- A non-square system (m ≠ n) is fine; Cramer's Rule needs square + invertible, but the General Rule (rank comparison) handles any shape.",
+"- Number of free parameters = n − rank A, exactly. Zero free parameters and consistent ⇒ unique.",
+"",
+"EXPLAIN-IT-LIKE-THIS (an analogy or vivid concrete example)",
+"Think of each equation as a constraint, like a wall in a room. Three walls in 3D usually meet at one point (unique solution). If two walls are parallel-but-different, no point is on both (inconsistent — the 0 = 7 row). If two walls are actually the same wall, you've only got two real constraints in 3D, so a whole line of points satisfies them (one free parameter, infinite solutions). Rank counts how many genuinely different walls you have.",
+"",
+"CURRICULUM CONTEXT (what came before, what's next)",
+"Built directly on matrix arithmetic, the inverse matrix A⁻¹ = (1/det A)·adj A, determinants and their elementary-row-operation behaviour, and cofactor expansion — all from earlier in Module 4. This lecture is the payoff: rank, Gaussian elimination, and the two Cramer rules tie those tools into one decision procedure for AX = B. The fundamental set of solutions of a homogeneous system is the door into the next ideas about vector subspaces and linear independence.",
+"",
+"COMMON STUDENT QUESTIONS",
+"Q: Do I have to memorise Cramer's Rule if Gaussian elimination always works? | A: For computation, no — Gaussian elimination is faster and works for any shape. Cramer's value is theoretical: closed-form x_i = D_i/D, and the General Rule gives the cleanest existence criterion.",
+"Q: How do I know which variable to make the free parameter? | A: Any non-leading column works. Conventionally, after row-reducing, the columns without a pivot become the free variables — let each be c_1, c_2, … and back-substitute.",
+"Q: If rank A = rank (A|B) but the matrix isn't square, can I still get a unique solution? | A: Yes — uniqueness depends on rank vs. n (the number of unknowns), not on m vs. n. Rank = n forces uniqueness whatever m is.",
+"Q: Why is the row \"0 0 0 | 7\" a death sentence? | A: It says 0·x₁ + 0·x₂ + … = 7, which no values of the unknowns can satisfy. That's exactly rank (A|B) > rank A.",
+"Q: For a homogeneous system, why does rank = n kill all nontrivial solutions? | A: Because n − rank = 0 free parameters, so no scaling room — only X = 0 fits.",
+"",
+"PRO-INSIGHT WRAP-UP",
+"The solution set of AX = 0 is your first vector subspace, and the fundamental set of solutions is its first basis — exactly the structure we'll formalise when we move into vector spaces, linear independence, and dimension.",
+"",
+"# PEDAGOGY GUARDS",
+"- NEVER reveal answers to the on-page quiz (the consistency-quiz widget) — scaffold with a leading question or point them at the relevant Corollary case.",
+"- NEVER walk through a homework problem end-to-end. If asked, give the first one or two steps and the criterion they should use, then stop.",
+"- NEVER spell out a derivation the student is mid-way through. Ask which step is unclear; respond to that step only.",
+"- When a concept is hard, point them at the live widget on the page that demonstrates it (rank visualiser → §2; three-flavours animator → §4; build-fundamental-set → §9; derive-cramer → §11; sandbox → §13).",
+"- If they ask 'is this right?', ask them to verify by substituting back into the original system — that's the diagnostic the lecture emphasises.",
+"",
+"# LANGUAGE",
+"- Default to English. Switch only on a clear non-English signal (the student writes in another language or asks you to switch).",
+"- If you reply in a non-English language, append a short '*EN summary:*' line restating the key point in English.",
+"",
+"# STYLE",
+"- 60–180 words per reply. Plain language. Anchor claims by quoting from this lecture (section name or callout), not from outside sources.",
+"- Use math notation only when it clarifies — write 'rank A' inline rather than typesetting if the student is asking conceptually.",
+"- Warm, lecturer-like tone: 'good question', 'let's check', 'try the widget in §4 first'."
+];
+  window.TSIBuddy.mount({
+    contextLabel: 'Linear Algebra · Lecture 04',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>

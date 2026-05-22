@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Understanding each component of the dynamic model | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,91,255,0.25);
+  }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .tok { display:inline-block; padding:4px 10px; border-radius:100px; font-family: var(--mono); font-size:0.85rem; font-weight:600; margin:2px 3px; border:1px solid; vertical-align:middle; }
+  .tok-id    { background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; }
+  .tok-num   { background:#d1fae5; border-color:#10b981; color:#065f46; }
+  .tok-op    { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+  .tok-kw    { background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+  .tok-paren { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .tok-nt    { background:#ede9fe; border-color:#8b5cf6; color:#5b21b6; }
+  .tok-term  { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .quiz-card { background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%); border:1px solid #6a1b9a; border-radius:10px; padding:30px 32px; margin:22px 0; scroll-margin-top: 90px; }
+  .quiz-card h2 { font-family: var(--serif); color: #6a1b9a; font-weight: 600; font-size: 1.55rem; margin: 0 0 0.5rem; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { font-size: 0.78rem; color: var(--brand); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 8px; display: block; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+
+  /* widget-local helpers */
+  .ctrl-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:10px 0; }
+  .ctrl-row label { font-size:0.83rem; color:var(--ink-soft); font-weight:600; min-width:60px; }
+  .ctrl-row input[type=range] { flex: 1 1 140px; }
+  .pill { display:inline-block; padding:3px 9px; border-radius:999px; font-size:0.78rem; font-weight:600; background:#eef2f7; color:#475569; margin-right:6px; }
+  .pill.on { background:var(--brand); color:white; }
+  .stage { padding:8px 14px; border-radius:8px; background:#eef2f7; font-size:0.88rem; transition: all 0.3s; }
+  .stage.is-active { background:var(--brand); color:white; box-shadow: 0 4px 12px -2px rgba(47,84,150,0.45); }
+  .heat-cell { stroke:white; stroke-width:1.5; transition: fill 0.2s; }
+  .num-readout { font-family: var(--mono); font-size:0.92rem; padding:6px 10px; background:#f8fafc; border:1px solid var(--rule); border-radius:6px; min-width:80px; }
+  .opt-btn { display:block; width:100%; text-align:left; padding:9px 12px; margin:5px 0; background:white; border:1px solid #cbd5e1; border-radius:7px; font-size:0.92rem; cursor:pointer; transition: all 0.15s; }
+  .opt-btn:hover { border-color: var(--brand); background: #f8fafc; }
+  .opt-btn.correct { background:#dcfce7; border-color:#16a34a; color:#14532d; }
+  .opt-btn.wrong { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .opt-btn:disabled { cursor:default; }
+  .bar { height:18px; background:#e5e7eb; border-radius:4px; overflow:hidden; display:flex; }
+  .bar > span { display:block; height:100%; transition: width 0.3s; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Robot Dynamics and Control<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 04 · Module 4 · Robot Dynamics and Control</div>
+  <h1 class="lecture-title">Understanding each component of the dynamic model</h1>
+  <p class="lecture-subtitle">From theory to practice — analysing the 5-DOF RV-M1 through its inertia, Coriolis and gravity terms.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 04</span>
+  </div>
+</header>
+
+<div class="voice">We've already written <code>five_dof_dynamics.m</code> and watched the equations spit out torques. Today we slow down and ask what each piece of $\tau = \mathbf{D}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) + \mathbf{c}(\mathbf{q})$ is actually doing on the RV-M1 — which links dominate the inertia, when Coriolis stops being a footnote, and why gravity compensation is the single biggest win you can hand a PD loop. By the end you should be reading the code physically, not symbolically.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span>What this lecture covers</h2>
+  <p>Building on the RV-M1 case study and the <code>five_dof_dynamics.m</code> implementation, we dissect the three pieces of the manipulator equation one at a time. We'll look at the inertia matrix $\mathbf{D}(\mathbf{q})$ and how its entries change with configuration, the velocity-dependent vector $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$ that captures Coriolis and centrifugal effects, and the gravity vector $\mathbf{c}(\mathbf{q})$ that dominates static loading. We then connect each term back to lines of MATLAB code, explore optimisation opportunities, and end with a progression of controllers from naive PD up to full dynamic compensation.</p>
+  <div class="voice">Think of this as the autopsy lecture — same equations, but now we know which organ does what.</div>
+  <div class="callout blue"><strong>Learning targets.</strong>Inertia matrix analysis, velocity-dependent forces, gravitational loading, code↔maths connection, control-design implications, and computational strategy.</div>
+</section>
+
+<section class="card" id="inertia-matrix">
+  <h2><span class="badge">1</span>The inertia matrix $\mathbf{D}(\mathbf{q})$ — configuration-dependent mass</h2>
+  <p>In <code>five_dof_dynamics.m</code> you assembled a 5×5 symmetric matrix from <code>trace(U*J*U')</code> terms. Those entries aren't abstractions — they're the real coupling between the RV-M1's joints. The <strong>diagonal</strong> entries are <em>self-inertias</em>: $D_{11}$ is the inertia seen by the base when the whole arm rotates with it (largest when the arm is extended horizontally), $D_{22}$ is dominated by the 250 mm upper arm and everything outboard of it, $D_{33}$ by the 160 mm forearm and wrist, and $D_{44}, D_{55}$ are small wrist contributions.</p>
+  <p>The <strong>off-diagonal</strong> entries are coupling inertias. $D_{12}$ tells you how an acceleration of the base shows up as a torque demand at the shoulder; $D_{23}$ couples shoulder and elbow strongly because the forearm sits between them; $D_{13}$ becomes large when the arm is extended because the moment arms are long. Crucially, every one of these entries is a function of $\mathbf{q}$ — the matrix you compute at one pose is not the matrix you compute at another.</p>
+  <div class="voice">If you remember one thing: $\mathbf{D}(\mathbf{q})$ is not a constant. The robot you're controlling changes shape every millisecond.</div>
+  <div class="callout blue"><strong>Diagonal vs off-diagonal.</strong>Diagonals say <em>how hard is it to accelerate this joint alone</em>. Off-diagonals say <em>what does accelerating this joint do to its neighbours</em>.</div>
+  <div class="callout teal"><strong>Properties guaranteed by the formulation.</strong>Symmetry ($D_{ij}=D_{ji}$) and positive-definiteness fall out of the $\operatorname{tr}(U J U^{\top})$ construction — you don't have to enforce them by hand.</div>
+  <div class="code-block">
+    <div class="code-label">Compare the inertia matrix at three poses</div>
+<pre><code>% Compare inertia matrix for different configurations
+config1 = [0; 0; 0; 0; 0];      % All joints at zero (reference)
+config2 = [0; 90; 0; 0; 0];     % Shoulder joint raised
+config3 = [0; 45; 45; 0; 0];    % Elbow bent
+veloc = zeros(5,1); acc = zeros(5,1);
+
+torque1 = five_dof_dynamics(config1, veloc, acc, 'deg');
+torque2 = five_dof_dynamics(config2, veloc, acc, 'deg');
+torque3 = five_dof_dynamics(config3, veloc, acc, 'deg');
+
+fprintf('Configuration 1 (reference): %.3f N*m\n', norm(torque1));
+fprintf('Configuration 2 (shoulder up): %.3f N*m\n', norm(torque2));
+fprintf('Configuration 3 (elbow bent): %.3f N*m\n', norm(torque3));</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Animator · Watch $\mathbf{D}(\mathbf{q})$ change as the arm moves</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="inertia-matrix-sweep"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="coriolis-centrifugal">
+  <h2><span class="badge">2</span>Coriolis &amp; centrifugal terms $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})$</h2>
+  <p>The Christoffel symbols <code>h111</code>, <code>h112</code>, … in your code assemble into the velocity-dependent vector $\mathbf{h}$. These are the <em>phantom forces</em> — they don't exist when the robot is still, but at high speed they can dominate. <strong>Centrifugal</strong> terms scale as $\dot{q}_i^2$ and arise from a single joint's motion (spin the base fast and the upper arm tries to fly outward). <strong>Coriolis</strong> terms scale as $\dot{q}_i\dot{q}_j$ and arise from <em>interaction</em> — moving joints 1 and 2 together produces a force at joint 3 that neither motion alone would produce.</p>
+  <p>For the RV-M1, the strongest Coriolis coupling comes from the shoulder–elbow pair through the 160 mm forearm. The practical rule of thumb: if your trajectory has any joint moving above ~3 rad/s, $\mathbf{h}$ is no longer optional in the controller.</p>
+  <div class="voice">Centrifugal goes as $\dot{q}^2$, Coriolis as $\dot{q}_i\dot{q}_j$. Doubling the speed quadruples the headache.</div>
+  <div class="callout amber"><strong>Phantom but predictable.</strong>These forces are tracking-error generators if you ignore them — but the model knows them exactly, so feedforward compensation is cheap.</div>
+  <div class="code-block">
+    <div class="code-label">Pure centrifugal — sweep speed at fixed pose</div>
+<pre><code>config = [0; 45; 30; 0; 0];  % Fixed configuration
+acc = zeros(5,1);            % No acceleration
+
+speeds = [0, 1, 2, 5, 10];   % rad/s
+for i = 1:length(speeds)
+    veloc = [speeds(i); 0; 0; 0; 0];
+    torque = five_dof_dynamics(config, veloc, acc, 'deg');
+    fprintf('Speed %.1f rad/s: Torque magnitude = %.3f N*m\n', ...
+            speeds(i), norm(torque));
+end</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Isolating Coriolis interaction</div>
+<pre><code>config = [0; 45; 30; 0; 0];
+acc = zeros(5,1);
+
+veloc_single = [2; 0; 0; 0; 0];     % Only joint 1
+veloc_both   = [2; 2; 0; 0; 0];     % Joints 1 and 2
+
+torque_single = five_dof_dynamics(config, veloc_single, acc, 'deg');
+torque_both   = five_dof_dynamics(config, veloc_both,   acc, 'deg');
+torque_interaction = torque_both - torque_single;
+
+fprintf('Interaction forces: %.3f N*m\n', norm(torque_interaction));</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Picker · Centrifugal or Coriolis?</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="coriolis-velocity-picker"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="speed-thresholds">
+  <h2><span class="badge">3</span>When velocity forces actually matter</h2>
+  <p>Not every controller needs the full $\mathbf{h}$ term. The RV-M1's geometry gives reasonably crisp speed bands where each modelling decision pays off, and these are the numbers worth keeping in your head when you're choosing between simple PID, gravity-compensated PD, and full dynamic feedforward.</p>
+  <div class="voice">Pick your controller for the speed band you actually operate in — not the one that sounds most rigorous.</div>
+  <div class="callout green"><strong>Below 0.5 rad/s.</strong>Velocity terms are &lt;1% of the torque budget. Plain PID with integral action is fine.</div>
+  <div class="callout amber"><strong>3–8 rad/s.</strong>15–40% of total torque is velocity-dependent. You need explicit dynamic compensation or your tracking falls apart.</div>
+  <div class="callout red"><strong>Above 8 rad/s.</strong>Dominant velocity forces. Without the full model you're not really controlling the robot — you're hoping.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Picker · Match the controller to the speed regime</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="controller-for-speed"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="gravity">
+  <h2><span class="badge">4</span>Gravitational terms $\mathbf{c}(\mathbf{q})$ — the static load</h2>
+  <p>The <code>cc</code> vector in <code>five_dof_dynamics.m</code> carries the gravity loading. For the RV-M1 it's almost always the largest term in the static torque budget, and unlike $\mathbf{h}$ it's <strong>purely a function of pose</strong> — which makes it the easiest piece to feedforward.</p>
+  <p>Joint 1 (base, vertical axis) sees essentially zero gravity torque. Joint 2 (shoulder) sees the worst of it because it carries the entire 250 mm + 160 mm + wrist chain. Joint 3 carries less, the wrist joints almost nothing. As you sweep the shoulder angle from $-90°$ through $0°$ to $+90°$, the joint-2 gravity torque traces a clean $\sin(\theta_2)$: maximum at horizontal, zero at vertical.</p>
+  <div class="voice">Gravity never moves and never sleeps. Pay it once with feedforward and your PD loop only has to worry about <em>motion</em>.</div>
+  <div class="callout blue"><strong>Joint-by-joint static load.</strong>$J_1$: ≈0. $J_2$: dominant. $J_3$: moderate. $J_4, J_5$: small. This ranking is a property of the geometry, not the trajectory.</div>
+  <div class="code-block">
+    <div class="code-label">Gravity torque vs shoulder angle</div>
+<pre><code>veloc = zeros(5,1); acc = zeros(5,1);  % Static case
+
+shoulder_angles = -90:15:90;  % degrees
+gravity_torques = zeros(length(shoulder_angles), 5);
+
+for i = 1:length(shoulder_angles)
+    config = [0; shoulder_angles(i); 0; 0; 0];
+    torque = five_dof_dynamics(config, veloc, acc, 'deg');
+    gravity_torques(i, :) = torque';
+end
+
+figure;
+plot(shoulder_angles, gravity_torques(:, 2), 'b-', 'LineWidth', 2);
+xlabel('Shoulder Angle (degrees)');
+ylabel('Joint 2 Gravity Torque (N*m)');
+title('RV-M1 Gravity Loading vs Shoulder Position');
+grid on;</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Animator · Trace the $\sin(\theta_2)$ gravity curve</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="gravity-shoulder-sweep"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="control-system">
+  <h2><span class="badge">5</span>A complete control system: PD + gravity + forward dynamics</h2>
+  <p>To go from torque equations to a <em>moving</em> robot we need three pieces: a PD law that turns errors into corrective torque, a gravity-compensation feedforward that uses <code>five_dof_dynamics</code> with zero velocity and acceleration, and a way to extract $\mathbf{D}(\mathbf{q})$ so we can integrate $\ddot{\mathbf{q}} = \mathbf{D}^{-1}(\tau - \mathbf{c})$ forward in time.</p>
+  <p>The trick in <code>get_inertia_matrix_fd</code> is elegant: drive each joint with a unit acceleration in turn, subtract off the gravity-only torque, and the remaining vector is one column of $\mathbf{D}$. Five calls give you the whole matrix — without ever exposing it from inside the function.</p>
+  <div class="voice">Think of this as the smallest closed loop that does anything useful: PD + gravity FF, with forward dynamics doing the integration.</div>
+  <div class="callout teal"><strong>Why subtract <code>tau_g</code> after dividing by D?</strong><code>tau</code> already includes the gravity-compensation term we added. Subtracting <code>tau_g</code> again leaves only the <em>net</em> torque available for accelerating the links — exactly what $\mathbf{D}\ddot{\mathbf{q}}$ should equal.</div>
+  <div class="code-block">
+    <div class="code-label">PD + gravity-compensation controller</div>
+<pre><code>function tau_total = simple_rvm1_controller(q_desired, q_current, qd_current, Kp, Kd)
+if nargin &lt; 4
+    Kp = diag([50, 100, 80, 30, 20]);
+end
+if nargin &lt; 5
+    Kd = diag([5, 10, 8, 3, 2]);
+end
+
+pos_error = q_desired - q_current;
+vel_error = -qd_current;
+
+tau_pd      = Kp * pos_error + Kd * vel_error;
+tau_gravity = five_dof_dynamics(q_current, zeros(5,1), zeros(5,1), 'rad');
+
+tau_total = tau_pd + tau_gravity;
+end</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Extract D(q) by unit-acceleration probing</div>
+<pre><code>function D = get_inertia_matrix_fd(q)
+n = length(q);
+D = zeros(n,n);
+
+for j = 1:n
+    qd  = zeros(n,1);
+    qdd = zeros(n,1);
+    qdd(j) = 1;                         % unit acceleration at joint j
+    tau   = five_dof_dynamics(q, qd, qdd, 'rad');
+    tau_0 = five_dof_dynamics(q, zeros(n,1), zeros(n,1), 'rad');
+    D(:,j) = tau - tau_0;               % jth column of D(q)
+end
+end</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Joint-2 step response — full simulation</div>
+<pre><code>clear; clc;
+dt = 0.01; T = 5; t = 0:dt:T; n_joints = 5;
+
+q  = zeros(n_joints,1);
+qd = zeros(n_joints,1);
+
+q_desired = zeros(n_joints,1);
+q_desired(2) = deg2rad(45);
+
+Kp = diag([0, 6, 0, 0, 0]);
+Kd = diag([0, 1, 0, 0, 0]);
+
+q_history   = zeros(n_joints,length(t));
+qd_history  = zeros(n_joints,length(t));
+tau_history = zeros(n_joints,length(t));
+
+for k = 1:length(t)
+    pos_error = q_desired - q;
+    vel_error = -qd;
+    tau_pd = Kp * pos_error + Kd * vel_error;
+
+    tau_g = five_dof_dynamics(q, zeros(n_joints,1), zeros(n_joints,1), 'rad');
+    tau   = tau_pd + tau_g;
+
+    D   = get_inertia_matrix_fd(q);
+    qdd = D \ (tau - tau_g);
+
+    qd = qd + qdd * dt;
+    q  = q  + qd  * dt;
+
+    q_history(:,k)   = q;
+    qd_history(:,k)  = qd;
+    tau_history(:,k) = tau;
+end</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Builder · Stack the closed loop block by block</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="controller-builder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="experiments">
+  <h2><span class="badge">6</span>Hands-on experiments to run</h2>
+  <p>The simulator only earns its keep if you <em>probe</em> it. Four experiments expose the most important behaviours: turning gravity compensation on and off (steady-state error tells you everything), sweeping gains from sluggish to oscillatory to find the sweet spot, driving multiple joints simultaneously to surface the coupling terms, and running the same trajectory from different initial poses to see how dramatically configuration changes the answer.</p>
+  <div class="voice">You haven't really understood the model until you've broken it on purpose.</div>
+  <div class="callout green"><strong>Experiment payoff.</strong>Without gravity compensation, joint 2 will park itself well below the setpoint — that visible offset <em>is</em> the gravity term you weren't paying.</div>
+  <div class="callout purple"><strong>Coupling, made visible.</strong>Move joints 2 and 3 together and watch the joint-3 torque change versus moving joint 3 alone. That difference is $\mathbf{h}$ and the off-diagonals of $\mathbf{D}$ talking.</div>
+  <div class="code-block">
+    <div class="code-label">Toggle gravity compensation</div>
+<pre><code>% Without gravity compensation:
+tau = tau_pd;            % comment out the + tau_g
+
+% With gravity compensation:
+tau = tau_pd + tau_g;
+
+% Observe steady-state error and settling time.</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Gain sweep on joint 2</div>
+<pre><code>% Low gains (slow):
+Kp = diag([0, 10, 0, 0, 0]);
+Kd = diag([0,  2, 0, 0, 0]);
+
+% High gains (fast, may oscillate):
+Kp = diag([0, 100, 0, 0, 0]);
+Kd = diag([0,  15, 0, 0, 0]);
+
+% Reference 'optimal' from the lab notes:
+Kp = diag([0, 60, 0, 0, 0]);
+Kd = diag([0, 10, 0, 0, 0]);</code></pre>
+  </div>
+</section>
+
+<section class="card" id="code-optimisation">
+  <h2><span class="badge">7</span>Where <code>five_dof_dynamics.m</code> is slow — and what to do</h2>
+  <p>The provided code is faithful and easy to read, but it predates modern symbolic toolchains. It computes 125 Christoffel symbols line-by-line, stores every $U$ matrix explicitly, and hardcodes link lengths and masses. The optimisation opportunities sit in three layers: <strong>vectorise</strong> the trace sums and exploit the symmetry $h_{ijk}=h_{ikj}$ to halve the work; <strong>reduce storage</strong> by computing $U$ matrices on demand or recursively; and <strong>generalise</strong> away from the RV-M1's specific dimensions.</p>
+  <p>For real-time use the right move is usually to switch algorithm entirely — recursive Newton-Euler is $O(n)$ versus the Lagrangian formulation's $O(n^4)$. For this course we keep the Lagrangian form because it makes the structure visible; in production you'd pre-compute symbolic expressions and emit C++.</p>
+  <div class="voice">This code was written to <em>teach</em> the equations, not to ship them. Optimising it is the rite of passage from student to engineer.</div>
+  <div class="callout amber"><strong>Algorithmic vs micro-optimisation.</strong>A 2× win from vectorising trace sums is nice. A 100× win from switching to recursive Newton-Euler is the real unlock.</div>
+  <div class="code-block">
+    <div class="code-label">What the current Christoffel block looks like</div>
+<pre><code>% Current approach — one explicit line per symbol:
+h111 = trace(U111*J1*U11') + trace(U211*J2*U21') + trace(U311*J3*U31') + ...
+h112 = trace(U212*J2*U21') + trace(U312*J3*U31') + trace(U412*J4*U41') + ...
+% ... 123 more lines</code></pre>
+  </div>
+</section>
+
+<section class="card" id="component-analysis">
+  <h2><span class="badge">8</span>Component decomposition with one function</h2>
+  <p>You don't need extra code to separate $\mathbf{D}\ddot{\mathbf{q}}$, $\mathbf{h}$, and $\mathbf{c}$ — clever calls to <code>five_dof_dynamics</code> do it for you. Call it with $(\mathbf{q}, 0, 0)$ to get pure gravity. Call it with $(\mathbf{q}, 0, \ddot{\mathbf{q}})$ and subtract gravity to get pure inertial torque. Call it with $(\mathbf{q}, \dot{\mathbf{q}}, 0)$ minus gravity to get the velocity-dependent piece. The percentages of total torque attributable to each component are the single best diagnostic for <em>why</em> a controller is failing.</p>
+  <div class="voice">Three calls, three components. Print the percentages and the failure mode usually announces itself.</div>
+  <div class="callout teal"><strong>What the percentages tell you.</strong>Joint dominated by gravity → invest in compensation. Joint dominated by velocity terms → you're operating in the dynamic regime. Joint dominated by inertial term → your trajectory is aggressive.</div>
+  <div class="code-block">
+    <div class="code-label">Decompose the torque into its three components</div>
+<pre><code>function analyze_dynamic_components(q, qd, qdd)
+tau_total    = five_dof_dynamics(q, qd, qdd, 'rad');
+tau_gravity  = five_dof_dynamics(q, zeros(5,1), zeros(5,1), 'rad');
+tau_inertial = five_dof_dynamics(q, zeros(5,1), qdd, 'rad') - tau_gravity;
+tau_velocity = five_dof_dynamics(q, qd, zeros(5,1), 'rad') - tau_gravity;
+
+fprintf('                J1     J2     J3     J4     J5\n');
+fprintf('Total:     %6.2f %6.2f %6.2f %6.2f %6.2f\n', tau_total);
+fprintf('Gravity:   %6.2f %6.2f %6.2f %6.2f %6.2f\n', tau_gravity);
+fprintf('Inertial:  %6.2f %6.2f %6.2f %6.2f %6.2f\n', tau_inertial);
+fprintf('Velocity:  %6.2f %6.2f %6.2f %6.2f %6.2f\n', tau_velocity);
+end</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Playground · Decompose any $(\mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}})$ into its three torque pieces</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="component-decomposition-sandbox"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="control-progression">
+  <h2><span class="badge">9</span>Three controllers, in order of cost vs benefit</h2>
+  <p>Treat controller design as a ladder. <strong>Level 1</strong> is naive PD with no model — works at low speed, sluggish under gravity, the baseline you compare everything else to. <strong>Level 2</strong> adds gravity compensation; for the RV-M1 this is almost free (one extra call to <code>five_dof_dynamics</code> per cycle) and removes nearly all the steady-state error. <strong>Level 3</strong> is full dynamic compensation: pass desired $(\mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}})$ into the model as feedforward and let PD only handle deviations. Level 3 wins at trajectory tracking; for point-to-point moves Level 2 is usually the right engineering choice.</p>
+  <div class="voice">Don't pay for Level 3 if your task lives at Level 2 speeds. Match the controller to the regime.</div>
+  <div class="callout blue"><strong>Where each level wins.</strong>L1: prototyping. L2: positioning, pick-and-place, anything below ~3 rad/s. L3: trajectory tracking, high-speed work, contact tasks.</div>
+  <div class="code-block">
+    <div class="code-label">Level 3 — feedforward + feedback</div>
+<pre><code>function tau_full = full_dynamic_control(q_desired, qd_desired, qdd_desired, ...
+                                         q_current, qd_current)
+tau_feedforward = five_dof_dynamics(q_current, qd_current, qdd_desired, 'rad');
+
+Kp = diag([50, 100, 80, 30, 20]);
+Kd = diag([5,   10,  8,  3,  2]);
+
+pos_error = q_desired  - q_current;
+vel_error = qd_desired - qd_current;
+
+tau_feedback = Kp * pos_error + Kd * vel_error;
+tau_full = tau_feedforward + tau_feedback;
+end</code></pre>
+  </div>
+</section>
+
+<section class="card" id="summary-forward">
+  <h2><span class="badge">10</span>Summary and where Module 5 takes us</h2>
+  <p>By the end of this lecture you should be able to point at any line of <code>five_dof_dynamics.m</code> and say which physical effect it captures, predict whether velocity terms matter for a given trajectory before you simulate, and pick the cheapest controller that meets the task. The RV-M1's geometry — the 250 mm upper arm and the 160 mm forearm — is now part of your physical intuition: those two links dominate inertia, set the gravity load on joint 2, and create the strongest Coriolis coupling.</p>
+  <p>Module 5 will lift these ideas into stability and performance: Lyapunov analysis with the manipulator equation, linearisation around operating points, recursive Newton-Euler for real-time use, and parameter identification when the link masses you have on paper don't quite match the robot you have on the bench.</p>
+  <div class="voice">You've stopped reading the equations and started reading the <em>robot</em>. That's the whole point of Module 4.</div>
+  <div class="callout green"><strong>Mastery check.</strong>Can you explain why $\mathbf{D}(\mathbf{q})$ changes with configuration, predict the speed at which $\mathbf{h}$ matters, name the joints with the highest gravity load, and outline a path to a 10× faster implementation? If yes — you're ready for Module 5.</div>
+  <div class="callout purple"><strong>Next module preview.</strong>Lyapunov stability, linearisation and frequency-domain tools, $O(n)$ recursive algorithms, parameter identification, and dynamic-aware trajectory planning.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · Four questions to close the loop</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="mastery-mcq"></div>
+    </div>
+  </div>
+</section>
+
+<section class="homework" id="homework">
+  <h2><span class="badge">★</span>Homework</h2>
+  <p class="hw-intro">Four short pieces. The first builds intuition for $\mathbf{D}(\mathbf{q})$, the second forces the decomposition habit, the third is the controller comparison everyone should do once, and the fourth is a written engineering pitch — no implementation required.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Inertia-matrix sweep</h4>
+      <p>Using <code>five_dof_dynamics.m</code>, plot $D_{22}(\mathbf{q})$ and $D_{23}(\mathbf{q})$ as the elbow angle $q_3$ varies over its full range with the shoulder fixed at $45°$. Submit the plots plus a one-paragraph physical interpretation of what changes and why.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>2 · Component decomposition</h4>
+      <p>Run <code>analyze_dynamic_components</code> for at least three poses (horizontal extension, vertical, and folded) at a moderate speed (≈2 rad/s on joints 2 and 3). Hand in the printed percentages and identify which joint and which component dominates in each pose.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Controller comparison</h4>
+      <p>Implement Levels 1, 2 and 3 from §9 and run all three on a 45° step at joint 2. Submit overlaid plots of joint-2 angle vs time plus the steady-state error and settling time for each controller.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>4 · Optimisation pitch</h4>
+      <p>Profile <code>five_dof_dynamics.m</code> with MATLAB's profiler and write a one-page proposal for a 10× speedup. State which lines you'd vectorise, what symmetries you'd exploit, and whether you'd switch to a recursive Newton-Euler formulation. No implementation required — only the plan.</p>
+      <span class="due">Due: two lectures</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#inertia-matrix">1 · The inertia matrix $\mathbf{D}(\mathbf{q})$</a></li>
+      <li><a href="#coriolis-centrifugal">2 · Coriolis &amp; centrifugal $\mathbf{h}$</a></li>
+      <li><a href="#speed-thresholds">3 · When velocity matters</a></li>
+      <li><a href="#gravity">4 · Gravitational terms $\mathbf{c}(\mathbf{q})$</a></li>
+      <li><a href="#control-system">5 · A complete control system</a></li>
+      <li><a href="#experiments">6 · Hands-on experiments</a></li>
+      <li><a href="#code-optimisation">7 · Where the code is slow</a></li>
+      <li><a href="#component-analysis">8 · Component decomposition</a></li>
+      <li><a href="#control-progression">9 · Three controllers</a></li>
+      <li><a href="#summary-forward">10 · Summary &amp; Module 5</a></li>
+      <li><a href="#homework">★ Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Robot Dynamics and Control · Lecture 04 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* =====================================================================
+   Simplified RV-M1 dynamics — close enough to make the widgets behave
+   physically. Link/mass values come straight from the lecture's source.
+   ===================================================================== */
+const RVM1 = { L1:0.300, L2:0.250, L3:0.160, L4:0.072, L5:0.107,
+               m1:5, m2:8, m3:6, m4:0, m5:2, g:9.81 };
+
+const d2r = d => d * Math.PI / 180;
+const r2d = r => r * 180 / Math.PI;
+
+function gravityVec(qDeg){
+  const q2 = d2r(qDeg[1]);
+  const q3 = d2r(qDeg[2]);
+  const { L2, L3, m2, m3, m5, g } = RVM1;
+  // joint 2 carries the whole outboard chain; cosine pattern peaking
+  // at q2=0 (horizontal) and zero at q2=±90° (vertical), as the lecture
+  // describes.
+  const c2 = ((m2*L2/2) + (m3+m5)*L2) * g * Math.cos(q2)
+           + (m3*L3/2 + m5*L3) * g * Math.cos(q2+q3);
+  const c3 = (m3*L3/2 + m5*L3) * g * Math.cos(q2+q3);
+  return [0, c2, c3, 0.05*Math.sin(q2+q3), 0];
+}
+
+function inertiaMatrix(qDeg){
+  const q2 = d2r(qDeg[1]);
+  const q3 = d2r(qDeg[2]);
+  const { L2, L3, m2, m3, m5 } = RVM1;
+  const M = m3 + m5;                       // outboard mass past elbow
+  const cosQ2 = Math.cos(q2);
+  const cosQ3 = Math.cos(q3);
+  const reach = L2*cosQ2 + L3*Math.cos(q2+q3);
+  const D = Array.from({length:5}, () => Array(5).fill(0));
+  D[0][0] = 0.40 + m2*(L2/2)*(L2/2)*cosQ2*cosQ2 + M*reach*reach;
+  D[1][1] = 0.50 + m2*(L2/2)*(L2/2) + M*L2*L2 + (m3/4 + m5)*L3*L3
+            + 2*L2*(m3*L3/2 + m5*L3)*cosQ3;
+  D[2][2] = 0.15 + (m3/4 + m5)*L3*L3;
+  D[3][3] = 0.025;
+  D[4][4] = 0.018;
+  D[1][2] = D[2][1] = (m3/4 + m5)*L3*L3 + L2*(m3*L3/2 + m5*L3)*cosQ3;
+  D[0][1] = D[1][0] = 0.18 * Math.sin(q2) * cosQ2;
+  D[0][2] = D[2][0] = 0.10 * Math.sin(q2+q3) * cosQ2;
+  D[1][3] = D[3][1] = 0.006 * cosQ2;
+  D[2][3] = D[3][2] = 0.004;
+  D[3][4] = D[4][3] = 0.002;
+  return D;
+}
+
+function velocityForces(qDeg, qd){
+  const q2 = d2r(qDeg[1]);
+  const q3 = d2r(qDeg[2]);
+  const { L2, L3, m3, m5 } = RVM1;
+  const c23 = (m3*L3/2 + m5*L3) * L2 * Math.sin(q3);   // dominant Coriolis coupling
+  const h = [0,0,0,0,0];
+  // h2 absorbs the q3-velocity centrifugal and 2*q2*q3 Coriolis term
+  h[1] = -c23 * (qd[2]*qd[2] + 2*qd[1]*qd[2]);
+  h[2] =  c23 * qd[1]*qd[1];
+  // base spin throws outboard chain outward
+  const spin = qd[0]*qd[0];
+  h[1] += -0.55 * Math.sin(q2)*Math.cos(q2) * spin;
+  h[2] += -0.20 * Math.sin(q2+q3)*Math.cos(q2+q3) * spin;
+  // small wrist contributions
+  h[3] +=  0.02 * qd[1]*qd[2];
+  return h;
+}
+
+function fiveDoF(qDeg, qd, qdd){
+  const D = inertiaMatrix(qDeg);
+  const h = velocityForces(qDeg, qd);
+  const c = gravityVec(qDeg);
+  const tau = [0,0,0,0,0];
+  for (let i=0;i<5;i++){
+    let s = 0;
+    for (let j=0;j<5;j++) s += D[i][j]*qdd[j];
+    tau[i] = s + h[i] + c[i];
+  }
+  return tau;
+}
+
+/* =====================================================================
+   Widget 1 — Inertia matrix sweep (animator)
+   ===================================================================== */
+function InertiaMatrixSweepWidget(){
+  const PRESETS = [
+    { label:'All zeros (reference)', q:[0,0,0,0,0] },
+    { label:'Shoulder up 90°',       q:[0,90,0,0,0] },
+    { label:'Elbow bent 45/45',      q:[0,45,45,0,0] },
+    { label:'Fully extended',        q:[0,0,0,0,0] },
+    { label:'Folded compact',        q:[0,90,-90,0,0] }
+  ];
+  const [q, setQ] = useState([0,45,30,0,0]);
+  const [prev, setPrev] = useState(null);
+
+  const D = useMemo(() => inertiaMatrix(q), [q]);
+  const flat = D.flat();
+  const maxAbs = Math.max(...flat.map(Math.abs), 0.01);
+
+  useEffect(() => {
+    const t = setTimeout(() => setPrev(D), 60);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  const trace = D[0][0]+D[1][1]+D[2][2]+D[3][3]+D[4][4];
+  const condProxy = (Math.max(...[D[0][0],D[1][1],D[2][2],D[3][3],D[4][4]])
+                     / Math.min(...[D[0][0],D[1][1],D[2][2],D[3][3],D[4][4]]));
+
+  const updateOne = (i, v) => {
+    const next = [...q];
+    next[i] = Number(v);
+    setQ(next);
+  };
+
+  const cellColor = (v) => {
+    const t = Math.abs(v) / maxAbs;
+    const r = Math.round(255 - t*210);
+    const g = Math.round(255 - t*180);
+    const b = Math.round(255 - t*60);
+    return `rgb(${r},${g},${b})`;
+  };
+
+  const changedFlag = (i,j) => {
+    if (!prev) return false;
+    const a = D[i][j]; const b = prev[i][j];
+    if (Math.abs(b) < 1e-6) return false;
+    return Math.abs((a-b)/b) > 0.10;
+  };
+
+  const cell = 56;
+  return (
+    <div>
+      <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:12 }}>
+        {PRESETS.map((p,i) => (
+          <button key={i} className="btn secondary"
+                  style={{ fontSize:'0.78rem', padding:'5px 10px' }}
+                  onClick={() => setQ(p.q)}>{p.label}</button>
+        ))}
+      </div>
+      {['q1 (base)','q2 (shoulder)','q3 (elbow)','q4 (wrist pitch)','q5 (wrist roll)'].map((lab,i)=>(
+        <div className="ctrl-row" key={i}>
+          <label>{lab}</label>
+          <input type="range" min="-90" max="90" step="1"
+                 value={q[i]} onChange={e=>updateOne(i, e.target.value)} />
+          <span className="num-readout">{q[i].toFixed(0)}°</span>
+        </div>
+      ))}
+      <div style={{ display:'flex', gap:18, alignItems:'flex-start', flexWrap:'wrap', marginTop:14 }}>
+        <svg width={cell*5+50} height={cell*5+50} style={{ background:'#fbfaf5', borderRadius:8, border:'1px solid var(--rule)' }}>
+          {[0,1,2,3,4].map(i => (
+            <text key={'col'+i} x={50+i*cell+cell/2} y={20} fontSize="11"
+                  textAnchor="middle" fill="#475569" fontFamily="var(--mono)">{i+1}</text>
+          ))}
+          {[0,1,2,3,4].map(j => (
+            <text key={'row'+j} x={26} y={40+j*cell+cell/2} fontSize="11"
+                  textAnchor="middle" fill="#475569" fontFamily="var(--mono)">{j+1}</text>
+          ))}
+          {D.map((row,i) => row.map((v,j) => (
+            <g key={`${i}-${j}`}>
+              <rect className="heat-cell" x={50+j*cell} y={30+i*cell}
+                    width={cell-2} height={cell-2}
+                    fill={cellColor(v)}
+                    stroke={changedFlag(i,j) ? '#dc2626' : 'white'}
+                    strokeWidth={changedFlag(i,j) ? 2.5 : 1.5}
+                    rx="4" />
+              <text x={50+j*cell+cell/2} y={30+i*cell+cell/2+4}
+                    fontSize="10.5" textAnchor="middle"
+                    fill={Math.abs(v)/maxAbs > 0.55 ? 'white' : '#1f2937'}
+                    fontFamily="var(--mono)" fontWeight="600">
+                {Math.abs(v) < 0.001 ? '0' : v.toFixed(2)}
+              </text>
+            </g>
+          )))}
+        </svg>
+        <div style={{ flex:'1 1 200px', fontSize:'0.9rem' }}>
+          <div style={{ marginBottom:10 }}>
+            <span className="pill on">D₂₂</span>
+            <span className="num-readout">{D[1][1].toFixed(3)}</span>
+          </div>
+          <div style={{ marginBottom:10 }}>
+            <span className="pill on">D₂₃</span>
+            <span className="num-readout">{D[1][2].toFixed(3)}</span>
+            <div style={{ fontSize:'0.78rem', color:'var(--ink-soft)', marginTop:4 }}>
+              Bend the elbow — watch this swell and shrink.
+            </div>
+          </div>
+          <div style={{ marginBottom:10 }}>
+            <span className="pill on">tr(D)</span>
+            <span className="num-readout">{trace.toFixed(3)}</span>
+          </div>
+          <div>
+            <span className="pill on">cond≈</span>
+            <span className="num-readout">{condProxy.toFixed(1)}</span>
+          </div>
+          <div style={{ marginTop:10, fontSize:'0.78rem', color:'#dc2626' }}>
+            Red border = cell magnitude moved &gt;10% since last frame.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   Widget 2 — Coriolis vs centrifugal picker
+   ===================================================================== */
+function CoriolisVelocityPickerWidget(){
+  const POSE = [0, 45, 30, 0, 0];
+  const CHOICES = [
+    { label:'Joint 1 alone at 2 rad/s',         qd:[2,0,0,0,0] },
+    { label:'Joint 2 alone at 5 rad/s',         qd:[0,5,0,0,0] },
+    { label:'Joints 1 & 2 together at 2 rad/s', qd:[2,2,0,0,0] },
+    { label:'Shoulder + elbow at 3 rad/s',      qd:[0,3,3,0,0] }
+  ];
+  const [pick, setPick] = useState(null);
+
+  const result = useMemo(() => {
+    if (pick === null) return null;
+    const c = CHOICES[pick];
+    const tauJoint = velocityForces(POSE, c.qd);
+    // self-spin = sum of single-joint sims; interaction = total - self-spin
+    const selfSpin = [0,0,0,0,0];
+    for (let k=0;k<5;k++){
+      if (Math.abs(c.qd[k]) < 1e-9) continue;
+      const isolated = c.qd.map((v,idx) => idx===k ? v : 0);
+      const t = velocityForces(POSE, isolated);
+      for (let i=0;i<5;i++) selfSpin[i] += t[i];
+    }
+    const interaction = tauJoint.map((v,i) => v - selfSpin[i]);
+    const dominant = (Math.max(...interaction.map(Math.abs)) > 0.05)
+                     ? 'Coriolis interaction is non-trivial here'
+                     : 'Pure centrifugal — no interaction term';
+    return { tauJoint, selfSpin, interaction, dominant };
+  }, [pick]);
+
+  return (
+    <div>
+      <div style={{ fontSize:'0.86rem', color:'var(--ink-soft)', marginBottom:10 }}>
+        Pose fixed at <code>q = [0°, 45°, 30°, 0°, 0°]</code>. Pick a velocity profile:
+      </div>
+      {CHOICES.map((c,i) => (
+        <button key={i} className="opt-btn"
+                style={{ borderColor: pick===i ? 'var(--brand)' : '#cbd5e1',
+                         background:  pick===i ? '#e3f2fd' : 'white' }}
+                onClick={() => setPick(i)}>
+          <span className="pill on" style={{ background:'var(--brand)' }}>{i+1}</span>
+          {c.label}
+        </button>
+      ))}
+      {result && (
+        <div style={{ marginTop:14, padding:12, background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8 }}>
+          <div style={{ fontWeight:600, marginBottom:8, color:'var(--brand)' }}>{result.dominant}</div>
+          <table style={{ width:'100%', fontFamily:'var(--mono)', fontSize:'0.85rem', borderCollapse:'collapse' }}>
+            <thead>
+              <tr style={{ background:'#eef2f7' }}>
+                <th style={{ padding:'6px', textAlign:'left' }}>Joint</th>
+                <th style={{ padding:'6px', textAlign:'right' }}>τ (N·m)</th>
+                <th style={{ padding:'6px', textAlign:'right' }}>self-spin</th>
+                <th style={{ padding:'6px', textAlign:'right' }}>interaction</th>
+              </tr>
+            </thead>
+            <tbody>
+              {result.tauJoint.map((v,i) => (
+                <tr key={i} style={{ borderTop:'1px solid var(--rule)' }}>
+                  <td style={{ padding:'5px 6px' }}>J{i+1}</td>
+                  <td style={{ padding:'5px 6px', textAlign:'right' }}>{v.toFixed(3)}</td>
+                  <td style={{ padding:'5px 6px', textAlign:'right' }}>{result.selfSpin[i].toFixed(3)}</td>
+                  <td style={{ padding:'5px 6px', textAlign:'right',
+                               color: Math.abs(result.interaction[i])>0.05 ? '#dc2626' : '#475569' }}>
+                    {result.interaction[i].toFixed(3)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ marginTop:10, fontSize:'0.83rem', color:'var(--ink-soft)' }}>
+            Rule of thumb: Coriolis becomes non-trivial whenever any
+            $|\dot q_i \dot q_j| > 1\,\mathrm{rad}^2/\mathrm{s}^2$.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* =====================================================================
+   Widget 3 — Controller-for-speed picker
+   ===================================================================== */
+function ControllerForSpeedWidget(){
+  const ROUNDS = [
+    { prompt:"Pick-and-place at 0.3 rad/s peak — what's enough?", correct:0,
+      why:"Below 0.5 rad/s velocity terms are <1% of the budget. PID is fine; anything more is wasted compute." },
+    { prompt:"Continuous trajectory tracking at 5 rad/s — what's enough?", correct:2,
+      why:"3–8 rad/s puts 15–40% of torque into velocity terms. Without explicit dynamic compensation the tracking error goes hyperbolic." },
+    { prompt:"Joint 2 holding 45° steady against gravity — what's enough?", correct:1,
+      why:"Static load is pure $\\mathbf{c}(\\mathbf{q})$. Gravity-compensated PD is the sweet spot; full feedforward adds nothing because q̇=q̈=0." },
+    { prompt:"Joint 5 wrist twist at 10 rad/s — what's enough?", correct:2,
+      why:"Above 8 rad/s velocity forces dominate. Even on the wrist (where inertia is small) you need the full model or you're hoping, not controlling." }
+  ];
+  const CHOICES = ['Plain PID', 'PD + gravity compensation', 'Full dynamic feedforward'];
+  const COSTS = ['cheap', 'modest', 'most expensive'];
+
+  const [picks, setPicks] = useState({});
+  const choose = (r,c) => setPicks(p => ({ ...p, [r]:c }));
+  const reset = () => setPicks({});
+
+  const score = ROUNDS.reduce((acc,r,i) => acc + (picks[i]===r.correct ? 1 : 0), 0);
+
+  return (
+    <div>
+      {ROUNDS.map((r, ri) => {
+        const picked = picks[ri];
+        return (
+          <div key={ri} style={{ marginBottom:14, paddingBottom:12, borderBottom:'1px solid var(--rule)' }}>
+            <div style={{ fontWeight:600, marginBottom:8 }}>
+              <span className="pill on">{ri+1}</span>{r.prompt}
+            </div>
+            {CHOICES.map((c, ci) => {
+              let cls = 'opt-btn';
+              if (picked !== undefined){
+                if (ci === r.correct) cls += ' correct';
+                else if (ci === picked) cls += ' wrong';
+              }
+              return (
+                <button key={ci} className={cls} disabled={picked!==undefined}
+                        onClick={() => choose(ri, ci)}>
+                  <span style={{ display:'inline-block', width:32, fontWeight:700 }}>L{ci+1}</span>
+                  {c}
+                  <span style={{ float:'right', fontSize:'0.75rem', color:'var(--ink-soft)', fontWeight:400 }}>{COSTS[ci]}</span>
+                </button>
+              );
+            })}
+            {picked !== undefined && (
+              <div className={picked===r.correct ? 'callout green' : 'callout amber'}
+                   style={{ marginTop:8, fontSize:'0.88rem' }}>
+                <strong>{picked===r.correct ? 'Right call.' : 'Not quite.'}</strong>
+                {r.why}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+        <div style={{ fontFamily:'var(--mono)', fontWeight:600 }}>
+          Score: {score} / {ROUNDS.length}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   Widget 4 — Gravity shoulder sweep (animator)
+   ===================================================================== */
+function GravityShoulderSweepWidget(){
+  const [theta2, setTheta2] = useState(0);
+  const [theta3, setTheta3] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [trace, setTrace] = useState([]);
+  const [direction, setDirection] = useState(1);
+
+  // sample the curve 19 points across [-90,90]
+  const curve = useMemo(() => {
+    const pts = [];
+    for (let a = -90; a <= 90; a += 5){
+      const tau = gravityVec([0, a, theta3, 0, 0])[1];
+      pts.push({ a, tau });
+    }
+    return pts;
+  }, [theta3]);
+
+  useEffect(() => {
+    if (!playing) return;
+    const t = setTimeout(() => {
+      let next = theta2 + 3 * direction;
+      let dirNext = direction;
+      if (next > 90){ next = 90; dirNext = -1; }
+      if (next < -90){ next = -90; dirNext = 1; }
+      setTheta2(next);
+      setDirection(dirNext);
+      const tau = gravityVec([0, next, theta3, 0, 0])[1];
+      setTrace(tr => [...tr.slice(-180), { a: next, tau }]);
+    }, 60);
+    return () => clearTimeout(t);
+  }, [playing, theta2, theta3, direction]);
+
+  const liveTau = gravityVec([0, theta2, theta3, 0, 0])[1];
+  const peak = Math.max(...curve.map(p => Math.abs(p.tau)));
+
+  // SVG dimensions
+  const W = 460, H = 200, mL = 36, mR = 12, mT = 14, mB = 28;
+  const xScale = a => mL + (a + 90)/180 * (W - mL - mR);
+  const yMax = peak * 1.1;
+  const yScale = v => mT + (1 - (v + yMax)/(2*yMax)) * (H - mT - mB);
+
+  const path = curve.map((p,i) => `${i===0?'M':'L'}${xScale(p.a).toFixed(1)},${yScale(p.tau).toFixed(1)}`).join(' ');
+  const tracePath = trace.map((p,i) => `${i===0?'M':'L'}${xScale(p.a).toFixed(1)},${yScale(p.tau).toFixed(1)}`).join(' ');
+
+  return (
+    <div>
+      <div className="ctrl-row">
+        <label>θ₂</label>
+        <input type="range" min="-90" max="90" step="1"
+               value={theta2} onChange={e => setTheta2(Number(e.target.value))} />
+        <span className="num-readout">{theta2.toFixed(0)}°</span>
+      </div>
+      <div className="ctrl-row">
+        <label>θ₃</label>
+        <input type="range" min="-90" max="90" step="1"
+               value={theta3} onChange={e => setTheta3(Number(e.target.value))} />
+        <span className="num-readout">{theta3.toFixed(0)}°</span>
+      </div>
+      <div style={{ display:'flex', gap:8, marginBottom:10 }}>
+        <button className="btn purple" onClick={() => setPlaying(p => !p)}>
+          {playing ? '⏸ Pause' : '▶ Sweep'}
+        </button>
+        <button className="btn secondary" onClick={() => { setTheta2(0); setTrace([]); setPlaying(false); }}>↺ Reset</button>
+        <button className="btn secondary" onClick={() => setTheta3(0)}>θ₃ → 0</button>
+        <button className="btn secondary" onClick={() => setTheta3(45)}>θ₃ → 45°</button>
+        <button className="btn secondary" onClick={() => setTheta3(90)}>θ₃ → 90°</button>
+      </div>
+      <svg width={W} height={H} style={{ background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8, maxWidth:'100%' }}>
+        {/* axes */}
+        <line x1={mL} y1={yScale(0)} x2={W-mR} y2={yScale(0)} stroke="#94a3b8" strokeDasharray="3,3"/>
+        <line x1={xScale(0)} y1={mT} x2={xScale(0)} y2={H-mB} stroke="#94a3b8" strokeDasharray="3,3"/>
+        {/* full curve, ghost */}
+        <path d={path} stroke="#cbd5e1" strokeWidth="1.5" fill="none"/>
+        {/* drawn trace */}
+        <path d={tracePath} stroke="var(--brand)" strokeWidth="2.4" fill="none"/>
+        {/* current point */}
+        <circle cx={xScale(theta2)} cy={yScale(liveTau)} r="6" fill="#dc2626"/>
+        {/* x-axis labels */}
+        {[-90,-45,0,45,90].map(a => (
+          <g key={a}>
+            <line x1={xScale(a)} y1={H-mB} x2={xScale(a)} y2={H-mB+3} stroke="#94a3b8"/>
+            <text x={xScale(a)} y={H-mB+15} fontSize="10" textAnchor="middle" fill="#475569" fontFamily="var(--mono)">{a}°</text>
+          </g>
+        ))}
+        <text x={W/2} y={H-3} fontSize="10.5" textAnchor="middle" fill="#475569" fontFamily="var(--mono)">θ₂ (deg)</text>
+        <text x={mL-4} y={mT+8} fontSize="10.5" textAnchor="end" fill="#475569" fontFamily="var(--mono)">τ₂</text>
+        {/* peak annotation */}
+        <text x={xScale(0)+6} y={yScale(curve.find(p=>p.a===0).tau)-4}
+              fontSize="10" fill="#dc2626" fontFamily="var(--mono)">peak (horiz)</text>
+      </svg>
+      <div style={{ marginTop:10, display:'flex', gap:14, flexWrap:'wrap', fontSize:'0.86rem' }}>
+        <div><span className="pill on">τ₂(now)</span><span className="num-readout">{liveTau.toFixed(2)} N·m</span></div>
+        <div><span className="pill on">peak</span><span className="num-readout">{peak.toFixed(2)} N·m</span></div>
+        <div style={{ color:'var(--ink-soft)', alignSelf:'center' }}>
+          Bend θ₃ — the curve's <em>amplitude</em> changes, the shape doesn't. That's geometry, not code.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   Widget 5 — Controller builder
+   ===================================================================== */
+function ControllerBuilderWidget(){
+  const BLOCKS = [
+    { id:'pd',   label:'PD law',                   sub:'τ_pd = K_p·(q_d − q) + K_d·(−q̇)' },
+    { id:'grav', label:'Gravity compensation',     sub:'τ_g = five_dof_dynamics(q, 0, 0)' },
+    { id:'fd',   label:'Forward-dynamics integrator', sub:'q̈ = D(q) \\ (τ − τ_g);  integrate' }
+  ];
+  const [active, setActive] = useState({});
+  const toggle = id => setActive(a => ({ ...a, [id]: !a[id] }));
+  const reset = () => setActive({});
+
+  const sim = useMemo(() => {
+    const dt = 0.02, T = 3.0;
+    const N = Math.floor(T/dt) + 1;
+    const Kp = 60, Kd = 10, D22 = 0.5, G = 25;
+    const desired = Math.PI/4;
+    let q = 0, qd = 0;
+    const samples = [];
+    const useFD = !!active.fd, usePD = !!active.pd, useGrav = !!active.grav;
+    for (let i = 0; i < N; i++){
+      const t = i * dt;
+      const c = G * Math.cos(q);                  // gravity disturbance
+      let tau = 0;
+      if (usePD) tau += Kp*(desired - q) + Kd*(-qd);
+      if (useGrav) tau += c;
+      if (useFD){
+        const qdd = (tau - c) / D22;
+        qd += qdd * dt;
+        q  += qd  * dt;
+        if (q >  Math.PI) q =  Math.PI;
+        if (q < -Math.PI) q = -Math.PI;
+      } else {
+        // robot doesn't move because nothing integrates
+      }
+      samples.push({ t, q, tau });
+    }
+    const finalQ = samples[samples.length-1].q;
+    const sse = Math.abs(desired - finalQ);
+    let settled = -1;
+    for (let i = 0; i < samples.length; i++){
+      const remaining = samples.slice(i);
+      if (remaining.every(s => Math.abs(s.q - desired) < d2r(2))){
+        settled = samples[i].t; break;
+      }
+    }
+    return { samples, sse, settled };
+  }, [active]);
+
+  // SVG plot
+  const W = 460, H = 180, mL = 36, mR = 12, mT = 12, mB = 22;
+  const xS = t => mL + (t/3.0) * (W - mL - mR);
+  const yS = q => mT + (1 - (r2d(q) + 20) / 80) * (H - mT - mB);
+  const path = sim.samples.map((s,i) => `${i===0?'M':'L'}${xS(s.t).toFixed(1)},${yS(s.q).toFixed(1)}`).join(' ');
+
+  const allOn = active.pd && active.grav && active.fd;
+  const win = allOn && sim.sse < d2r(2) && sim.settled > 0 && sim.settled < 1.5;
+
+  return (
+    <div>
+      <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:12 }}>
+        {BLOCKS.map(b => (
+          <button key={b.id} className={'btn ' + (active[b.id] ? '' : 'secondary')}
+                  onClick={() => toggle(b.id)}>
+            {active[b.id] ? '✓ ' : '+ '}{b.label}
+          </button>
+        ))}
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+      </div>
+      <div style={{ display:'flex', flexWrap:'wrap', gap:10, marginBottom:10 }}>
+        {BLOCKS.map(b => (
+          <div key={b.id} style={{
+            padding:'8px 12px', border:'1px solid var(--rule)',
+            borderRadius:6, background: active[b.id] ? 'var(--brand-soft)' : '#f8fafc',
+            opacity: active[b.id] ? 1 : 0.55, fontSize:'0.78rem', flex:'1 1 180px'
+          }}>
+            <div style={{ fontWeight:600, color:'var(--brand-2)' }}>{b.label}</div>
+            <code style={{ fontSize:'0.74rem' }}>{b.sub}</code>
+          </div>
+        ))}
+      </div>
+      <svg width={W} height={H} style={{ background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8, maxWidth:'100%' }}>
+        {/* desired line */}
+        <line x1={mL} y1={yS(Math.PI/4)} x2={W-mR} y2={yS(Math.PI/4)}
+              stroke="#dc2626" strokeWidth="1.5" strokeDasharray="5,3"/>
+        <text x={W-mR-2} y={yS(Math.PI/4)-4} fontSize="10" textAnchor="end" fill="#dc2626" fontFamily="var(--mono)">q_d = 45°</text>
+        {/* zero line */}
+        <line x1={mL} y1={yS(0)} x2={W-mR} y2={yS(0)} stroke="#cbd5e1"/>
+        <path d={path} stroke="var(--brand)" strokeWidth="2.4" fill="none"/>
+        {/* axes labels */}
+        {[0,1,2,3].map(t => (
+          <g key={t}>
+            <line x1={xS(t)} y1={H-mB} x2={xS(t)} y2={H-mB+3} stroke="#94a3b8"/>
+            <text x={xS(t)} y={H-mB+13} fontSize="10" textAnchor="middle" fill="#475569" fontFamily="var(--mono)">{t}s</text>
+          </g>
+        ))}
+        <text x={mL-4} y={yS(0)+3} fontSize="10" textAnchor="end" fill="#475569" fontFamily="var(--mono)">0°</text>
+        <text x={mL-4} y={yS(d2r(45))+3} fontSize="10" textAnchor="end" fill="#475569" fontFamily="var(--mono)">45°</text>
+      </svg>
+      <div style={{ display:'flex', gap:14, flexWrap:'wrap', marginTop:10, fontSize:'0.86rem' }}>
+        <div><span className="pill on">SSE</span><span className="num-readout">{r2d(sim.sse).toFixed(1)}°</span></div>
+        <div><span className="pill on">settled</span><span className="num-readout">
+          {sim.settled > 0 ? sim.settled.toFixed(2)+'s' : '—'}
+        </span></div>
+      </div>
+      <div style={{ marginTop:12 }}>
+        {!active.fd && (
+          <div className="callout amber"><strong>No motion.</strong>Without forward dynamics there's nothing to integrate — torques are computed but the robot stays put.</div>
+        )}
+        {active.fd && active.pd && !active.grav && (
+          <div className="callout amber"><strong>Gravity wins.</strong>PD alone can't beat the sin pattern in $\mathbf{c}(\mathbf{q})$ — joint 2 parks well below 45°.</div>
+        )}
+        {active.fd && !active.pd && (
+          <div className="callout red"><strong>The arm just falls.</strong>No PD law means no corrective torque. Add a controller block.</div>
+        )}
+        {win && (
+          <div className="callout green"><strong>✓ Closed loop earning its keep.</strong>Within ±2° of 45° in {sim.settled.toFixed(2)} s — clean, no offset. That's the smallest closed loop that does anything useful.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   Widget 6 — Component decomposition sandbox
+   ===================================================================== */
+function ComponentDecompositionSandboxWidget(){
+  const PRESETS = [
+    { label:'Static horizontal — gravity-only',
+      q:[0,0,0,0,0],   qd:[0,0,0,0,0],     qdd:[0,0,0,0,0] },
+    { label:'Moderate speed, mid-pose',
+      q:[0,45,30,0,0], qd:[0,2,1.5,0,0],   qdd:[0,1,0.5,0,0] },
+    { label:'Aggressive trajectory',
+      q:[0,30,30,0,0], qd:[2,5,5,1,1],     qdd:[1,3,3,1,1] },
+    { label:'Wrist-only fast spin',
+      q:[0,45,30,0,0], qd:[0,0,0,8,0],     qdd:[0,0,0,0,0] }
+  ];
+  const [q,   setQ]   = useState([0,45,30,0,0]);
+  const [qd,  setQd]  = useState([0,2,1.5,0,0]);
+  const [qdd, setQdd] = useState([0,1,0.5,0,0]);
+
+  const result = useMemo(() => {
+    const tauTotal   = fiveDoF(q, qd, qdd);
+    const tauGrav    = fiveDoF(q, [0,0,0,0,0], [0,0,0,0,0]);
+    const tauInert   = fiveDoF(q, [0,0,0,0,0], qdd).map((v,i) => v - tauGrav[i]);
+    const tauVelocity= fiveDoF(q, qd, [0,0,0,0,0]).map((v,i) => v - tauGrav[i]);
+    return { tauTotal, tauGrav, tauInert, tauVelocity };
+  }, [q, qd, qdd]);
+
+  const update = (which, i, v) => {
+    v = Number(v);
+    const setters = { q:[q,setQ], qd:[qd,setQd], qdd:[qdd,setQdd] };
+    const [arr, set] = setters[which];
+    const next = [...arr]; next[i] = v; set(next);
+  };
+
+  const apply = p => { setQ(p.q); setQd(p.qd); setQdd(p.qdd); };
+
+  const fmt = v => v.toFixed(2);
+
+  return (
+    <div>
+      <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:12 }}>
+        {PRESETS.map((p,i) => (
+          <button key={i} className="btn secondary"
+                  style={{ fontSize:'0.78rem', padding:'5px 10px' }}
+                  onClick={() => apply(p)}>{p.label}</button>
+        ))}
+      </div>
+      <table style={{ width:'100%', fontFamily:'var(--mono)', fontSize:'0.82rem', marginBottom:10 }}>
+        <thead>
+          <tr><th></th><th>J1</th><th>J2</th><th>J3</th><th>J4</th><th>J5</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style={{ fontWeight:600, color:'var(--brand-2)' }}>q (deg)</td>
+            {q.map((v,i) => (
+              <td key={i}><input type="number" step="5" value={v}
+                                 onChange={e => update('q', i, e.target.value)}
+                                 style={{ width:60, fontFamily:'var(--mono)', padding:2 }}/></td>
+            ))}
+          </tr>
+          <tr>
+            <td style={{ fontWeight:600, color:'var(--brand-2)' }}>q̇ (rad/s)</td>
+            {qd.map((v,i) => (
+              <td key={i}><input type="number" step="0.5" value={v}
+                                 onChange={e => update('qd', i, e.target.value)}
+                                 style={{ width:60, fontFamily:'var(--mono)', padding:2 }}/></td>
+            ))}
+          </tr>
+          <tr>
+            <td style={{ fontWeight:600, color:'var(--brand-2)' }}>q̈ (rad/s²)</td>
+            {qdd.map((v,i) => (
+              <td key={i}><input type="number" step="0.5" value={v}
+                                 onChange={e => update('qdd', i, e.target.value)}
+                                 style={{ width:60, fontFamily:'var(--mono)', padding:2 }}/></td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+      <div style={{ background:'#fbfaf5', border:'1px solid var(--rule)', borderRadius:8, padding:12 }}>
+        <table style={{ width:'100%', fontFamily:'var(--mono)', fontSize:'0.85rem', borderCollapse:'collapse' }}>
+          <thead>
+            <tr style={{ background:'#eef2f7' }}>
+              <th style={{ padding:6, textAlign:'left' }}> </th>
+              <th style={{ padding:6, textAlign:'right' }}>J1</th>
+              <th style={{ padding:6, textAlign:'right' }}>J2</th>
+              <th style={{ padding:6, textAlign:'right' }}>J3</th>
+              <th style={{ padding:6, textAlign:'right' }}>J4</th>
+              <th style={{ padding:6, textAlign:'right' }}>J5</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['Total',     result.tauTotal,   '#1a1d24'],
+              ['Gravity',   result.tauGrav,    '#16a34a'],
+              ['Inertial',  result.tauInert,   '#7c3aed'],
+              ['Velocity',  result.tauVelocity,'#d97706']
+            ].map(([lab, vec, color], r) => (
+              <tr key={r} style={{ borderTop:'1px solid var(--rule)' }}>
+                <td style={{ padding:'4px 6px', fontWeight:600, color }}>{lab}</td>
+                {vec.map((v,i) => (
+                  <td key={i} style={{ padding:'4px 6px', textAlign:'right' }}>{fmt(v)}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style={{ marginTop:10, fontSize:'0.78rem', color:'var(--ink-soft)' }}>Per-joint % breakdown:</div>
+        {[0,1,2,3,4].map(i => {
+          const tot = Math.abs(result.tauGrav[i]) + Math.abs(result.tauInert[i]) + Math.abs(result.tauVelocity[i]);
+          if (tot < 0.01) return (
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:8, margin:'4px 0', fontSize:'0.78rem', color:'#9ca3af' }}>
+              <span style={{ width:30, fontFamily:'var(--mono)' }}>J{i+1}</span>—
+            </div>
+          );
+          const pG = Math.abs(result.tauGrav[i])/tot*100;
+          const pI = Math.abs(result.tauInert[i])/tot*100;
+          const pV = Math.abs(result.tauVelocity[i])/tot*100;
+          return (
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:8, margin:'4px 0' }}>
+              <span style={{ width:30, fontFamily:'var(--mono)', fontSize:'0.78rem' }}>J{i+1}</span>
+              <div className="bar" style={{ flex:1 }}>
+                <span style={{ width:pG+'%', background:'#16a34a' }}/>
+                <span style={{ width:pI+'%', background:'#7c3aed' }}/>
+                <span style={{ width:pV+'%', background:'#d97706' }}/>
+              </div>
+              <span style={{ fontFamily:'var(--mono)', fontSize:'0.74rem', minWidth:140, textAlign:'right' }}>
+                G:{pG.toFixed(0)}% I:{pI.toFixed(0)}% V:{pV.toFixed(0)}%
+              </span>
+            </div>
+          );
+        })}
+        {result.tauVelocity.some((v,i) => {
+          const tot = Math.abs(result.tauGrav[i]) + Math.abs(result.tauInert[i]) + Math.abs(result.tauVelocity[i]);
+          return tot > 0.01 && Math.abs(v)/tot > 0.4;
+        }) && (
+          <div className="callout amber" style={{ marginTop:10, fontSize:'0.85rem' }}>
+            <strong>Dynamic regime.</strong>At least one joint has &gt;40% of its torque coming from velocity terms — gravity-comp PD is no longer enough.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   Widget 7 — Mastery MCQ
+   ===================================================================== */
+function MasteryMcqWidget(){
+  const QUESTIONS = [
+    { q: "Why does the inertia matrix $\\mathbf{D}(\\mathbf{q})$ change as the RV-M1 moves?",
+      options: [
+        "Because link masses change with pose",
+        "Because the effective moments of inertia depend on how each link's mass projects onto each joint axis, which is a function of $\\mathbf{q}$",
+        "Because MATLAB recomputes the link masses on every call",
+        "Because the Christoffel symbols add a configuration-dependent mass term"
+      ],
+      correct: 1,
+      explain: "Link masses are fixed. What changes is the *projection* of those masses onto each joint axis as the geometry rotates — that's exactly why the $\\operatorname{tr}(U J U^{\\top})$ entries are functions of $\\mathbf{q}$." },
+    { q: "On joint 2 of the RV-M1 at ≈5 rad/s, roughly what fraction of the torque budget comes from velocity-dependent forces?",
+      options: [
+        "<1% — negligible",
+        "5–15% — moderate",
+        "15–40% — significant, needs explicit dynamic compensation",
+        ">80% — dominant"
+      ],
+      correct: 2,
+      explain: "From the §3 speed-threshold table: 3–8 rad/s is the 'significant' band — that's where gravity-compensated PD stops being enough and you need the full $\\mathbf{h}$ term in the controller." },
+    { q: "Which joint of the RV-M1 sees the largest *static* gravity torque, and why?",
+      options: [
+        "Joint 1, because it carries everything above it",
+        "Joint 2, because it has to support the entire 250mm + 160mm + wrist chain hanging off it",
+        "Joint 3, because the forearm is the longest link",
+        "Joint 5, because it's the furthest from the base"
+      ],
+      correct: 1,
+      explain: "Joint 1 rotates about the vertical axis, so gravity creates no torque about it (≈0). Joint 2 carries the whole outboard chain horizontally — it's always the worst-case static load." },
+    { q: "What's the biggest *realistic* speedup you can get on five_dof_dynamics.m for real-time use?",
+      options: [
+        "Vectorising the $\\operatorname{tr}(U J U^{\\top})$ sums (≈2×)",
+        "Switching algorithm from Lagrangian to recursive Newton-Euler ($O(n^4)\\to O(n)$, ≈100×)",
+        "Precomputing and caching the $U$ matrices",
+        "Using sparse-matrix storage for the Christoffel block"
+      ],
+      correct: 1,
+      explain: "Vectorisation, caching, and sparse storage each give 2–3×. The 100× unlock is the *algorithmic* change — recursive Newton-Euler is $O(n)$ versus the Lagrangian's $O(n^4)$, which is what production controllers actually run." }
+  ];
+  const [picks, setPicks] = useState({});
+  const choose = (qi, oi) => setPicks(p => ({ ...p, [qi]:oi }));
+  const reset = () => setPicks({});
+  const score = QUESTIONS.reduce((a,q,i) => a + (picks[i]===q.correct ? 1 : 0), 0);
+  const allDone = Object.keys(picks).length === QUESTIONS.length;
+
+  return (
+    <div>
+      {QUESTIONS.map((q, qi) => {
+        const picked = picks[qi];
+        return (
+          <div key={qi} style={{ marginBottom:14, paddingBottom:12, borderBottom:'1px solid var(--rule)' }}>
+            <div style={{ fontWeight:600, marginBottom:8 }}>
+              <span className="pill on">{qi+1}</span>{q.q}
+            </div>
+            {q.options.map((opt, oi) => {
+              let cls = 'opt-btn';
+              if (picked !== undefined){
+                if (oi === q.correct) cls += ' correct';
+                else if (oi === picked) cls += ' wrong';
+              }
+              return (
+                <button key={oi} className={cls} disabled={picked!==undefined}
+                        onClick={() => choose(qi, oi)}>
+                  <span style={{ display:'inline-block', width:24, fontWeight:700 }}>{String.fromCharCode(65+oi)}</span>
+                  {opt}
+                </button>
+              );
+            })}
+            {picked !== undefined && (
+              <div className={picked===q.correct ? 'callout green' : 'callout amber'}
+                   style={{ marginTop:8, fontSize:'0.88rem' }}>
+                <strong>{picked===q.correct ? 'Correct.' : 'Not quite.'}</strong>
+                {q.explain}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <button className="btn secondary" onClick={reset}>↺ Reset</button>
+        <div style={{ fontFamily:'var(--mono)', fontWeight:600 }}>
+          Score: {score} / {QUESTIONS.length}
+        </div>
+        {allDone && score === QUESTIONS.length && (
+          <span className="pill on" style={{ background:'#16a34a' }}>✓ Ready for Module 5</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   Mounts — every widget id from the WIDGETS spec exactly once.
+   ===================================================================== */
+const mounts = [
+  ['inertia-matrix-sweep',            InertiaMatrixSweepWidget],
+  ['coriolis-velocity-picker',        CoriolisVelocityPickerWidget],
+  ['controller-for-speed',            ControllerForSpeedWidget],
+  ['gravity-shoulder-sweep',          GravityShoulderSweepWidget],
+  ['controller-builder',              ControllerBuilderWidget],
+  ['component-decomposition-sandbox', ComponentDecompositionSandboxWidget],
+  ['mastery-mcq',                     MasteryMcqWidget]
+];
+
+for (const [id, Comp] of mounts){
+  const el = document.getElementById(id);
+  if (el){
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are TSI Buddy — the lecturer-warm assistant for Lecture 04 of the bibliosense course \"Robot Dynamics and Control\".",
+    "",
+    "Your job for THIS lecture:",
+    "- Help students decode each piece of τ = D(q)q̈ + h(q,q̇) + c(q) on the 5-DOF RV-M1 — what changes with pose, what scales with speed, what is purely static.",
+    "- Build physical intuition before symbol-pushing: which joints feel gravity, which links dominate inertia, when Coriolis stops being a footnote.",
+    "- Connect the maths back to lines of five_dof_dynamics.m — the trace(U J Uᵀ) construction of D, the Christoffel-symbol assembly of h, the gravity vector cc.",
+    "- Push students toward the live widgets on the page (inertia heatmap, Coriolis picker, speed-regime selector, gravity sweep, controller builder, decomposition sandbox) instead of spelling out conclusions.",
+    "- Match the controller to the regime the student is actually working in: PD below ~0.5 rad/s, gravity-compensated PD up to ~3 rad/s, full dynamic feedforward above ~3 rad/s.",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "THE FORMULA(S) / KEY DEFINITIONS",
+    "Manipulator equation: τ = D(q)q̈ + h(q,q̇) + c(q).",
+    "D(q): 5×5 symmetric positive-definite inertia matrix, configuration-dependent.",
+    "h(q,q̇): velocity-dependent vector built from Christoffel symbols; centrifugal terms scale as q̇ᵢ², Coriolis as q̇ᵢq̇ⱼ.",
+    "c(q): gravity vector, depends only on pose.",
+    "Forward dynamics: q̈ = D(q)⁻¹(τ − h − c).",
+    "",
+    "WHY (the intuition behind it)",
+    "Lagrangian mechanics says total joint torque equals \"mass × acceleration\" plus \"phantom velocity forces\" plus \"static weight.\" Because the robot's geometry changes as it moves, the effective mass matrix D(q) is not constant — extending the arm increases moment arms, so the same joint acceleration costs more torque. h(q,q̇) and c(q) collect the corrections that arise because the rotating frames are non-inertial and gravity is always pulling.",
+    "",
+    "THE GOTCHA (most common student misconception)",
+    "Treating D as if it were constant. Students compute D once at the home pose and reuse it; their controller then drifts as the arm extends because the real D has doubled. Equally common: assuming \"Coriolis is negligible\" by analogy with slow textbook examples — for the RV-M1 above ~3 rad/s the velocity term is 15–40% of the torque budget.",
+    "",
+    "BOUNDARY CASES (limit cases worth mentioning)",
+    "At q̇ = 0: h vanishes; τ_static = c(q) alone.",
+    "At q̈ = 0 and q̇ = 0: pure gravity-holding torque.",
+    "Joint 2 vertical (±90°): gravity torque on J2 is zero.",
+    "Joint 2 horizontal (0°): gravity torque on J2 is maximum (sinusoidal pattern in θ₂).",
+    "Joint 1 (vertical axis): c₁ ≈ 0 for any pose — its motor never fights gravity statically.",
+    "",
+    "EXPLAIN-IT-LIKE-THIS (an analogy)",
+    "Imagine carrying a long pole. Holding it vertical costs almost nothing (gravity term small). Holding it horizontal is exhausting (c(q) huge). Spinning yourself while holding it makes the tip want to fly outward (centrifugal). Now move your shoulder while spinning — the pole tugs sideways in a direction neither motion alone would have produced (Coriolis). The manipulator equation is just bookkeeping for all four sensations at once.",
+    "",
+    "CURRICULUM CONTEXT",
+    "Came before: Lagrangian formulation, the RV-M1 case study, and the five_dof_dynamics.m implementation that computes τ from (q, q̇, q̈) using U-matrices and Christoffel symbols.",
+    "Next: stability and performance analysis — Lyapunov methods on the manipulator equation, linearisation around operating points, recursive Newton-Euler for O(n) real-time use, and parameter identification.",
+    "",
+    "COMMON STUDENT QUESTIONS",
+    "Q: Why subtract tau_g after dividing by D in the forward-dynamics step? | A: Because the applied tau already includes the gravity-compensation term we added; subtracting it leaves only the net torque accelerating the links, which is exactly what Dq̈ should equal.",
+    "Q: How do I extract D(q) from a function that only returns total torque? | A: Drive one joint at a time with a unit acceleration and zero velocity, subtract the gravity-only torque, and the result is that column of D. Five calls give the whole matrix.",
+    "Q: When can I get away with just PD control? | A: Below about 0.5 rad/s on the RV-M1, velocity terms are under 1% — plain PD with integral action works. Add gravity feedforward and you cover almost all positioning tasks up to ~3 rad/s.",
+    "Q: Are centrifugal and Coriolis the same thing? | A: No. Centrifugal scales as q̇ᵢ² (single joint), Coriolis as q̇ᵢq̇ⱼ (two joints interacting). Both live inside h(q,q̇), but they vanish under different conditions.",
+    "Q: Why is D always symmetric and positive-definite? | A: It's built as Σ trace(Uᵢ J Uᵢᵀ) — the trace-of-a-similarity-transform construction guarantees both properties, so you never have to enforce them by hand.",
+    "",
+    "PRO-INSIGHT WRAP-UP",
+    "Once you can read each term of τ = Dq̈ + h + c off the RV-M1's geometry, Module 5's Lyapunov stability proofs become almost mechanical — they all hinge on the same symmetry and positive-definiteness of D(q) you've just verified in code.",
+    "",
+    "# PEDAGOGY GUARDS",
+    "- Never reveal the answer to a quiz or self-check question. If a student asks \"is B right?\", redirect them: name the section to revisit and the specific claim they need to weigh.",
+    "- Never spell out a derivation. Ask which step they are stuck on; offer one hint at a time.",
+    "- Use the live widgets — when a student wonders how D changes with pose, point them at the inertia-matrix-sweep heatmap and tell them which slider to move and what to watch.",
+    "- Don't paste large code blocks. Quote the single line that matters and explain it.",
+    "- Anchor every claim to a quoted phrase from the lecture text or a named widget so the student can verify against the page.",
+    "",
+    "# LANGUAGE",
+    "Default to English. If a student writes clearly in another language, reply in that language and append a short *EN summary:* line afterwards. Mixed-language signal stays English.",
+    "",
+    "# REPLY LENGTH",
+    "60–180 words. Plain language. Concrete. One follow-up question at the end if it'll help the student think."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Robot Dynamics and Control · Lecture 04',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>

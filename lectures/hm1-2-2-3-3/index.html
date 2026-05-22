@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Scalar Triple Product | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'\\(',right:'\\)',display:false},
+            {left:'$',right:'$',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,91,255,0.25);
+  }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+  section.card blockquote {
+    border-left: 4px solid var(--brand);
+    background: var(--brand-soft);
+    padding: 0.85rem 1.1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+    font-style: italic;
+    color: var(--brand-2);
+  }
+  section.card blockquote p { margin: 0; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .tok { display:inline-block; padding:4px 10px; border-radius:100px; font-family: var(--mono); font-size:0.85rem; font-weight:600; margin:2px 3px; border:1px solid; vertical-align:middle; }
+  .tok-id    { background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; }
+  .tok-num   { background:#d1fae5; border-color:#10b981; color:#065f46; }
+  .tok-op    { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+  .tok-kw    { background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+  .tok-paren { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .tok-nt    { background:#ede9fe; border-color:#8b5cf6; color:#5b21b6; }
+  .tok-term  { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .quiz-card { background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%); border:1px solid #6a1b9a; border-radius:10px; padding:30px 32px; margin:22px 0; scroll-margin-top: 90px; }
+  .quiz-card h2 { font-family: var(--serif); color: #6a1b9a; font-weight: 600; font-size: 1.55rem; margin: 0 0 0.5rem; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { font-size: 0.78rem; color: var(--brand); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 8px; display: block; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+
+  /* Widget-internal helpers */
+  .stp-grid { display:grid; gap:12px; }
+  .stp-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .stp-readout {
+    background: var(--math-bg); border:1px solid var(--rule); border-radius:8px;
+    padding: 12px 14px; font-family: var(--mono); font-size:0.92rem;
+  }
+  .stp-readout.big { font-size: 1.05rem; }
+  .stp-stage {
+    border:1px solid var(--rule); border-radius:8px; padding:12px 14px;
+    background: white; transition: all 0.35s ease; opacity: 0.35;
+  }
+  .stp-stage.is-active {
+    opacity: 1; border-color: var(--brand);
+    box-shadow: 0 4px 18px -8px rgba(47,84,150,0.45);
+    background: #f5f8fd;
+  }
+  .stp-stage h5 {
+    margin: 0 0 6px; font-family: var(--serif); color: var(--brand-2);
+    font-size: 0.95rem; font-weight: 600;
+  }
+  .stp-letter {
+    width: 38px; height: 38px; display: inline-flex; align-items:center; justify-content:center;
+    border-radius: 8px; font-family: var(--serif); font-weight:700; font-size:1.15rem;
+    border:2px solid var(--brand); background: white; color: var(--brand);
+    cursor: pointer; transition: all 0.18s;
+  }
+  .stp-letter:hover { background: var(--brand-soft); }
+  .stp-letter.placed { background: var(--brand); color: white; }
+  .stp-letter:disabled { opacity: 0.35; cursor: default; }
+  .stp-slot {
+    min-width: 50px; min-height: 38px; padding: 4px 10px;
+    border: 2px dashed #cbd5e1; border-radius: 8px;
+    display: inline-flex; align-items:center; justify-content:center;
+    font-family: var(--serif); font-weight: 700; font-size: 1.1rem; color: var(--ink);
+    background: white; transition: all 0.2s;
+  }
+  .stp-slot.filled { border-style: solid; border-color: var(--brand); background: var(--brand-soft); color: var(--brand-2); }
+  .stp-slot.target { border-color: #c2a25a; background: #fbf6e8; }
+  .stp-mcq-opt {
+    display: block; width:100%; text-align:left;
+    background: white; border:1.5px solid var(--rule); border-radius: 7px;
+    padding: 10px 14px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
+    font-family: var(--sans); font-size: 0.93rem; color: var(--ink);
+  }
+  .stp-mcq-opt:hover { border-color: var(--brand); background: var(--brand-soft); }
+  .stp-mcq-opt.correct { border-color:#16a34a; background:#dcfce7; color:#14532d; font-weight:600; }
+  .stp-mcq-opt.wrong   { border-color:#dc2626; background:#fee2e2; color:#7f1d1d; }
+  .stp-mcq-opt:disabled { cursor: default; }
+  .stp-vec-input {
+    width: 56px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px;
+    font-family: var(--mono); font-size: 0.9rem; text-align: center;
+  }
+  .stp-pick-card {
+    border:1.5px solid var(--rule); border-radius:8px; padding:10px 12px;
+    background:white; cursor:pointer; transition: all 0.15s;
+    font-family: var(--mono); font-size: 0.85rem;
+  }
+  .stp-pick-card:hover { border-color: var(--brand); background: var(--brand-soft); }
+  .stp-pick-card.selected { border-color: var(--brand); background: var(--brand-soft); box-shadow: 0 2px 8px -2px rgba(47,84,150,0.3); }
+  .stp-cycle-arrow {
+    display: inline-block; width: 0; height: 0;
+    border-left: 6px solid transparent; border-right: 6px solid transparent;
+  }
+  .stp-derive-row {
+    display: inline-block; padding: 4px 10px; margin: 2px;
+    border:1.5px solid var(--rule); border-radius: 6px;
+    background: white; cursor: pointer; font-family: var(--mono); font-size: 0.85rem;
+    transition: all 0.15s;
+  }
+  .stp-derive-row:hover { border-color: var(--brand); background: var(--brand-soft); }
+  .stp-derive-row.best { border-color: #16a34a; }
+  .stp-derive-row.chosen { border-color: var(--brand); background: var(--brand); color: white; }
+  .det-cell {
+    display:inline-block; min-width:36px; text-align:center; padding:6px 8px;
+    border-radius: 4px; font-family: var(--mono); font-size:0.95rem;
+    transition: all 0.3s;
+  }
+  .det-cell.glow { background: #fef3c7; box-shadow: 0 0 0 2px #f59e0b inset; }
+  .det-row { display: flex; justify-content: center; gap: 4px; }
+  .det-bracket {
+    border-left: 2px solid var(--ink); border-right: 2px solid var(--ink);
+    padding: 4px 8px; display:inline-block;
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Linear Algebra and Analytic Geometry<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 06 · Chapter 5 · Vectors</div>
+  <h1 class="lecture-title">The Scalar Triple Product</h1>
+  <p class="lecture-subtitle">Mixing the dot and the cross to measure volume — and to test when three vectors collapse onto a plane.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 06</span>
+  </div>
+</header>
+
+<div class="voice">Today we braid together the two products you already know. Take the cross of two vectors, then dot the result with a third — what falls out is a single number that simultaneously tells you the <em>signed volume</em> of the parallelepiped they span and whether the three vectors lie flat in a common plane. We will derive the determinant formula, work through its symmetries, and then put it to work on tetrahedra: volumes, heights, and coplanarity tests.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span>What this lecture covers</h2>
+  <p>We define the <strong>scalar triple product</strong> $\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c})$, prove it equals a $3\times 3$ determinant of the components, and read off its geometric meaning as the volume of the parallelepiped spanned by $\mathbf{a},\mathbf{b},\mathbf{c}$.</p>
+  <p>From that single object we get a clean coplanarity test, a tidy set of cyclic-permutation rules, and a fast way to compute volumes and heights of tetrahedra. Three worked examples close the lecture.</p>
+  <div class="voice">Two products, one number — and that number is a <em>volume</em>. Keep that picture in mind and the algebra stops feeling arbitrary.</div>
+  <div class="callout blue">
+    <strong>Where we are.</strong>
+    This builds directly on the dot product (Lecture 04) and the vector product (Lecture 05). If $\mathbf{a}\times\mathbf{b}$ is fuzzy, revisit §5.5 first.
+  </div>
+</section>
+
+<section class="card" id="definition">
+  <h2><span class="badge">1</span>Definition — combining dot and cross</h2>
+  <p>Given three vectors $\mathbf{a}, \mathbf{b}, \mathbf{c}$, the <strong>scalar triple product</strong> (also called the <em>mixed product</em>) is</p>
+  <p>$[\mathbf{a},\mathbf{b},\mathbf{c}] \;=\; \mathbf{a}\cdot(\mathbf{b}\times\mathbf{c}).$</p>
+  <p>Notice the order: cross <em>first</em>, then dot. The cross product produces a vector; dotting it with $\mathbf{a}$ collapses everything down to a single scalar. That scalar carries a surprising amount of geometric information.</p>
+  <div class="callout amber">
+    <strong>Mind the operation order.</strong>
+    $(\mathbf{a}\cdot\mathbf{b})\times\mathbf{c}$ is meaningless — you can't cross a scalar with a vector. The grouping in $\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c})$ is the only one that type-checks.
+  </div>
+</section>
+
+<section class="card" id="determinant-formula">
+  <h2><span class="badge">2</span>The determinant formula</h2>
+  <p><strong>Theorem.</strong> In a rectangular coordinate system with $\mathbf{a}=\{a_x,a_y,a_z\}$, $\mathbf{b}=\{b_x,b_y,b_z\}$, $\mathbf{c}=\{c_x,c_y,c_z\}$,</p>
+  <p>$\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c}) \;=\; \begin{vmatrix} a_x & a_y & a_z \\ b_x & b_y & b_z \\ c_x & c_y & c_z \end{vmatrix}. \qquad (9)$</p>
+  <p><strong>Proof sketch.</strong> Expanding the cross product</p>
+  <p>$\mathbf{b}\times\mathbf{c} = (b_y c_z - b_z c_y)\mathbf{i} - (b_x c_z - b_z c_x)\mathbf{j} + (b_x c_y - b_y c_x)\mathbf{k},$</p>
+  <p>then dotting with $\mathbf{a} = a_x\mathbf{i} + a_y\mathbf{j} + a_z\mathbf{k}$, gives exactly the cofactor expansion of the $3\times 3$ determinant along the first row. So the algebra and the determinant agree term-for-term.</p>
+  <div class="voice">This is the single most useful identity in the chapter — almost every problem reduces to evaluating one of these determinants.</div>
+  <div class="code-block">
+    <div class="code-label">Determinant template</div>
+    <pre><code>          | a_x  a_y  a_z |
+ a·(b×c) = | b_x  b_y  b_z |
+          | c_x  c_y  c_z |</code></pre>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Watch a·(b×c) become a 3×3 determinant</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <p style="color:var(--ink-soft); font-size:0.93rem; margin:0 0 12px;">Step through the proof line by line: expand $\mathbf{b}\times\mathbf{c}$ into $\mathbf{i},\mathbf{j},\mathbf{k}$ components, dot with $\mathbf{a}$, regroup as cofactors, and watch the result land exactly on the determinant.</p>
+      <div id="determinant-proof-animator"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="geometric-interpretation">
+  <h2><span class="badge">3</span>Geometric meaning — volume of a parallelepiped</h2>
+  <p>Place the three vectors at a common origin and complete the parallelepiped they span. Then</p>
+  <p>$\bigl|\,\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c})\,\bigr| \;=\; V_{\text{parallelepiped}}.$</p>
+  <p><strong>Why.</strong> Volume = (area of base) $\times$ (height). The vector $\mathbf{b}\times\mathbf{c}$ is normal to the base parallelogram, and its length $|\mathbf{b}\times\mathbf{c}|$ equals that base area. Dotting with $\mathbf{a}$ projects $\mathbf{a}$ onto that normal:</p>
+  <p>$\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c}) = |\mathbf{a}|\,|\mathbf{b}\times\mathbf{c}|\cos\varphi,$</p>
+  <p>and $|\mathbf{a}|\cos\varphi$ is precisely the height of the parallelepiped. The sign of the triple product encodes orientation (right-handed vs left-handed); the <em>absolute value</em> gives the volume.</p>
+  <div class="voice">The cross product builds the floor; the dot product measures how tall the box stands above it.</div>
+  <div class="callout green">
+    <strong>Sign = handedness.</strong>
+    Positive triple product → right-handed triple. Negative → left-handed. Zero → flat.
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Volume = base × height — pick the third vector</h3>
+      <span class="widget-tag tag-warm">activity</span>
+    </div>
+    <div class="widget-body">
+      <p style="color:var(--ink-soft); font-size:0.93rem; margin:0 0 12px;">Fix the base parallelogram on $\mathbf{b}=\{2,0,0\}$, $\mathbf{c}=\{0,2,0\}$. Pick a third vector and watch the box tilt, the height resize, and the signed triple product flip from <strong>+</strong> to <strong>−</strong> — or vanish.</p>
+      <p style="margin: 4px 0 0; font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 0.93rem;">Try the flat one first — when $\mathbf{a}$ lies in the plane of $\mathbf{b}$ and $\mathbf{c}$, the box collapses and the number drops to zero.</p>
+      <div id="parallelepiped-picker"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="coplanarity">
+  <h2><span class="badge">4</span>Coplanarity — the flat-box test</h2>
+  <p>If the parallelepiped has zero volume, it is <em>flat</em> — the three vectors lie in a common plane.</p>
+  <p><strong>Corollary 1.</strong> If $\mathbf{a},\mathbf{b},\mathbf{c}$ are coplanar, then $\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c}) = 0$.</p>
+  <p><strong>Corollary 2.</strong> Four points $A,B,C,D$ lie in the same plane iff</p>
+  <p>$\overrightarrow{AB}\cdot(\overrightarrow{AC}\times\overrightarrow{AD}) = 0.$</p>
+  <p>This is the workhorse coplanarity test: pick any vertex as the anchor, form three edge-vectors out of it, and evaluate one determinant.</p>
+  <div class="callout teal">
+    <strong>Equivalent statements.</strong>
+    For non-zero $\mathbf{a},\mathbf{b},\mathbf{c}$: triple product = 0 ⟺ vectors are linearly dependent ⟺ vectors are coplanar.
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Slide a vector into the plane — watch the volume die</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <p style="color:var(--ink-soft); font-size:0.93rem; margin:0 0 12px;">Move the slider $t\in[0,1]$ to interpolate $\mathbf{a}(t)=(1-t)\{1,1,2\}+t\{2,1,0\}$. The parallelepiped flattens in real time and the readout falls continuously to zero.</p>
+      <p style="margin: 4px 0 0; font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 0.93rem;">Slide $t$ to 1 and you've witnessed three vectors becoming linearly dependent — and the determinant agreeing.</p>
+      <div id="flatness-slider-animator"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="properties">
+  <h2><span class="badge">5</span>Algebraic properties — cyclic symmetry</h2>
+  <p>From the symmetry of the dot product and the row-swap rules of determinants, the triple product has a clean structure.</p>
+  <p><strong>Order of dot and cross is irrelevant.</strong> $\mathbf{a}\cdot(\mathbf{b}\times\mathbf{c}) = (\mathbf{a}\times\mathbf{b})\cdot\mathbf{c}$. We therefore drop the parentheses and write simply $\mathbf{abc}$.</p>
+  <p><strong>Cyclic permutations preserve the value:</strong></p>
+  <p>$\mathbf{abc} \;=\; \mathbf{cab} \;=\; \mathbf{bca}.$</p>
+  <p><strong>Swapping any two flips the sign:</strong></p>
+  <p>$\mathbf{abc} \;=\; -\,\mathbf{bac} \;=\; -\,\mathbf{acb}.$</p>
+  <p>These mirror exactly the row-swap behaviour of a $3\times 3$ determinant — which is, of course, the same object.</p>
+  <div class="voice">Cyclic = same. Anti-cyclic = sign flip. The notation $\mathbf{abc}$ keeps the algebra honest.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Build any permutation of abc — and predict the sign</h3>
+      <span class="widget-tag tag-violet">practice</span>
+    </div>
+    <div class="widget-body">
+      <p style="color:var(--ink-soft); font-size:0.93rem; margin:0 0 12px;">Place $\mathbf{a}, \mathbf{b}, \mathbf{c}$ into the three rows of the determinant. <strong>Predict</strong> whether your arrangement is cyclic (+) or anti-cyclic (−) before pressing reveal. Score all six orderings to win.</p>
+      <div id="permutation-builder"></div>
+    </div>
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check — symmetries, signs, and zeros</h3>
+      <span class="widget-tag tag-violet">practice</span>
+    </div>
+    <div class="widget-body">
+      <p style="color:var(--ink-soft); font-size:0.93rem; margin:0 0 12px;">Four quick questions on cyclic vs anti-cyclic, the dot/cross swap, the meaning of a vanishing triple product, and which grouping type-checks.</p>
+      <div id="triple-product-mcq"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="linear-dependence">
+  <h2><span class="badge">6</span>Linear dependence test</h2>
+  <p>By the theorem on linearly dependent vectors, any three linearly dependent vectors are coplanar — so they fit inside a flat (zero-volume) parallelepiped.</p>
+  <blockquote><p><strong>The triple product of non-zero vectors equals zero if and only if the vectors are linearly dependent.</strong></p></blockquote>
+  <p>This turns a question about <em>vector spaces</em> (is $\{\mathbf{a},\mathbf{b},\mathbf{c}\}$ a basis?) into a question about a <em>single number</em> (is the determinant zero?). It is the cheapest basis check you have for $\mathbb{R}^3$.</p>
+  <div class="callout purple">
+    <strong>Useful corollary.</strong>
+    Three vectors form a basis of $\mathbb{R}^3$ ⟺ their triple product is non-zero.
+  </div>
+</section>
+
+<section class="card" id="example-coplanar-points">
+  <h2><span class="badge">7</span>Example 1 — Are four points coplanar?</h2>
+  <p><strong>Problem.</strong> Determine whether the points $A(1,-2,2)$, $B(3,3,4)$, $C(2,-2,10)$, and $D(0,2,2)$ lie on the same plane.</p>
+  <p><strong>Solution.</strong> Anchor at $A$ and form three edge-vectors:</p>
+  <p>$\overrightarrow{AB} = \{4,1,2\}, \quad \overrightarrow{AC} = \{3,4,8\}, \quad \overrightarrow{AD} = \{1,0,0\}.$</p>
+  <p>Compute the triple product (expand along the third row, which has two zeros):</p>
+  <p>$\begin{vmatrix} 4 & 1 & 2 \\ 3 & 4 & 8 \\ 1 & 0 & 0 \end{vmatrix} = 1\cdot\begin{vmatrix} 1 & 2 \\ 4 & 8 \end{vmatrix} = 1\cdot(8-8) = 0.$</p>
+  <p>The triple product vanishes, so the three edge-vectors are coplanar — the four points lie in a common plane.</p>
+  <div class="voice">Pick the row with the most zeros to expand along. Less arithmetic, fewer sign mistakes.</div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Derive Example 1 — pick the cleverest row</h3>
+      <span class="widget-tag tag-violet">practice</span>
+    </div>
+    <div class="widget-body">
+      <p style="color:var(--ink-soft); font-size:0.93rem; margin:0 0 12px;">Choose which row or column to expand along. The widget rewards you for picking the row with the most zeros — and penalises the laborious choices by making you actually evaluate the surviving 2×2 minors.</p>
+      <p style="margin: 4px 0 0; font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 0.93rem;">Two zeros in row three — that is the row of least resistance. Take it.</p>
+      <div id="cofactor-expansion-derive"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="example-tetrahedron-volume">
+  <h2><span class="badge">8</span>Example 2 — Volume of a tetrahedron</h2>
+  <p><strong>Problem.</strong> Find the volume $V$ of the tetrahedron with vertices $A(1,0,2)$, $B(-3,1,4)$, $C(1,5,2)$, $D(4,4,4)$.</p>
+  <p><strong>Strategy.</strong> Build the parallelepiped on the same three edges from $A$. Its volume is $|\mathbf{abc}|$, and the tetrahedron is exactly one-sixth of that:</p>
+  <p>$V = \tfrac{1}{6}\,V_{\text{p}} = \tfrac{1}{6}\bigl|\,\overrightarrow{AB}\cdot(\overrightarrow{AC}\times\overrightarrow{AD})\,\bigr|.$</p>
+  <p>With $\overrightarrow{AB} = \{-2,1,2\}$, $\overrightarrow{AC} = \{0,5,0\}$, $\overrightarrow{AD} = \{3,4,2\}$, expand along the second row (only the middle entry survives):</p>
+  <p>$\begin{vmatrix} -2 & 1 & 2 \\ 0 & 5 & 0 \\ 3 & 4 & 2 \end{vmatrix} = 5\cdot\begin{vmatrix} -2 & 2 \\ 3 & 2 \end{vmatrix} = 5\cdot(-4-6) = -10.$</p>
+  <p>Therefore</p>
+  <p>$V = \dfrac{|-10|}{6} = \dfrac{5}{3}.$</p>
+  <div class="voice">The factor $\tfrac{1}{6}$ is the only thing separating tetrahedra from parallelepipeds — memorise it once and never derive it again.</div>
+  <div class="callout green">
+    <strong>Tetrahedron volume formula.</strong>
+    $V_{\text{tet}} = \tfrac{1}{6}\bigl|\overrightarrow{AB}\cdot(\overrightarrow{AC}\times\overrightarrow{AD})\bigr|$ — anchor at any one vertex.
+  </div>
+</section>
+
+<section class="card" id="example-tetrahedron-height">
+  <h2><span class="badge">9</span>Example 3 — Height from a vertex to a face</h2>
+  <p><strong>Problem.</strong> For the tetrahedron of Example 2, find the height $h$ dropped from $D$ to the base $\triangle ABC$.</p>
+  <p><strong>Strategy.</strong> Use $V = \tfrac{1}{3} S\, h$, so $h = 3V/S$. We already have $V = 5/3$; we still need the area $S$ of $\triangle ABC$.</p>
+  <p>Using the cross-product area formula</p>
+  <p>$S = \tfrac{1}{2}\,\bigl|\overrightarrow{AB}\times\overrightarrow{AC}\bigr|,$</p>
+  <p>with $\overrightarrow{AB}=\{-2,1,2\}$, $\overrightarrow{AC}=\{0,5,0\}$:</p>
+  <p>$\overrightarrow{AB}\times\overrightarrow{AC} = -10\,\mathbf{i} - 10\,\mathbf{k}, \qquad \bigl|\overrightarrow{AB}\times\overrightarrow{AC}\bigr| = 10\sqrt{2}.$</p>
+  <p>So $S = 5\sqrt{2}$ and</p>
+  <p>$h \;=\; \dfrac{3V}{S} \;=\; \dfrac{3\cdot 5/3}{5\sqrt{2}} \;=\; \dfrac{5}{5\sqrt{2}} \;=\; \dfrac{\sqrt{2}}{2}.$</p>
+  <div class="voice">Volume from the triple product, area from the cross product, height from a one-line ratio. Three lectures' worth of machinery, all reused.</div>
+  <div class="callout blue">
+    <strong>Pattern to remember.</strong>
+    Whenever you see <em>height from a vertex to a face</em>, reach for $h = 3V/S$. The triple product gives $V$, the cross product gives $S$.
+  </div>
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Tetrahedron lab — type four vertices, get V, S, h</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <p style="color:var(--ink-soft); font-size:0.93rem; margin:0 0 12px;">A free sandbox for the homework. Type any four vertices $A, B, C, D$; the widget anchors at $A$, builds the three edge vectors, evaluates the determinant for $V=|\mathbf{abc}|/6$, the cross-product magnitude for $S = \tfrac{1}{2}|AB\times AC|$, and the height $h = 3V/S$.</p>
+      <p style="margin: 4px 0 0; font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 0.93rem;">Drop in the homework vertices and you have all three answers in one run — $V$, $S$, and $h$.</p>
+      <div id="tetrahedron-playground"></div>
+    </div>
+  </div>
+</section>
+
+<section class="homework" id="homework">
+  <h2><span class="badge">HW</span>Homework</h2>
+  <p class="hw-intro">Bring solutions to the next lecture — bring questions sooner. Use the tetrahedron lab above to check your arithmetic.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Coplanarity check</h4>
+      <p>Decide whether the points $P_1(2,-1,3)$, $P_2(4,2,5)$, $P_3(0,3,-1)$, $P_4(6,6,7)$ lie in a common plane. Show the triple-product determinant in full.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>2 · Volume of a tetrahedron</h4>
+      <p>Find the volume of the tetrahedron with vertices $A(0,0,0)$, $B(2,0,1)$, $C(1,3,0)$, $D(0,1,4)$ using the $\tfrac{1}{6}|\mathbf{abc}|$ formula.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Height from a vertex</h4>
+      <p>For the tetrahedron in Problem 2, compute the height dropped from $D$ to the face $\triangle ABC$ via $h = 3V/S$.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+    <div class="deliverable">
+      <h4>4 · Sign vs. handedness</h4>
+      <p>Construct three vectors whose triple product is $-12$, and verify that swapping any two of them flips the sign while a cyclic rotation preserves it.</p>
+      <span class="due">Due: next lecture</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#definition">1 · Definition — combining dot and cross</a></li>
+      <li><a href="#determinant-formula">2 · The determinant formula</a></li>
+      <li><a href="#geometric-interpretation">3 · Geometric meaning — volume of a parallelepiped</a></li>
+      <li><a href="#coplanarity">4 · Coplanarity — the flat-box test</a></li>
+      <li><a href="#properties">5 · Algebraic properties — cyclic symmetry</a></li>
+      <li><a href="#linear-dependence">6 · Linear dependence test</a></li>
+      <li><a href="#example-coplanar-points">7 · Example 1 — Are four points coplanar?</a></li>
+      <li><a href="#example-tetrahedron-volume">8 · Example 2 — Volume of a tetrahedron</a></li>
+      <li><a href="#example-tetrahedron-height">9 · Example 3 — Height from a vertex to a face</a></li>
+      <li><a href="#homework">HW · Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Linear Algebra and Analytic Geometry · Lecture 06 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+// ────────────────────────── shared helpers ──────────────────────────
+function KaTeXBlock({ tex, displayMode = true, style }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    const k = window.katex;
+    if (!k) {
+      ref.current.textContent = tex;
+      return;
+    }
+    try {
+      k.render(tex, ref.current, { throwOnError: false, displayMode });
+    } catch (e) {
+      ref.current.textContent = tex;
+    }
+  }, [tex, displayMode]);
+  return <div ref={ref} style={style} />;
+}
+
+function det3(M) {
+  const [a, b, c] = M;
+  return (
+    a[0] * (b[1] * c[2] - b[2] * c[1]) -
+    a[1] * (b[0] * c[2] - b[2] * c[0]) +
+    a[2] * (b[0] * c[1] - b[1] * c[0])
+  );
+}
+function cross(u, v) {
+  return [
+    u[1] * v[2] - u[2] * v[1],
+    u[2] * v[0] - u[0] * v[2],
+    u[0] * v[1] - u[1] * v[0],
+  ];
+}
+function dot(u, v) { return u[0]*v[0]+u[1]*v[1]+u[2]*v[2]; }
+function sub(u, v) { return [u[0]-v[0], u[1]-v[1], u[2]-v[2]]; }
+function mag(u) { return Math.sqrt(u[0]*u[0]+u[1]*u[1]+u[2]*u[2]); }
+function fmt(x, d=3) {
+  if (Math.abs(x) < 1e-9) return '0';
+  const r = Math.round(x * Math.pow(10, d)) / Math.pow(10, d);
+  return r.toString();
+}
+
+// Isometric projection for SVG parallelepipeds (a, b, c are 3D vectors,
+// drawn as edges from origin).
+function iso(p, ox = 180, oy = 150, scale = 18) {
+  const cos30 = 0.866, sin30 = 0.5;
+  return {
+    x: ox + (p[0] - p[2]) * cos30 * scale,
+    y: oy + ((p[0] + p[2]) * sin30 - p[1]) * scale,
+  };
+}
+
+function ParallelepipedSVG({ a, b, c, width = 360, height = 280, showNormal = true }) {
+  // 8 vertices
+  const O = [0,0,0];
+  const A = a, B = b, C = c;
+  const AB = [a[0]+b[0], a[1]+b[1], a[2]+b[2]];
+  const AC = [a[0]+c[0], a[1]+c[1], a[2]+c[2]];
+  const BC = [b[0]+c[0], b[1]+c[1], b[2]+c[2]];
+  const ABC = [a[0]+b[0]+c[0], a[1]+b[1]+c[1], a[2]+b[2]+c[2]];
+
+  const ox = width/2, oy = height*0.65;
+  const verts = [O, A, B, C, AB, AC, BC, ABC].map(p => iso(p, ox, oy, 22));
+  const [pO, pA, pB, pC, pAB, pAC, pBC, pABC] = verts;
+
+  // Faces (12 edges total, drawn as 6 face polygons with low alpha)
+  const faces = [
+    { pts: [pO, pB, pBC, pC], fill: '#3b82f6', op: 0.10 },     // base (bc plane)
+    { pts: [pO, pA, pAB, pB], fill: '#16a34a', op: 0.13 },
+    { pts: [pO, pA, pAC, pC], fill: '#dc2626', op: 0.10 },
+    { pts: [pA, pAB, pABC, pAC], fill: '#3b82f6', op: 0.13 }, // top
+    { pts: [pB, pAB, pABC, pBC], fill: '#dc2626', op: 0.13 },
+    { pts: [pC, pAC, pABC, pBC], fill: '#16a34a', op: 0.13 },
+  ];
+
+  const edges = [
+    [pO,pA],[pO,pB],[pO,pC],
+    [pA,pAB],[pA,pAC],
+    [pB,pAB],[pB,pBC],
+    [pC,pAC],[pC,pBC],
+    [pAB,pABC],[pAC,pABC],[pBC,pABC]
+  ];
+
+  // Cross product b×c lifted from origin
+  const N = cross(b, c);
+  const nMag = mag(N);
+  const nUnit = nMag > 1e-9 ? [N[0]/nMag, N[1]/nMag, N[2]/nMag] : [0,0,0];
+  // scale so it's visible but not huge
+  const nScale = 1.2;
+  const nTip = [nUnit[0]*nScale, nUnit[1]*nScale, nUnit[2]*nScale];
+  const pNtip = iso(nTip, ox, oy, 22);
+
+  // Projection of a onto b×c (the height)
+  const proj = nMag > 1e-9 ? dot(a, nUnit) : 0;
+  const heightTip = nMag > 1e-9 ? [nUnit[0]*proj, nUnit[1]*proj, nUnit[2]*proj] : [0,0,0];
+  const pHt = iso(heightTip, ox, oy, 22);
+
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} width="100%" style={{ maxWidth: width, display: 'block', margin: '0 auto', background: 'linear-gradient(180deg, #fbfaf5 0%, #f4f1e8 100%)', borderRadius: 8 }}>
+      {/* Faces */}
+      {faces.map((f, i) => (
+        <polygon
+          key={i}
+          points={f.pts.map(p => `${p.x},${p.y}`).join(' ')}
+          fill={f.fill}
+          fillOpacity={f.op}
+          stroke="none"
+        />
+      ))}
+      {/* Edges */}
+      {edges.map(([p, q], i) => (
+        <line key={i} x1={p.x} y1={p.y} x2={q.x} y2={q.y}
+              stroke="#1a1d24" strokeWidth="1.5" strokeOpacity="0.7" />
+      ))}
+      {/* Coloured edge vectors a (green), b (red), c (blue) */}
+      <line x1={pO.x} y1={pO.y} x2={pA.x} y2={pA.y} stroke="#16a34a" strokeWidth="3" />
+      <line x1={pO.x} y1={pO.y} x2={pB.x} y2={pB.y} stroke="#dc2626" strokeWidth="3" />
+      <line x1={pO.x} y1={pO.y} x2={pC.x} y2={pC.y} stroke="#2F5496" strokeWidth="3" />
+      {/* Normal b×c */}
+      {showNormal && nMag > 1e-9 && (
+        <g>
+          <line x1={pO.x} y1={pO.y} x2={pNtip.x} y2={pNtip.y}
+                stroke="#7c3aed" strokeWidth="2" strokeDasharray="4 3" />
+          <text x={pNtip.x + 6} y={pNtip.y - 4} fontSize="11" fill="#7c3aed" fontWeight="600">b×c</text>
+          {Math.abs(proj) > 0.01 && (
+            <line x1={pO.x} y1={pO.y} x2={pHt.x} y2={pHt.y}
+                  stroke="#c2a25a" strokeWidth="3.5" />
+          )}
+        </g>
+      )}
+      {/* Vertex labels */}
+      <text x={pO.x - 12} y={pO.y + 12} fontSize="11" fill="#4b515c">O</text>
+      <text x={pA.x + 4}  y={pA.y - 4}  fontSize="12" fill="#16a34a" fontWeight="700">a</text>
+      <text x={pB.x + 4}  y={pB.y - 4}  fontSize="12" fill="#dc2626" fontWeight="700">b</text>
+      <text x={pC.x - 14} y={pC.y - 4}  fontSize="12" fill="#2F5496" fontWeight="700">c</text>
+    </svg>
+  );
+}
+
+// ────────────────────────── Widget 1: DetProofAnimator ──────────────────────────
+function DetProofAnimator() {
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+
+  const STAGES = [
+    {
+      title: '1 · Expand b × c via the i, j, k formula',
+      tex: '\\mathbf{b}\\times\\mathbf{c} \\;=\\; (b_y c_z - b_z c_y)\\,\\mathbf{i} \\;-\\; (b_x c_z - b_z c_x)\\,\\mathbf{j} \\;+\\; (b_x c_y - b_y c_x)\\,\\mathbf{k}',
+      gloss: 'Each component is a 2×2 minor of b and c.',
+      glow: { rows: [1,2], cols: [] }
+    },
+    {
+      title: '2 · Read the components into a vector',
+      tex: '\\mathbf{b}\\times\\mathbf{c} \\;=\\; \\bigl\\{\\,(b_y c_z - b_z c_y),\\;-(b_x c_z - b_z c_x),\\;(b_x c_y - b_y c_x)\\,\\bigr\\}',
+      gloss: 'Three numbers — about to meet the dot product.',
+      glow: { rows: [1,2], cols: [] }
+    },
+    {
+      title: '3 · Dot with a — three terms, one line',
+      tex: '\\mathbf{a}\\cdot(\\mathbf{b}\\times\\mathbf{c}) \\;=\\; a_x(b_y c_z - b_z c_y) \\;-\\; a_y(b_x c_z - b_z c_x) \\;+\\; a_z(b_x c_y - b_y c_x)',
+      gloss: 'This is exactly the cofactor pattern.',
+      glow: { rows: [0,1,2], cols: [] }
+    },
+    {
+      title: '4 · Group as a cofactor expansion along row 1',
+      tex: '= \\;a_x\\,\\begin{vmatrix} b_y & b_z \\\\ c_y & c_z \\end{vmatrix} \\;-\\; a_y\\,\\begin{vmatrix} b_x & b_z \\\\ c_x & c_z \\end{vmatrix} \\;+\\; a_z\\,\\begin{vmatrix} b_x & b_y \\\\ c_x & c_y \\end{vmatrix}',
+      gloss: 'Each minor is the 2×2 you delete row 1 + the corresponding column.',
+      glow: { rows: [0], cols: [0,1,2] }
+    },
+    {
+      title: '5 · And that is the determinant',
+      tex: '\\boxed{\\;\\mathbf{a}\\cdot(\\mathbf{b}\\times\\mathbf{c}) \\;=\\; \\begin{vmatrix} a_x & a_y & a_z \\\\ b_x & b_y & b_z \\\\ c_x & c_y & c_z \\end{vmatrix}\\;}',
+      gloss: 'The algebra and the determinant agree term-for-term.',
+      glow: { rows: [0,1,2], cols: [0,1,2] }
+    },
+  ];
+
+  useEffect(() => {
+    if (!playing) return;
+    const t = setTimeout(() => {
+      setStep(s => {
+        if (s + 1 >= STAGES.length) { setPlaying(false); return s; }
+        return s + 1;
+      });
+    }, 1900);
+    return () => clearTimeout(t);
+  }, [playing, step]);
+
+  const isGlow = (r, c) => {
+    const g = STAGES[step].glow;
+    return g.rows.includes(r) && (g.cols.length === 0 || g.cols.includes(c));
+  };
+
+  return (
+    <div className="stp-grid">
+      <div className="stp-row" style={{ justifyContent: 'space-between' }}>
+        <div style={{ fontSize: '0.85rem', color: 'var(--ink-soft)' }}>
+          Step <strong style={{ color: 'var(--brand)' }}>{step + 1}</strong> of {STAGES.length}
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn purple" onClick={() => setPlaying(p => !p)}>
+            {playing ? '⏸ Pause' : (step >= STAGES.length - 1 ? '↻ Replay' : '▶ Play')}
+          </button>
+          <button className="btn secondary" onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}>← Back</button>
+          <button className="btn secondary" onClick={() => setStep(s => Math.min(STAGES.length - 1, s + 1))} disabled={step === STAGES.length - 1}>Next →</button>
+          <button className="btn secondary" onClick={() => { setStep(0); setPlaying(false); }}>↺ Reset</button>
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 200px', gap: 16, alignItems: 'start' }}>
+        <div className="stp-stage is-active" style={{ minHeight: 180 }}>
+          <h5>{STAGES[step].title}</h5>
+          <KaTeXBlock tex={STAGES[step].tex} displayMode={true} style={{ marginTop: 8 }} />
+          <p style={{ marginTop: 12, fontSize: '0.88rem', color: 'var(--ink-soft)', fontStyle: 'italic' }}>
+            {STAGES[step].gloss}
+          </p>
+        </div>
+        <div className="stp-readout" style={{ padding: 14 }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.1em', marginBottom: 8 }}>TARGET</div>
+          <div className="det-bracket" style={{ padding: '6px 8px' }}>
+            {[['a_x','a_y','a_z'], ['b_x','b_y','b_z'], ['c_x','c_y','c_z']].map((row, r) => (
+              <div className="det-row" key={r}>
+                {row.map((cell, c) => (
+                  <span key={c} className={'det-cell' + (isGlow(r, c) ? ' glow' : '')}>
+                    {cell}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 6 }}>
+        {STAGES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setStep(i); setPlaying(false); }}
+            style={{
+              flex: 1, height: 6, border: 0, borderRadius: 3,
+              background: i <= step ? 'var(--brand)' : '#e6e1d3',
+              cursor: 'pointer', padding: 0,
+              transition: 'background 0.3s'
+            }}
+            aria-label={`Step ${i + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────── Widget 2: ParallelepipedPicker ──────────────────────────
+function ParallelepipedPicker() {
+  const CHOICES = [
+    { label: 'a₁ = {0, 0, 3}',  a: [0, 0, 3],  desc: 'tall, right-handed' },
+    { label: 'a₂ = {0, 0, -3}', a: [0, 0, -3], desc: 'tall, left-handed' },
+    { label: 'a₃ = {1, 1, 2}',  a: [1, 1, 2],  desc: 'slanted box' },
+    { label: 'a₄ = {2, 1, 0}',  a: [2, 1, 0],  desc: 'lies in the base plane' },
+    { label: 'a₅ = {1, 0, 2}',  a: [1, 0, 2],  desc: 'modest tilt' },
+  ];
+  const [pick, setPick] = useState(0);
+  const b = [2, 0, 0], c = [0, 2, 0];
+  const a = CHOICES[pick].a;
+  const tp = det3([a, b, c]);
+  const baseArea = mag(cross(b, c));
+  const N = cross(b, c);
+  const proj = baseArea > 1e-9 ? dot(a, N) / baseArea : 0;
+
+  const handed = tp > 1e-9 ? 'right-handed' : tp < -1e-9 ? 'left-handed' : 'flat';
+  const handedColor = tp > 1e-9 ? '#16a34a' : tp < -1e-9 ? '#dc2626' : '#7c3aed';
+
+  return (
+    <div className="stp-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 8 }}>
+        {CHOICES.map((ch, i) => (
+          <div
+            key={i}
+            className={'stp-pick-card' + (i === pick ? ' selected' : '')}
+            onClick={() => setPick(i)}
+            role="button"
+            tabIndex={0}
+          >
+            <div style={{ fontWeight: 700, color: 'var(--brand-2)' }}>{ch.label}</div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--ink-soft)', marginTop: 3, fontFamily: 'var(--sans)' }}>{ch.desc}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)', gap: 16, alignItems: 'center' }}>
+        <ParallelepipedSVG a={a} b={b} c={c} />
+        <div className="stp-readout">
+          <div style={{ fontSize: '0.72rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>READOUT</div>
+          <KaTeXBlock tex={`\\mathbf{a} = \\{${a[0]},${a[1]},${a[2]}\\}`} displayMode={false} style={{ marginBottom: 6 }} />
+          <KaTeXBlock tex={`\\mathbf{b}\\times\\mathbf{c} = \\{${N[0]},${N[1]},${N[2]}\\}`} displayMode={false} style={{ marginBottom: 6 }} />
+          <KaTeXBlock tex={`|\\mathbf{b}\\times\\mathbf{c}| = ${fmt(baseArea, 2)}\\quad(\\text{base area})`} displayMode={false} style={{ marginBottom: 6 }} />
+          <KaTeXBlock tex={`\\text{height} = |\\mathbf{a}|\\cos\\varphi = ${fmt(proj, 3)}`} displayMode={false} style={{ marginBottom: 10 }} />
+          <div style={{ borderTop: '1px solid var(--rule)', paddingTop: 10 }}>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '1.1rem' }}>
+              <strong>a · (b × c) = {fmt(tp, 2)}</strong>
+            </div>
+            <div style={{ marginTop: 4, fontSize: '0.85rem', color: handedColor, fontWeight: 700 }}>
+              |V| = {fmt(Math.abs(tp), 2)} · {handed}
+            </div>
+            {Math.abs(tp) < 1e-9 && (
+              <div className="callout teal" style={{ marginTop: 10, marginBottom: 0, fontSize: '0.85rem' }}>
+                <strong>Coplanar!</strong>
+                $\mathbf{{a}}$ lies in the plane of $\mathbf{{b}}$ and $\mathbf{{c}}$ — the box has flattened.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <div style={{ fontSize: '0.82rem', color: 'var(--ink-soft)', fontStyle: 'italic' }}>
+        Green = a · Red = b · Blue = c · Purple dashed = direction of b × c · Gold = projection of a onto the normal (the height).
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────── Widget 3: PermutationBuilder ──────────────────────────
+function PermutationBuilder() {
+  // Seeded vectors with abc = +20:  a={1,2,1}, b={3,0,2}, c={1,1,4}
+  // det = 1*(0*4-2*1) - 2*(3*4-2*1) + 1*(3*1-0*1) = 1*(-2) - 2*(10) + 1*(3) = -2 - 20 + 3 = -19
+  // Hmm let me pick vectors that actually give a clean +20.
+  // a = {1,0,0}, b = {0,2,0}, c = {0,0,10} → det = 1*2*10 = 20 ✓
+  const VECS = { a: [1, 0, 0], b: [0, 2, 0], c: [0, 0, 10] };
+  const BASE = 20;
+
+  const [slots, setSlots] = useState([null, null, null]);
+  const [prediction, setPrediction] = useState(null); // '+' or '-'
+  const [revealed, setRevealed] = useState(false);
+  const [scoreboard, setScoreboard] = useState({}); // { 'abc': true/false (correct prediction) }
+
+  const placedLetters = slots.filter(Boolean);
+  const allLetters = ['a', 'b', 'c'];
+
+  function placeLetter(letter) {
+    if (revealed) return;
+    if (slots.includes(letter)) return;
+    const next = [...slots];
+    const empty = next.indexOf(null);
+    if (empty < 0) return;
+    next[empty] = letter;
+    setSlots(next);
+  }
+  function clearSlot(i) {
+    if (revealed) return;
+    const next = [...slots];
+    next[i] = null;
+    setSlots(next);
+  }
+  function reset() {
+    setSlots([null, null, null]);
+    setPrediction(null);
+    setRevealed(false);
+  }
+
+  const filled = slots.every(Boolean);
+  const key = filled ? slots.join('') : '';
+
+  // Cyclic = abc, bca, cab → +20
+  // Anti-cyclic = bac, acb, cba → -20
+  const CYCLIC = new Set(['abc', 'bca', 'cab']);
+  const ANTI = new Set(['bac', 'acb', 'cba']);
+  const expectedSign = filled ? (CYCLIC.has(key) ? '+' : '-') : null;
+  const value = filled ? (CYCLIC.has(key) ? BASE : -BASE) : null;
+
+  function reveal() {
+    if (!filled || prediction == null) return;
+    setRevealed(true);
+    setScoreboard(prev => ({ ...prev, [key]: prediction === expectedSign }));
+  }
+
+  const allSix = ['abc', 'bca', 'cab', 'bac', 'acb', 'cba'];
+  const completed = allSix.filter(k => k in scoreboard).length;
+
+  return (
+    <div className="stp-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 18, alignItems: 'start' }}>
+        <div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>BUILD A PERMUTATION</div>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            {allLetters.map(L => (
+              <button key={L}
+                      className={'stp-letter ' + (slots.includes(L) ? 'placed' : '')}
+                      disabled={slots.includes(L) || revealed}
+                      onClick={() => placeLetter(L)}>
+                {L}
+              </button>
+            ))}
+          </div>
+          <div style={{ background: 'var(--math-bg)', border: '1px solid var(--rule)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--ink-soft)', marginBottom: 6 }}>Determinant rows:</div>
+            {[0, 1, 2].map(i => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <span style={{ width: 18, color: 'var(--ink-soft)', fontFamily: 'var(--mono)', fontSize: '0.85rem' }}>R{i+1}</span>
+                <span className={'stp-slot ' + (slots[i] ? 'filled' : 'target')}
+                      onClick={() => clearSlot(i)}
+                      title={slots[i] ? 'click to clear' : ''}>
+                  {slots[i] ?? '·'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>PREDICT THE SIGN</div>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <button className={'btn ' + (prediction === '+' ? '' : 'secondary')}
+                    onClick={() => !revealed && setPrediction('+')}
+                    disabled={!filled || revealed}>+ cyclic</button>
+            <button className={'btn ' + (prediction === '-' ? '' : 'secondary')}
+                    onClick={() => !revealed && setPrediction('-')}
+                    disabled={!filled || revealed}>− anti-cyclic</button>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="btn purple"
+                    onClick={reveal}
+                    disabled={!filled || prediction == null || revealed}>
+              ✓ Reveal
+            </button>
+            <button className="btn secondary" onClick={reset}>↺ Try another</button>
+          </div>
+          {/* Cycle ring */}
+          <div style={{ marginTop: 14, textAlign: 'center' }}>
+            <svg viewBox="0 0 160 100" width="160" height="100" style={{ display: 'block', margin: '0 auto' }}>
+              <circle cx="80" cy="50" r="38"
+                      fill="none"
+                      stroke={revealed ? (CYCLIC.has(key) ? '#16a34a' : '#dc2626') : '#e6e1d3'}
+                      strokeWidth="2" strokeDasharray={revealed ? '0' : '4 4'} />
+              <text x="42" y="55" fontSize="14" fontWeight="700" fill="#16a34a">a</text>
+              <text x="120" y="55" fontSize="14" fontWeight="700" fill="#dc2626">b</text>
+              <text x="80" y="22" fontSize="14" fontWeight="700" fill="#2F5496">c</text>
+              <text x="80" y="92" fontSize="11"
+                    fill={revealed ? (CYCLIC.has(key) ? '#16a34a' : '#dc2626') : '#4b515c'}
+                    textAnchor="middle" fontWeight="600">
+                {revealed ? (CYCLIC.has(key) ? '⟳ cyclic' : '⟲ anti-cyclic') : 'cycle a → b → c → a'}
+              </text>
+            </svg>
+          </div>
+        </div>
+      </div>
+      {revealed && (
+        <div className={'callout ' + (prediction === expectedSign ? 'green' : 'red')}>
+          <strong>
+            {prediction === expectedSign ? '✓ Correct!' : '✗ Off by a sign.'}
+          </strong>
+          The permutation <code>{key}</code> is {CYCLIC.has(key) ? 'a cyclic rotation' : 'a single swap from cyclic'} of $\mathbf{{abc}}$, so its determinant equals <strong>{value}</strong>. Cyclic preserves the value; any single swap flips the sign.
+        </div>
+      )}
+      <div className="stp-readout" style={{ fontSize: '0.85rem' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 6 }}>SCOREBOARD ({completed}/6)</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {allSix.map(k => (
+            <span key={k} style={{
+              padding: '4px 10px', borderRadius: 4, fontFamily: 'var(--mono)',
+              border: '1px solid',
+              background: !(k in scoreboard) ? '#fafaf7' : (scoreboard[k] ? '#dcfce7' : '#fee2e2'),
+              borderColor: !(k in scoreboard) ? '#e6e1d3' : (scoreboard[k] ? '#16a34a' : '#dc2626'),
+              color: !(k in scoreboard) ? '#4b515c' : (scoreboard[k] ? '#14532d' : '#7f1d1d')
+            }}>
+              {k} {!(k in scoreboard) ? '·' : (scoreboard[k] ? '✓' : '✗')}
+            </span>
+          ))}
+        </div>
+        <div style={{ marginTop: 8, fontSize: '0.78rem', color: 'var(--ink-soft)', fontFamily: 'var(--sans)' }}>
+          Seeded with $\mathbf{{a}}=\{`{1,0,0}`\}$, $\mathbf{{b}}=\{`{0,2,0}`\}$, $\mathbf{{c}}=\{`{0,0,10}`\}$ ⇒ <strong>abc = +20</strong>.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────── Widget 4: CofactorExpansionDerive ──────────────────────────
+function CofactorExpansionDerive() {
+  const M = [[4, 1, 2], [3, 4, 8], [1, 0, 0]];
+  const [pick, setPick] = useState(null); // {axis: 'row'|'col', idx: 0-2}
+  const [minorVals, setMinorVals] = useState(['', '', '']);
+  const [done, setDone] = useState(false);
+
+  const CHOICES = [
+    { label: 'Row 1', axis: 'row', idx: 0, zeros: 0, recommend: 0 },
+    { label: 'Row 2', axis: 'row', idx: 1, zeros: 0, recommend: 0 },
+    { label: 'Row 3', axis: 'row', idx: 2, zeros: 2, recommend: 2 },
+    { label: 'Col 1', axis: 'col', idx: 0, zeros: 0, recommend: 0 },
+    { label: 'Col 2', axis: 'col', idx: 1, zeros: 1, recommend: 1 },
+    { label: 'Col 3', axis: 'col', idx: 2, zeros: 1, recommend: 1 },
+  ];
+
+  function expansionInfo() {
+    if (!pick) return null;
+    const { axis, idx } = pick;
+    const items = [];
+    for (let k = 0; k < 3; k++) {
+      const r = axis === 'row' ? idx : k;
+      const c = axis === 'col' ? idx : k;
+      const coeff = M[r][c];
+      // Build 2x2 minor by deleting row r, col c
+      const minor = [];
+      for (let rr = 0; rr < 3; rr++) {
+        if (rr === r) continue;
+        const row = [];
+        for (let cc = 0; cc < 3; cc++) {
+          if (cc === c) continue;
+          row.push(M[rr][cc]);
+        }
+        minor.push(row);
+      }
+      const minorVal = minor[0][0] * minor[1][1] - minor[0][1] * minor[1][0];
+      const sign = ((r + c) % 2 === 0) ? 1 : -1;
+      items.push({ r, c, coeff, minor, minorVal, sign, dropped: coeff === 0 });
+    }
+    return items;
+  }
+
+  function selectChoice(ch) {
+    setPick({ axis: ch.axis, idx: ch.idx });
+    setMinorVals(['', '', '']);
+    setDone(false);
+  }
+  function reset() {
+    setPick(null);
+    setMinorVals(['', '', '']);
+    setDone(false);
+  }
+
+  const items = expansionInfo();
+  const surviving = items ? items.filter(it => !it.dropped) : [];
+
+  function evaluate() {
+    setDone(true);
+  }
+
+  // best advice
+  const bestZeros = Math.max(...CHOICES.map(c => c.zeros));
+
+  return (
+    <div className="stp-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 16, alignItems: 'start' }}>
+        <div className="stp-readout">
+          <div style={{ fontSize: '0.72rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>EXAMPLE 1 DETERMINANT</div>
+          <KaTeXBlock tex="\\det = \\begin{vmatrix} 4 & 1 & 2 \\\\ 3 & 4 & 8 \\\\ 1 & 0 & 0 \\end{vmatrix}" displayMode={true} />
+          <div style={{ fontSize: '0.83rem', color: 'var(--ink-soft)', marginTop: 8 }}>
+            $\overrightarrow{`{AB}`}=\{`{4,1,2}`\}$, $\overrightarrow{`{AC}`}=\{`{3,4,8}`\}$, $\overrightarrow{`{AD}`}=\{`{1,0,0}`\}$.
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>EXPAND ALONG…</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {CHOICES.map(ch => {
+              const isPicked = pick && pick.axis === ch.axis && pick.idx === ch.idx;
+              const isBest = ch.zeros === bestZeros;
+              return (
+                <button key={ch.label}
+                        className={'stp-derive-row' + (isPicked ? ' chosen' : '') + (isBest && !pick ? ' best' : '')}
+                        onClick={() => selectChoice(ch)}>
+                  {ch.label}{ch.zeros > 0 ? ` · ${ch.zeros} zero${ch.zeros>1?'s':''}` : ''}
+                </button>
+              );
+            })}
+          </div>
+          {pick && (
+            <div style={{ marginTop: 10, fontSize: '0.85rem', color: 'var(--ink-soft)' }}>
+              {(pick.axis === 'row' && pick.idx === 2)
+                ? '✓ Cleverest pick — row 3 has two zeros, so two cofactors vanish.'
+                : (pick.axis === 'col' && pick.idx === 2 || pick.axis === 'col' && pick.idx === 1)
+                  ? '⊙ Workable — one zero saves one minor.'
+                  : '⚠ Laborious — no zeros, three minors to compute.'}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {pick && items && (
+        <div className="stp-readout">
+          <div style={{ fontSize: '0.78rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>
+            EXPANSION ALONG {pick.axis.toUpperCase()} {pick.idx + 1}
+          </div>
+          <div style={{ display: 'grid', gap: 8 }}>
+            {items.map((it, k) => (
+              <div key={k}
+                   style={{
+                     padding: 8,
+                     borderRadius: 6,
+                     background: it.dropped ? '#f3f4f6' : 'white',
+                     border: '1px solid ' + (it.dropped ? '#cbd5e1' : 'var(--brand)'),
+                     opacity: it.dropped ? 0.5 : 1,
+                   }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontWeight: 700, color: 'var(--brand-2)' }}>
+                    {it.sign > 0 ? '+' : '−'} {Math.abs(it.coeff)}
+                  </span>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--ink-soft)' }}>×</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: '0.92rem' }}>
+                    |{it.minor[0][0]} {it.minor[0][1]}; {it.minor[1][0]} {it.minor[1][1]}|
+                  </span>
+                  {it.dropped ? (
+                    <span style={{ marginLeft: 'auto', fontSize: '0.82rem', color: '#16a34a', fontWeight: 700 }}>= 0 (coefficient is zero)</span>
+                  ) : (
+                    <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--ink-soft)' }}>2×2 =</span>
+                      <input
+                        className="stp-vec-input"
+                        type="text"
+                        placeholder="?"
+                        value={minorVals[k]}
+                        onChange={e => {
+                          const next = [...minorVals];
+                          next[k] = e.target.value;
+                          setMinorVals(next);
+                        }}
+                        disabled={done}
+                      />
+                      {done && (
+                        <span style={{
+                          fontFamily: 'var(--mono)',
+                          color: parseFloat(minorVals[k]) === it.minorVal ? '#16a34a' : '#dc2626',
+                          fontWeight: 700
+                        }}>
+                          actual = {it.minorVal}
+                        </span>
+                      )}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          {!done && surviving.length > 0 && (
+            <div style={{ marginTop: 10 }}>
+              <button className="btn" onClick={evaluate}
+                      disabled={surviving.some(it => minorVals[items.indexOf(it)] === '')}>
+                ✓ Check minors
+              </button>
+              <button className="btn secondary" onClick={reset} style={{ marginLeft: 8 }}>↺ Reset</button>
+            </div>
+          )}
+          {(done || surviving.length === 0) && (
+            <div className="callout green" style={{ marginTop: 12 }}>
+              <strong>Total = 0.</strong>
+              The triple product vanishes ⇒ $A,B,C,D$ are coplanar — the four points lie in a common plane. {pick.axis === 'row' && pick.idx === 2 ? 'And you got there with a single 2×2 evaluation.' : 'Try row 3 for the shortest path.'}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ────────────────────────── Widget 5: FlatnessSliderAnimator ──────────────────────────
+function FlatnessSliderAnimator() {
+  const [t, setT] = useState(0);
+  const A0 = [1, 1, 2];
+  const A1 = [2, 1, 0];
+  const a = [
+    A0[0] * (1 - t) + A1[0] * t,
+    A0[1] * (1 - t) + A1[1] * t,
+    A0[2] * (1 - t) + A1[2] * t,
+  ];
+  const b = [2, 0, 0];
+  const c = [0, 2, 0];
+  const tp = det3([a, b, c]);
+  const isFlat = Math.abs(tp) < 1e-6;
+
+  return (
+    <div className="stp-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr)', gap: 16, alignItems: 'center' }}>
+        <ParallelepipedSVG a={a} b={b} c={c} />
+        <div>
+          <div className="stp-readout">
+            <div style={{ fontSize: '0.72rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 6 }}>LIVE READOUT</div>
+            <KaTeXBlock tex={`\\mathbf{a}(t) = \\{${fmt(a[0],2)},${fmt(a[1],2)},${fmt(a[2],2)}\\}`} displayMode={false} style={{ marginBottom: 4 }} />
+            <KaTeXBlock tex={`\\mathbf{b} = \\{2,0,0\\}, \\quad \\mathbf{c} = \\{0,2,0\\}`} displayMode={false} style={{ marginBottom: 8, fontSize: '0.85rem' }} />
+            <div style={{ borderTop: '1px solid var(--rule)', paddingTop: 8, fontFamily: 'var(--mono)', fontSize: '1.1rem' }}>
+              <strong>a · (b × c) = {fmt(tp, 3)}</strong>
+            </div>
+            <div style={{ marginTop: 4, fontSize: '0.85rem', color: 'var(--ink-soft)' }}>
+              |V| = {fmt(Math.abs(tp), 3)}
+            </div>
+          </div>
+          {isFlat && (
+            <div className="callout teal" style={{ marginTop: 10 }}>
+              <strong>COPLANAR.</strong>
+              The triple product is zero; $\mathbf{{a}}$, $\mathbf{{b}}$, $\mathbf{{c}}$ have collapsed into a common plane and the parallelepiped is now a flat sheet.
+            </div>
+          )}
+        </div>
+      </div>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <span style={{ fontFamily: 'var(--mono)', fontSize: '0.92rem', color: 'var(--brand)' }}>t = {t.toFixed(2)}</span>
+          <input
+            type="range"
+            min="0" max="1" step="0.01"
+            value={t}
+            onChange={e => setT(parseFloat(e.target.value))}
+            style={{ flex: 1, accentColor: '#7c3aed' }}
+          />
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button className="btn secondary" onClick={() => setT(0)}>t = 0 (full box)</button>
+          <button className="btn secondary" onClick={() => setT(0.5)}>t = 0.5 (squashed)</button>
+          <button className="btn secondary" onClick={() => setT(1)}>t = 1 (flat — coplanar)</button>
+        </div>
+      </div>
+      <div style={{ fontSize: '0.85rem', color: 'var(--ink-soft)', fontStyle: 'italic' }}>
+        At $t=0$ the third vector points out of the $\mathbf{b}$–$\mathbf{c}$ plane and the box has volume 8. Slide $t$ to 1 and the third vector lands inside the plane: the determinant — and the volume — drop continuously to zero.
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────── Widget 6: TripleProductMCQ ──────────────────────────
+function TripleProductMCQ() {
+  const QUESTIONS = [
+    {
+      q: 'If abc = 7, what is the value of bac?',
+      options: ['+7', '−7', '0', 'cannot be determined'],
+      correct: 1,
+      explain: 'Swapping any two vectors flips the sign of the triple product (one row-swap in the determinant). Cyclic preserves; anti-cyclic flips.'
+    },
+    {
+      q: 'Which expression is well-defined?',
+      options: ['(a · b) × c', 'a · (b · c)', 'a · (b × c)', '(a × b) · (c · a)'],
+      correct: 2,
+      explain: 'You can only cross two vectors and dot two vectors. (a·b) is a scalar, so (a·b)×c is meaningless. Only a·(b×c) type-checks.'
+    },
+    {
+      q: 'Three non-zero vectors satisfy a · (b × c) = 0. Which conclusion is forced?',
+      options: ['They are mutually perpendicular',
+                'They are linearly dependent (and hence coplanar)',
+                'One of them is the zero vector',
+                'Their sum equals zero'],
+      correct: 1,
+      explain: 'A zero triple product on non-zero vectors is exactly the linear-dependence / coplanarity criterion.'
+    },
+    {
+      q: 'Given a = {1,0,0}, b = {0,1,0}, c = {0,0,1}, what is cab?',
+      options: ['+1', '−1', '0', '3'],
+      correct: 0,
+      explain: 'cab is a cyclic rotation of abc, so cab = abc. The standard basis gives det(I) = +1.'
+    }
+  ];
+
+  const [picks, setPicks] = useState({}); // { qIdx: optionIdx }
+
+  function pickOption(qi, oi) {
+    if (qi in picks) return;
+    setPicks(p => ({ ...p, [qi]: oi }));
+  }
+  function resetAll() { setPicks({}); }
+
+  const answered = Object.keys(picks).length;
+  const correct = Object.entries(picks).filter(([q, o]) => QUESTIONS[q].correct === o).length;
+
+  return (
+    <div className="stp-grid">
+      <div className="stp-row" style={{ justifyContent: 'space-between' }}>
+        <div style={{ fontSize: '0.85rem', color: 'var(--ink-soft)' }}>
+          Answered <strong>{answered}/{QUESTIONS.length}</strong> · Correct <strong style={{ color: '#16a34a' }}>{correct}</strong>
+        </div>
+        <button className="btn secondary" onClick={resetAll}>↺ Reset all</button>
+      </div>
+      {QUESTIONS.map((Q, qi) => {
+        const pick = picks[qi];
+        const settled = pick != null;
+        return (
+          <div key={qi} className="stp-stage is-active" style={{ opacity: 1 }}>
+            <h5>Q{qi + 1}. {Q.q}</h5>
+            <div style={{ marginTop: 8 }}>
+              {Q.options.map((opt, oi) => {
+                let cls = 'stp-mcq-opt';
+                if (settled) {
+                  if (oi === Q.correct) cls += ' correct';
+                  else if (oi === pick) cls += ' wrong';
+                }
+                return (
+                  <button key={oi}
+                          className={cls}
+                          onClick={() => pickOption(qi, oi)}
+                          disabled={settled}>
+                    <span style={{ fontFamily: 'var(--mono)', color: 'var(--ink-soft)', marginRight: 8 }}>{['A','B','C','D'][oi]}.</span>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+            {settled && (
+              <div className={'callout ' + (pick === Q.correct ? 'green' : 'amber')} style={{ marginTop: 8, fontSize: '0.88rem' }}>
+                <strong>{pick === Q.correct ? '✓ Correct.' : '⚠ Not quite.'}</strong>
+                {Q.explain}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      {answered === QUESTIONS.length && (
+        <div className={'callout ' + (correct === QUESTIONS.length ? 'green' : 'blue')}>
+          <strong>{correct === QUESTIONS.length ? '🎯 Clean sweep — the algebra of the triple product is in your hands.' : `${correct}/${QUESTIONS.length} on the first pass.`}</strong>
+          {correct === QUESTIONS.length ? 'You are ready for Examples 1–3.' : 'Re-read the corollaries on the lecture page and re-try the misses.'}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ────────────────────────── Widget 7: TetrahedronPlayground ──────────────────────────
+function TetrahedronPlayground() {
+  const PRESETS = [
+    { label: 'Example 2/3 (default)', A: [1,0,2], B: [-3,1,4], C: [1,5,2], D: [4,4,4] },
+    { label: 'Homework 2',            A: [0,0,0], B: [2,0,1], C: [1,3,0], D: [0,1,4] },
+    { label: 'Coplanar (V = 0)',       A: [0,0,0], B: [1,0,0], C: [0,1,0], D: [2,3,0] },
+  ];
+
+  const [verts, setVerts] = useState({ ...PRESETS[0] });
+
+  function updateComp(name, idx, value) {
+    const v = parseFloat(value);
+    setVerts(s => ({
+      ...s,
+      [name]: [
+        idx === 0 ? (isNaN(v) ? 0 : v) : s[name][0],
+        idx === 1 ? (isNaN(v) ? 0 : v) : s[name][1],
+        idx === 2 ? (isNaN(v) ? 0 : v) : s[name][2],
+      ]
+    }));
+  }
+  function loadPreset(p) {
+    setVerts({ ...p });
+  }
+
+  const A = verts.A, B = verts.B, C = verts.C, D = verts.D;
+  const AB = sub(B, A);
+  const AC = sub(C, A);
+  const AD = sub(D, A);
+  const tp = det3([AB, AC, AD]);
+  const Vp = Math.abs(tp);
+  const Vt = Vp / 6;
+  const ABxAC = cross(AB, AC);
+  const Sarea = mag(ABxAC) / 2;
+  const isDegenerate = Vt < 1e-9 || Sarea < 1e-9;
+  const h = isDegenerate ? null : (3 * Vt) / Sarea;
+
+  function vecRow(name, val) {
+    return (
+      <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+        <span style={{ width: 22, fontFamily: 'var(--serif)', fontWeight: 700, color: 'var(--brand)' }}>{name}</span>
+        <span style={{ color: 'var(--ink-soft)' }}>=</span>
+        {[0,1,2].map(i => (
+          <input key={i} className="stp-vec-input" type="number" step="any"
+                 value={val[i]}
+                 onChange={e => updateComp(name, i, e.target.value)} />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="stp-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 16, alignItems: 'start' }}>
+        <div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>VERTICES</div>
+          {vecRow('A', A)}
+          {vecRow('B', B)}
+          {vecRow('C', C)}
+          {vecRow('D', D)}
+          <div style={{ marginTop: 8, fontSize: '0.78rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em' }}>PRESETS</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+            {PRESETS.map(p => (
+              <button key={p.label} className="btn secondary" onClick={() => loadPreset(p)}
+                      style={{ fontSize: '0.8rem' }}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="stp-readout">
+          <div style={{ fontSize: '0.78rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>EDGE VECTORS (anchored at A)</div>
+          <KaTeXBlock tex={`\\overrightarrow{AB} = \\{${fmt(AB[0])},${fmt(AB[1])},${fmt(AB[2])}\\}`} displayMode={false} style={{ marginBottom: 4 }} />
+          <KaTeXBlock tex={`\\overrightarrow{AC} = \\{${fmt(AC[0])},${fmt(AC[1])},${fmt(AC[2])}\\}`} displayMode={false} style={{ marginBottom: 4 }} />
+          <KaTeXBlock tex={`\\overrightarrow{AD} = \\{${fmt(AD[0])},${fmt(AD[1])},${fmt(AD[2])}\\}`} displayMode={false} style={{ marginBottom: 10 }} />
+          <div style={{ fontSize: '0.78rem', color: 'var(--brand)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 6 }}>TRIPLE PRODUCT</div>
+          <KaTeXBlock tex={`\\overrightarrow{AB}\\!\\cdot\\!(\\overrightarrow{AC}\\!\\times\\!\\overrightarrow{AD}) = \\begin{vmatrix} ${fmt(AB[0])} & ${fmt(AB[1])} & ${fmt(AB[2])} \\\\ ${fmt(AC[0])} & ${fmt(AC[1])} & ${fmt(AC[2])} \\\\ ${fmt(AD[0])} & ${fmt(AD[1])} & ${fmt(AD[2])} \\end{vmatrix} = ${fmt(tp)}`} displayMode={true} />
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
+        <div className="stp-readout" style={{ background: '#e8f5e9', borderColor: '#16a34a' }}>
+          <div style={{ fontSize: '0.72rem', color: '#14532d', fontWeight: 700, letterSpacing: '0.08em' }}>PARALLELEPIPED VOLUME</div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: '1.05rem', color: '#14532d', fontWeight: 700 }}>
+            V<sub>p</sub> = |abc| = {fmt(Vp)}
+          </div>
+        </div>
+        <div className="stp-readout" style={{ background: '#e3f2fd', borderColor: '#1976d2' }}>
+          <div style={{ fontSize: '0.72rem', color: '#0d3d6e', fontWeight: 700, letterSpacing: '0.08em' }}>TETRAHEDRON VOLUME</div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: '1.05rem', color: '#0d3d6e', fontWeight: 700 }}>
+            V = V<sub>p</sub> / 6 = {fmt(Vt)}
+          </div>
+        </div>
+        <div className="stp-readout" style={{ background: '#f3e5f5', borderColor: '#6a1b9a' }}>
+          <div style={{ fontSize: '0.72rem', color: '#4c1d95', fontWeight: 700, letterSpacing: '0.08em' }}>BASE AREA (face ABC)</div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: '0.95rem', color: '#4c1d95' }}>
+            AB×AC = {`{${fmt(ABxAC[0])},${fmt(ABxAC[1])},${fmt(ABxAC[2])}}`}
+          </div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: '1.05rem', color: '#4c1d95', fontWeight: 700, marginTop: 4 }}>
+            S = ½|AB×AC| = {fmt(Sarea)}
+          </div>
+        </div>
+        <div className="stp-readout" style={{ background: '#fff3e0', borderColor: '#d97706' }}>
+          <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 700, letterSpacing: '0.08em' }}>HEIGHT FROM D</div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: '1.05rem', color: '#78350f', fontWeight: 700 }}>
+            {isDegenerate ? '— undefined —' : `h = 3V/S = ${fmt(h)}`}
+          </div>
+        </div>
+      </div>
+      {isDegenerate && (
+        <div className="callout amber">
+          <strong>Degenerate case.</strong>
+          The triple product is (effectively) zero — the four points are coplanar, so there is no tetrahedron and no height to drop. Try a different vertex.
+        </div>
+      )}
+      {!isDegenerate && (
+        <ParallelepipedSVG a={AB} b={AC} c={AD} width={420} height={300} />
+      )}
+      <div style={{ fontSize: '0.82rem', color: 'var(--ink-soft)', fontStyle: 'italic' }}>
+        Sanity check on the default preset: $V = 5/3 \approx 1.667$, $S = 5\sqrt{2} \approx 7.071$, $h = \sqrt{2}/2 \approx 0.707$ — exactly the answers from Examples 2 and 3.
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────── Mounts ──────────────────────────
+const mounts = [
+  ['determinant-proof-animator', DetProofAnimator],
+  ['parallelepiped-picker', ParallelepipedPicker],
+  ['permutation-builder', PermutationBuilder],
+  ['cofactor-expansion-derive', CofactorExpansionDerive],
+  ['flatness-slider-animator', FlatnessSliderAnimator],
+  ['triple-product-mcq', TripleProductMCQ],
+  ['tetrahedron-playground', TetrahedronPlayground],
+];
+
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are TSI Buddy for the lecture \"The Scalar Triple Product\" in Linear Algebra and Analytic Geometry, lectured by bibliosense.",
+    "",
+    "# YOUR JOB ON THIS LECTURE",
+    "- Help the student build geometric intuition for a·(b×c) — the box-volume picture, not just the formula.",
+    "- Connect the determinant formula (eq. 9) to the cofactor expansion proof when asked.",
+    "- Reinforce the cyclic / anti-cyclic permutation rules and how they mirror row swaps in a 3×3 determinant.",
+    "- Walk students through coplanarity tests for points (the AB·(AC×AD) = 0 pattern).",
+    "- Steer tetrahedron problems through the V = (1/6)|abc| and h = 3V/S pipeline used in Examples 2 and 3.",
+    "- Always anchor responses to the on-page widgets when relevant (e.g. \"open the tetrahedron lab and try those vertices\").",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "## THE FORMULAS / KEY DEFINITIONS",
+    "Scalar triple product: [a,b,c] = a·(b×c). In components it is the 3×3 determinant with a, b, c as rows. Geometric reading: |a·(b×c)| = volume of the parallelepiped on a, b, c. Tetrahedron on the same three edges: V = (1/6)|a·(b×c)|. Coplanarity test for points A,B,C,D: AB·(AC×AD) = 0. Triangle area used in heights: S = (1/2)|AB×AC|, then h = 3V/S.",
+    "",
+    "## WHY (the intuition)",
+    "The cross b×c is perpendicular to the base parallelogram and its length equals that base's area. Dotting with a projects a onto that normal — and |a|cos φ is exactly the box's height. So a·(b×c) literally executes \"volume = base × height\" in one stroke. The sign records orientation: positive for a right-handed triple, negative for left-handed, zero when the box has been flattened to a sheet.",
+    "",
+    "## THE GOTCHA (most common student misconception)",
+    "Students treat the triple product as having two valid groupings, (a·b)×c and a·(b×c). The first is nonsense — you cannot cross a scalar with a vector. Only one parse type-checks. A second trap: assuming \"the triple product is zero\" means some vector is zero. It means the three are coplanar / linearly dependent — each vector can still be perfectly nonzero.",
+    "",
+    "## BOUNDARY CASES",
+    "Two vectors equal or parallel: triple product is automatically 0 (the determinant has two proportional rows). One vector is the zero vector: triple product is 0, but this says nothing interesting about the other two. Sign flip on a single swap: abc = −bac; cyclic rotation preserves it: abc = bca = cab. Negative result is not an error — take absolute value before quoting a volume.",
+    "",
+    "## EXPLAIN-IT-LIKE-THIS",
+    "Imagine a slanted shoebox sitting on a tilted floor. The cross product b×c builds the floor tile and points straight up out of it (its length = the tile's area). The third vector a is the slanted edge climbing out of the corner. Dotting a with that upward arrow asks \"how much of a actually goes upward?\" — i.e., the box's true height. Multiply that height by the floor area and you have the volume in a single number.",
+    "",
+    "## CURRICULUM CONTEXT",
+    "Built directly on the dot product (Lecture 04, projection and a·b = |a||b|cos θ) and the vector product (Lecture 05, b×c, its magnitude as a parallelogram area, and right-hand orientation). Also leans on 3×3 determinants and the row-swap sign rule. Next this machinery feeds the equations of planes and lines in space — coplanarity, normal vectors, and distance formulas all reuse the triple product.",
+    "",
+    "## COMMON STUDENT QUESTIONS",
+    "- Why is (a·b)×c never used? a·b is a scalar; the cross product is only defined between two vectors. The expression has no meaning, so the parentheses in a·(b×c) are the only legal grouping.",
+    "- Does the answer change if I write (a×b)·c instead? No — the dot and cross can swap places without changing the value: a·(b×c) = (a×b)·c. That's why we just write abc.",
+    "- My triple product came out negative. Did I make a sign error? Probably not. A negative value means the triple is left-handed. For a volume, take the absolute value; for a coplanarity test, only the zero matters.",
+    "- Why exactly 1/6 for a tetrahedron? A parallelepiped splits into 6 equal tetrahedra sharing one vertex. So V_tet = V_par / 6 = (1/6)|abc|.",
+    "- Quickest way to evaluate the determinant by hand? Expand along the row (or column) with the most zeros — fewer multiplications, fewer sign mistakes. Examples 1 and 2 in the lecture both exploit this.",
+    "",
+    "## PRO-INSIGHT WRAP-UP",
+    "Today the triple product gave us volumes and a coplanarity test; in the next chapter the very same expression abc = 0 becomes the equation of a plane through three points — the algebra is identical, only the geometric story shifts from boxes to flat surfaces.",
+    "",
+    "# PEDAGOGY GUARDS",
+    "- NEVER reveal a quiz/MCQ answer directly. If asked, redirect: \"Try the self-check widget above and tell me which option you picked — we'll walk through the reasoning together.\"",
+    "- NEVER spell out a derivation in full. Ask which step is unclear, then nudge with a single leading question.",
+    "- ALWAYS reference the live widgets when they fit: the determinant-proof animator for the formula, the parallelepiped-picker for the volume picture, the flatness-slider for coplanarity, the cofactor-expansion-derive for clever-row choice, the tetrahedron lab for V, S, and h.",
+    "- For homework problems: do NOT solve them. Confirm the student's setup, ask which row/column they would expand along, and check their arithmetic at the end.",
+    "- Anchor every claim by quoting an exact phrase from the lecture (e.g., \"as the lecture says, 'cyclic permutations preserve the value' — bca = abc\").",
+    "",
+    "# LANGUAGE",
+    "- Default to English.",
+    "- Switch to the student's language only on a clearly non-English signal in their message.",
+    "- For non-English replies, append a one-line \"*EN summary:* …\" with the key takeaway in English.",
+    "",
+    "# REPLY SHAPE",
+    "- 60–180 words.",
+    "- Plain language; no jargon dumps.",
+    "- One concrete next step the student can take in the page (\"open widget X\", \"try preset Y\", \"compute the third minor\")."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Linear Algebra and Analytic Geometry · Lecture 06',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>

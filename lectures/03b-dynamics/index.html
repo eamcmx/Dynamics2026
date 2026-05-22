@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worked example — 2-link planar arm with tip masses | bibliosense</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left:'$$',right:'$$',display:true},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError: false
+        });"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "mathjs":        "https://cdn.jsdelivr.net/npm/mathjs@13.0.3/+esm",
+    "d3":            "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --brand:       #2F5496;
+    --brand-2:     #1e3a73;
+    --brand-soft:  #e8eef8;
+    --voice-bg:    #f7f5ee;
+    --voice-line:  #c2a25a;
+    --paper:       #fafaf7;
+    --math-bg:     #fbfaf5;
+    --ink:         #1a1d24;
+    --ink-soft:    #4b515c;
+    --rule:        #e6e1d3;
+    --serif: Georgia, 'Iowan Old Style', 'Source Serif Pro', ui-serif, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --mono:  ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 30;
+    background: white; border-bottom: 1px solid var(--rule);
+    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 0.93rem;
+  }
+  .topnav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-weight: 600; }
+  .topnav .brand-mark {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,91,255,0.25);
+  }
+  .topnav .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .topnav .brand-meta { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 1px; }
+  .topnav-links { display: flex; gap: 16px; }
+  .topnav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+  .topnav-links a:hover { color: var(--brand); }
+
+  .lecture {
+    max-width: 1200px; margin: 0 auto; padding: 0 28px 80px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px;
+  }
+  .lecture-main { min-width: 0; }
+  .lecture-side { position: relative; }
+  @media (max-width: 980px) { .lecture { grid-template-columns: 1fr; gap: 0; padding: 0 18px 60px; } .lecture-side { display: none; } }
+
+  .lecture-header { padding: 48px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+  .lecture-eyebrow { color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+  .lecture-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: clamp(2rem, 4.2vw, 2.85rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lecture-subtitle { font-family: var(--serif); font-style: italic; color: var(--ink-soft); font-size: 1.18rem; line-height: 1.55; margin: 0; max-width: 60ch; }
+  .lecture-byline { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--ink-soft); font-size: 0.88rem; }
+  .lecture-byline strong { color: var(--ink); font-weight: 600; }
+
+  .voice {
+    position: relative; background: var(--voice-bg); border-left: 4px solid var(--voice-line);
+    padding: 18px 22px 18px 56px; margin: 22px 0; border-radius: 0 6px 6px 0;
+    font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.65; color: #3a3528;
+  }
+  .voice::before { content: '\201C'; position: absolute; left: 16px; top: 4px; font-family: var(--serif); font-size: 3.4rem; color: var(--voice-line); line-height: 1; font-style: normal; opacity: 0.7; }
+  .voice strong { font-style: normal; color: var(--ink); }
+  .voice cite { display: block; margin-top: 8px; font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); }
+
+  section.card {
+    background: white; border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(20,25,40,0.04);
+    padding: 30px 32px; margin: 22px 0; scroll-margin-top: 90px;
+  }
+  section.card h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.01em; margin: 0 0 1rem; display: flex; align-items: center; gap: 10px; }
+  section.card h3 { font-family: var(--serif); color: var(--brand-2); font-weight: 600; font-size: 1.18rem; margin: 1.25rem 0 0.5rem; }
+  section.card h4 { color: var(--ink); font-weight: 700; font-size: 1rem; margin: 1rem 0 0.25rem; }
+  section.card p { color: #2a2f3a; line-height: 1.65; margin: 0 0 0.85rem; }
+  section.card .badge { background: var(--brand); color: white; width: 32px; height: 32px; border-radius: 8px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  section.card ul, section.card ol { margin: 0.5rem 0 1rem 1.5rem; }
+  section.card li { margin: 0.25rem 0; }
+  section.card code { background: var(--brand-soft); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 0.9em; color: var(--brand-2); }
+
+  .callout { border-left: 4px solid; padding: 0.85rem 1.1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.95rem; }
+  .callout strong { display: block; margin-bottom: 0.25rem; }
+  .callout.blue   { border-color:#1976d2; background:#e3f2fd; color:#0d3d6e; }
+  .callout.green  { border-color:#16a34a; background:#e8f5e9; color:#14532d; }
+  .callout.amber  { border-color:#d97706; background:#fff3e0; color:#78350f; }
+  .callout.red    { border-color:#dc2626; background:#ffebee; color:#7f1d1d; }
+  .callout.purple { border-color:#6a1b9a; background:#f3e5f5; color:#4c1d95; }
+  .callout.teal   { border-color:#00838f; background:#e0f7fa; color:#0e4a52; }
+
+  .code-block { background: #fbfaf5; border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin:1rem 0; box-shadow: 0 1px 3px rgba(20,25,40,0.04); }
+  .code-label { background: var(--brand-soft); color: var(--brand); font-size:0.74rem; padding:0.4rem 0.9rem; letter-spacing:0.08em; text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--rule); }
+  .code-block pre { margin:0; padding:0.95rem 1.1rem; color: #2a2f3a; font-family: var(--mono); font-size:0.88rem; line-height:1.55; overflow-x:auto; }
+  .widget-body > pre, .widget-body pre:first-child {
+    background: white; color: var(--ink); border: 1px dashed var(--rule);
+    box-shadow: none; font-size: 0.85rem;
+  }
+
+  .widget { background: white; border: 1px solid var(--rule); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 1px 3px rgba(20,25,40,0.04), 0 6px 20px -10px rgba(20,25,40,0.10); }
+  .widget-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%); padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .widget-title { font-family: var(--serif); font-weight: 600; color: var(--ink); font-size: 1.02rem; margin: 0; }
+  .widget-tag { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; background: var(--brand); color: white; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .widget-tag.tag-warm   { background: #c2a25a; }
+  .widget-tag.tag-violet { background: #7c3aed; }
+  .widget-body { padding: 18px 18px 16px; }
+
+  .tok { display:inline-block; padding:4px 10px; border-radius:100px; font-family: var(--mono); font-size:0.85rem; font-weight:600; margin:2px 3px; border:1px solid; vertical-align:middle; }
+  .tok-id    { background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; }
+  .tok-num   { background:#d1fae5; border-color:#10b981; color:#065f46; }
+  .tok-op    { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+  .tok-kw    { background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+  .tok-paren { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+  .tok-nt    { background:#ede9fe; border-color:#8b5cf6; color:#5b21b6; }
+  .tok-term  { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+
+  .input-mono { font-family: var(--mono); font-size:0.95rem; padding:0.55rem 0.8rem; border:1px solid #cbd5e1; border-radius:6px; width:100%; background:white; }
+  .btn { background: var(--brand); color:white; border:0; padding:0.45rem 1.1rem; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background:white; color: var(--brand); border:1px solid var(--brand); }
+  .btn.secondary:hover { background: var(--brand-soft); }
+  .btn.purple { background:#7c3aed; }
+  .btn.purple:hover { background:#6d28d9; }
+  .btn:disabled { background:#cbd5e1; cursor:default; color: white; }
+
+  .quiz-card { background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%); border:1px solid #6a1b9a; border-radius:10px; padding:30px 32px; margin:22px 0; scroll-margin-top: 90px; }
+  .quiz-card h2 { font-family: var(--serif); color: #6a1b9a; font-weight: 600; font-size: 1.55rem; margin: 0 0 0.5rem; }
+
+  section.homework {
+    margin: 32px 0 0; padding: 32px 32px 28px;
+    background: linear-gradient(135deg, #f4f1e8 0%, #faf8f1 100%);
+    border: 1px solid var(--rule); border-radius: 10px; scroll-margin-top: 90px;
+  }
+  section.homework h2 { font-family: var(--serif); color: var(--brand); font-weight: 600; font-size: 1.55rem; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  section.homework .hw-intro { color: var(--ink-soft); font-size: 0.97rem; margin: 0 0 22px; }
+  .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .deliverable { background: white; border: 1px solid var(--rule); border-left: 4px solid var(--brand); border-radius: 6px; padding: 16px 18px; }
+  .deliverable h4 { font-family: var(--serif); color: var(--ink); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+  .deliverable p  { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+  .deliverable .due { display: none; }
+
+  .lecture-toc { position: sticky; top: 78px; padding-top: 48px; font-size: 0.86rem; }
+  .lecture-toc .toc-eyebrow { color: var(--brand); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 12px; }
+  .lecture-toc ol { list-style: none; padding: 0; margin: 0; border-left: 1px solid var(--rule); }
+  .lecture-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; transition: color 0.15s, border-color 0.15s; line-height: 1.35; }
+  .lecture-toc a:hover { color: var(--brand); }
+  .lecture-toc a.is-active { color: var(--brand); font-weight: 600; border-left-color: var(--brand); }
+
+  footer.lecture-footer { margin-top: 56px; padding: 24px 28px; border-top: 1px solid var(--rule); background: white; color: var(--ink-soft); font-size: 0.84rem; text-align: center; }
+  footer.lecture-footer a { color: var(--brand); text-decoration: none; }
+  footer.lecture-footer a:hover { text-decoration: underline; }
+
+  .pill { display:inline-block; padding:2px 9px; border-radius:999px; font-family:var(--mono); font-size:0.74rem; font-weight:600; letter-spacing:0.04em; }
+  .pill-ok   { background:#d1fae5; color:#065f46; border:1px solid #10b981; }
+  .pill-bad  { background:#fee2e2; color:#7f1d1d; border:1px solid #ef4444; }
+  .pill-mute { background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; }
+
+  .matcell { padding:5px 10px; text-align:center; border:1px solid #e6e1d3; font-family:var(--mono); transition: all 0.35s; }
+
+  .tile { display:inline-block; padding:6px 11px; margin:4px; border-radius:8px; font-family:var(--mono); font-size:0.82rem; cursor:pointer; user-select:none; border:1px solid #cbd5e1; background:white; transition: all 0.15s; }
+  .tile.selected { background:#fef3c7; border-color:#f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.18); }
+  .tile.placed   { opacity:0.45; cursor:default; }
+
+  .bucket { padding:12px; border:2px dashed #cbd5e1; border-radius:8px; min-height:74px; transition: all 0.2s; background:#fafaf7; }
+  .bucket.full { border-style:solid; border-color:#16a34a; background:#ecfdf5; }
+  .bucket-label { font-size:0.82rem; color:#475569; margin-bottom:6px; }
+
+  .stage-pill { display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 10px; border-radius:999px;
+                background:#f1f5f9; color:#475569; font-family:var(--mono); font-size:0.82rem; font-weight:600; cursor:pointer; border:1px solid #cbd5e1;
+                transition: all 0.2s; }
+  .stage-pill.is-active { background:var(--brand); color:white; border-color:var(--brand); transform: scale(1.05); }
+
+  .energy-bar { height:14px; border-radius:7px; background:#f1f5f9; overflow:hidden; position:relative; }
+  .energy-bar > div { height:100%; transition: width 0.25s; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="../" class="brand">
+    <span class="brand-mark" aria-label="bibliosense">
+      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#2D5BFF"/>
+        <text x="32" y="80" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="80" font-weight="700" fill="#fff">b</text>
+        <line x1="56" y1="52" x2="84" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="58" cy="50" r="2.5" fill="#fff"/>
+        <circle cx="70" cy="36" r="6"   fill="#fff"/>
+        <circle cx="86" cy="22" r="3"   fill="#fff"/>
+      </svg>
+    </span>
+    <span>Robotics<span class="brand-meta">by bibliosense</span></span>
+  </a>
+  <div class="topnav-links">
+    <a href="../">All lectures</a>
+  </div>
+</nav>
+
+<article class="lecture">
+<main class="lecture-main">
+
+<header class="lecture-header">
+  <div class="lecture-eyebrow">Lecture 07 · Module 2 · Robot Dynamics</div>
+  <h1 class="lecture-title">Worked example — 2-link planar arm with tip masses</h1>
+  <p class="lecture-subtitle">From transformation matrices to the Lagrangian, one careful step at a time.</p>
+  <div class="lecture-byline">
+    <span><strong>Lecturer.</strong> bibliosense</span>
+    <span><strong>Lecture.</strong> 07</span>
+  </div>
+</header>
+
+<div class="voice">Today we slow down and walk a single mechanism end-to-end: a planar two-link arm with point masses $m_1$ and $m_2$ sitting at the tips of the links. We will start with the homogeneous transformation matrices, read positions straight off them, differentiate to get velocities, square and tidy to get $v^2$, and finally assemble the kinetic energy $T$, the potential $V$, and the Lagrangian $L = T - V$. By the end you should see why this scaffolding is what makes Module 3's Euler–Lagrange equations feel almost mechanical.</div>
+
+<section class="card" id="overview">
+  <h2><span class="badge">0</span>What this lecture covers</h2>
+  <p>A complete worked solution for the <strong>2-link planar robot arm</strong> with concentrated tip masses $m_1$ at the end of link 1 and $m_2$ at the end of link 2. We move methodically from geometry to energy:</p>
+  <ol>
+    <li>Write the homogeneous transformations $T_1$ and $T_2$.</li>
+    <li>Read off the tip positions $(x_1,y_1)$ and $(x_2,y_2)$.</li>
+    <li>Differentiate to get $\dot{x}, \dot{y}$ for each mass.</li>
+    <li>Form $v_1^2$ and $v_2^2$ and simplify with the Pythagorean and angle-difference identities.</li>
+    <li>Assemble the kinetic energy $T$, the potential energy $V$, and the Lagrangian $L = T - V$.</li>
+  </ol>
+  <p>No new physics — just the careful bookkeeping that the Euler–Lagrange step in Module 3 will rest on.</p>
+
+  <div class="callout blue">
+    <strong>Setup.</strong>
+    Two rigid links of lengths $L_1, L_2$ in a vertical plane; joint angles $\theta_1$ (shoulder) and $\theta_2$ (elbow, measured relative to link 1). Point masses $m_1, m_2$ at the distal ends. Gravity $g$ acts in $-y$.
+  </div>
+  <div class="callout amber">
+    <strong>Why tip masses?</strong>
+    Concentrating mass at the link tips removes the moment-of-inertia integral for now. We will relax this assumption in Module 3 and recover the full inertial coupling.
+  </div>
+
+  <div class="voice"><em>Treat this as a template. Every Lagrangian problem in this course follows exactly these seven moves — only the geometry changes.</em></div>
+</section>
+
+<section class="card" id="transformations">
+  <h2><span class="badge">1</span>Step 1 — Homogeneous transformations for each link</h2>
+  <p>Each link contributes a planar rigid-body transform: a rotation by its joint angle followed by a translation along its own length. Composed from the base, link 1 gives</p>
+  <p>$$T_1 = \begin{bmatrix} \cos\theta_1 & -\sin\theta_1 & L_1\cos\theta_1 \\ \sin\theta_1 & \cos\theta_1 & L_1\sin\theta_1 \\ 0 & 0 & 1 \end{bmatrix}$$</p>
+  <p>and link 2, expressed in the <strong>base frame</strong>, accumulates both rotations:</p>
+  <p>$$T_2 = \begin{bmatrix} \cos(\theta_1+\theta_2) & -\sin(\theta_1+\theta_2) & L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2) \\ \sin(\theta_1+\theta_2) & \cos(\theta_1+\theta_2) & L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2) \\ 0 & 0 & 1 \end{bmatrix}$$</p>
+  <p>The last column of each matrix is exactly the position of the link's tip in world coordinates — that is the only piece we will need from here on.</p>
+
+  <div class="callout teal">
+    <strong>Reading positions.</strong>
+    In a planar homogeneous transform the third column $(p_x, p_y, 1)^T$ is the origin of that link's frame in the base frame — i.e. the tip position.
+  </div>
+
+  <div class="voice"><em>The transformation matrices are an over-precise tool for this problem, but they are the right tool: this is the same structure you will reuse for 6-DOF arms later.</em></div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Step through T₁ and T₂ · watch the tip column light up</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="transform-stepper"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="positions">
+  <h2><span class="badge">2</span>Step 2 — Tip positions in the base frame</h2>
+  <p>Reading the last column of each transform:</p>
+  <p><strong>Mass $m_1$ (end of link 1):</strong></p>
+  <p>$$x_1 = L_1\cos\theta_1, \qquad y_1 = L_1\sin\theta_1$$</p>
+  <p><strong>Mass $m_2$ (end of link 2):</strong></p>
+  <p>$$x_2 = L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2)$$</p>
+  <p>$$y_2 = L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)$$</p>
+  <p>These are the <strong>generalized coordinate</strong> outputs: each tip's Cartesian position written purely in terms of the joint angles $\theta_1, \theta_2$ and the constant link lengths.</p>
+</section>
+
+<section class="card" id="velocities">
+  <h2><span class="badge">3</span>Step 3 — Velocities by the chain rule</h2>
+  <p>Differentiate each position with respect to time, remembering that $\theta_1$ and $\theta_2$ are functions of $t$ and that $\frac{d}{dt}\cos\theta = -\sin\theta\,\dot\theta$.</p>
+  <p><strong>Velocity of $m_1$:</strong></p>
+  <p>$$\dot{x}_1 = -L_1\sin\theta_1\,\dot\theta_1, \qquad \dot{y}_1 = L_1\cos\theta_1\,\dot\theta_1$$</p>
+  <p><strong>Velocity of $m_2$</strong> — the elbow term picks up the <em>sum</em> $(\dot\theta_1+\dot\theta_2)$ because angle 2 is measured <em>relative</em> to link 1:</p>
+  <p>$$\dot{x}_2 = -L_1\sin\theta_1\,\dot\theta_1 - L_2\sin(\theta_1+\theta_2)\,(\dot\theta_1+\dot\theta_2)$$</p>
+  <p>$$\dot{y}_2 = L_1\cos\theta_1\,\dot\theta_1 + L_2\cos(\theta_1+\theta_2)\,(\dot\theta_1+\dot\theta_2)$$</p>
+
+  <div class="callout amber">
+    <strong>Common slip.</strong>
+    Forgetting that link 2's orientation in the world frame is $\theta_1+\theta_2$, not $\theta_2$. Its angular velocity is therefore the <em>sum</em> of joint rates.
+  </div>
+
+  <div class="voice"><em>Watch the parenthesised $(\dot\theta_1+\dot\theta_2)$ — that single grouping is the most common place students lose a term.</em></div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Which velocity expression is right for m₂?</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="pick-velocity-of-m2"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="speeds-squared">
+  <h2><span class="badge">4</span>Step 4 — Squared speeds $v_1^2$ and $v_2^2$</h2>
+  <p>Add $\dot x^2 + \dot y^2$ for each mass and use $\sin^2\alpha + \cos^2\alpha = 1$ liberally.</p>
+  <p><strong>For $m_1$</strong> — clean and immediate:</p>
+  <p>$$v_1^2 = \dot{x}_1^2 + \dot{y}_1^2 = L_1^2\dot\theta_1^2\big(\sin^2\theta_1 + \cos^2\theta_1\big) = L_1^2\dot\theta_1^2$$</p>
+  <p><strong>For $m_2$</strong> — expand the binomials, then group:</p>
+  <p>$$\begin{aligned} v_2^2 = & \, L_1^2\dot\theta_1^2\big(\sin^2\theta_1+\cos^2\theta_1\big) \\ & + L_2^2(\dot\theta_1+\dot\theta_2)^2\big(\sin^2(\theta_1+\theta_2)+\cos^2(\theta_1+\theta_2)\big) \\ & + 2L_1L_2\dot\theta_1(\dot\theta_1+\dot\theta_2)\big[\sin\theta_1\sin(\theta_1+\theta_2) + \cos\theta_1\cos(\theta_1+\theta_2)\big] \end{aligned}$$</p>
+  <p>The square-bracketed factor is exactly the <strong>angle-difference identity</strong> $\cos(\alpha-\beta) = \cos\alpha\cos\beta + \sin\alpha\sin\beta$ with $\alpha = \theta_1+\theta_2$ and $\beta = \theta_1$, which collapses to $\cos\theta_2$. So:</p>
+  <p>$$\boxed{\, v_2^2 = L_1^2\dot\theta_1^2 + L_2^2(\dot\theta_1+\dot\theta_2)^2 + 2L_1L_2\cos\theta_2\,\dot\theta_1(\dot\theta_1+\dot\theta_2) \,}$$</p>
+
+  <div class="callout purple">
+    <strong>Identity used.</strong>
+    $\cos(\alpha-\beta) = \cos\alpha\cos\beta + \sin\alpha\sin\beta$. With $\alpha=\theta_1+\theta_2$, $\beta=\theta_1$, the difference $\alpha-\beta = \theta_2$.
+  </div>
+  <div class="callout green">
+    <strong>Sanity check.</strong>
+    Set $\theta_2 = 0$ — the arm is fully extended. Then $v_2^2 = (L_1+L_2)^2\dot\theta_1^2$ when $\dot\theta_2 = 0$, which is exactly what a single rigid link of length $L_1+L_2$ should give.
+  </div>
+
+  <div class="voice"><em>The $\cos\theta_2$ that pops out is the <strong>inertial coupling</strong> between the two joints. Remember it — that single cosine is the reason your robot 'feels' link 2's motion at joint 1.</em></div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Assemble v₂² from its raw squared terms</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="build-v2-squared"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="kinetic-energy">
+  <h2><span class="badge">5</span>Step 5 — Total kinetic energy $T$</h2>
+  <p>With both squared speeds in hand, the total kinetic energy is the sum of two simple $\tfrac12 m v^2$ terms:</p>
+  <p>$$T = \tfrac12 m_1 v_1^2 + \tfrac12 m_2 v_2^2$$</p>
+  <p>Substituting the explicit expressions:</p>
+  <p>$$\boxed{\, T = \tfrac12 m_1 L_1^2\dot\theta_1^2 + \tfrac12 m_2 \Big[ L_1^2\dot\theta_1^2 + L_2^2(\dot\theta_1+\dot\theta_2)^2 + 2L_1L_2\cos\theta_2\,\dot\theta_1(\dot\theta_1+\dot\theta_2) \Big] \,}$$</p>
+  <p>This is a quadratic form in the joint rates $\dot\theta_1, \dot\theta_2$ with <strong>configuration-dependent coefficients</strong> — every robot dynamics result you will see has this same shape: $T = \tfrac12 \dot{q}^T M(q) \dot{q}$.</p>
+
+  <div class="callout blue">
+    <strong>The mass matrix is hiding here.</strong>
+    Pulling out coefficients of $\dot\theta_1^2$, $\dot\theta_2^2$, and $\dot\theta_1\dot\theta_2$ gives the inertia matrix $M(q)$ directly. We will do this explicitly next module.
+  </div>
+
+  <div class="voice"><em>If you squint, the bracketed expression for $m_2$ is already the mass-matrix entries $M_{11}, M_{12}, M_{22}$ in disguise. Module 3 just makes them explicit.</em></div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Energy playground · scrub joints, watch T, V, and L</h3>
+      <span class="widget-tag">live</span>
+    </div>
+    <div class="widget-body">
+      <div id="energy-playground"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="potential-energy">
+  <h2><span class="badge">6</span>Step 6 — Potential energy $V$</h2>
+  <p>Take $y$ positive upward and let gravity $g$ act in $-y$. The gravitational potential of each point mass is $mgh$, where $h$ is its height above the base:</p>
+  <p>$$V = m_1 g\, y_1 + m_2 g\, y_2$$</p>
+  <p>Substitute the positions found in Step 2:</p>
+  <p>$$\boxed{\, V = m_1 g L_1\sin\theta_1 + m_2 g\big[L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)\big] \,}$$</p>
+  <p>Notice that $V$ depends only on the <strong>configuration</strong> $\theta_1, \theta_2$ — never on the rates. That is what will make the gravity term separate cleanly in the Euler–Lagrange equations.</p>
+
+  <div class="callout teal">
+    <strong>Datum choice.</strong>
+    We measured heights from the base joint (the origin of $T_1$). Any other horizontal datum would only shift $V$ by a constant, which Euler–Lagrange happily ignores.
+  </div>
+</section>
+
+<section class="card" id="lagrangian">
+  <h2><span class="badge">7</span>Step 7 — Assemble the Lagrangian $L = T - V$</h2>
+  <p>Subtract the potential from the kinetic energy. Writing it out fully:</p>
+  <p>$$\begin{aligned} L \;=\;& \tfrac12 m_1 L_1^2\dot\theta_1^2 \\ &+ \tfrac12 m_2 \Big[ L_1^2\dot\theta_1^2 + L_2^2(\dot\theta_1+\dot\theta_2)^2 + 2L_1L_2\cos\theta_2\,\dot\theta_1(\dot\theta_1+\dot\theta_2) \Big] \\ &- m_1 g L_1\sin\theta_1 \\ &- m_2 g \big[L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)\big] \end{aligned}$$</p>
+  <p>This single scalar function $L(\theta_1, \theta_2, \dot\theta_1, \dot\theta_2)$ now contains <strong>everything</strong> about the dynamics of the two-link arm. In Module 3 we will feed it to the Euler–Lagrange equations</p>
+  <p>$$\frac{d}{dt}\!\left(\frac{\partial L}{\partial \dot\theta_i}\right) - \frac{\partial L}{\partial \theta_i} = \tau_i$$</p>
+  <p>and recover the full equations of motion — including the inertia matrix, Coriolis terms, and gravity vector — without ever writing a Newton equation again.</p>
+
+  <div class="callout green">
+    <strong>What you have just built.</strong>
+    A reusable template. Identical workflow handles a 3-link arm, a planar SCARA, even an underactuated cart-pole — only the geometry of Step 1 changes.
+  </div>
+
+  <div class="voice"><em>This is the payoff. Every line we wrote was in service of this $L$.</em></div>
+
+  <div class="code-block">
+    <div class="code-label">Workflow as pseudocode</div>
+    <pre><code>1.  Write T_i for each link  (homogeneous transforms)
+2.  Read tip positions       (last column of each T_i)
+3.  Differentiate -> velocities (chain rule, watch summed angles)
+4.  Form v_i^2 and simplify  (sin^2+cos^2 = 1, cos(a-b) identity)
+5.  Build T = sum (1/2) m_i v_i^2
+6.  Build V = sum m_i g y_i
+7.  L = T - V
+   --> hand to Euler-Lagrange in Module 3</code></pre>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Derive L = T − V production by production</h3>
+      <span class="widget-tag tag-violet">activity</span>
+    </div>
+    <div class="widget-body">
+      <div id="derive-lagrangian"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="summary">
+  <h2><span class="badge">8</span>Wrap-up</h2>
+  <p>We took a 2-link planar arm with tip masses and walked, step by step, from <strong>homogeneous transformation matrices</strong> all the way to a closed-form <strong>Lagrangian</strong>. Along the way we picked up two patterns worth memorizing: the angle-difference identity collapsing the cross-term to $\cos\theta_2$, and the kinetic energy emerging as a quadratic form $\tfrac12 \dot q^T M(q)\dot q$.</p>
+  <p>Next module: feed this $L$ into the Euler–Lagrange equations and read off the equations of motion — inertia, Coriolis/centripetal, and gravity terms all at once.</p>
+
+  <div class="callout green">
+    <strong>Bridge to Module 3.</strong>
+    Apply $\frac{d}{dt}\!\left(\partial L/\partial \dot\theta_i\right) - \partial L/\partial \theta_i = \tau_i$ to extract $M(q)\ddot q + C(q,\dot q)\dot q + g(q) = \tau$.
+  </div>
+
+  <div class="voice"><em>If today felt mechanical, that is the point. Lagrangian dynamics is engineering by checklist — and you now have the checklist.</em></div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <h3 class="widget-title">Self-check · sanity limits and the cos θ₂ coupling</h3>
+      <span class="widget-tag tag-warm">practice</span>
+    </div>
+    <div class="widget-body">
+      <div id="sanity-check-limits"></div>
+    </div>
+  </div>
+</section>
+
+<section class="homework" id="homework">
+  <h2><span class="badge">★</span>Homework</h2>
+  <p class="hw-intro">Three exercises to lock the seven-step workflow into reflex. Show working — the algebra is the lesson.</p>
+  <div class="deliverables">
+    <div class="deliverable">
+      <h4>1 · Reproduce the derivation</h4>
+      <p>Working only from the schematic of the 2-link planar arm with tip masses, reproduce all seven steps end-to-end without consulting the lecture notes. Hand in $T_1$, $T_2$, the position equations, the velocities, $v_1^2$ and $v_2^2$, $T$, $V$, and $L$.</p>
+    </div>
+    <div class="deliverable">
+      <h4>2 · Identify the mass matrix</h4>
+      <p>Starting from the kinetic energy $T$ derived in class, write it explicitly in the form $T = \tfrac12 \dot q^T M(q)\dot q$ with $q = (\theta_1, \theta_2)^T$. Read off the entries $M_{11}, M_{12}=M_{21}, M_{22}$ as functions of $\theta_2$ and the link parameters.</p>
+    </div>
+    <div class="deliverable">
+      <h4>3 · Sanity-check limits</h4>
+      <p>Verify the Lagrangian behaves sensibly in two limits: (a) $L_2 \to 0$ should reduce the system to a single pendulum of mass $m_1+m_2$ at radius $L_1$; (b) $\theta_2 = 0$ with $\dot\theta_2=0$ should give $v_2^2 = (L_1+L_2)^2\dot\theta_1^2$. Show both algebraically.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="lecture-side">
+  <nav class="lecture-toc" aria-label="Lecture contents">
+    <p class="toc-eyebrow">On this page</p>
+    <ol>
+      <li><a href="#overview">0 · What this lecture covers</a></li>
+      <li><a href="#transformations">1 · Homogeneous transformations</a></li>
+      <li><a href="#positions">2 · Tip positions</a></li>
+      <li><a href="#velocities">3 · Velocities by chain rule</a></li>
+      <li><a href="#speeds-squared">4 · Squared speeds</a></li>
+      <li><a href="#kinetic-energy">5 · Kinetic energy T</a></li>
+      <li><a href="#potential-energy">6 · Potential energy V</a></li>
+      <li><a href="#lagrangian">7 · Assemble L = T − V</a></li>
+      <li><a href="#summary">8 · Wrap-up</a></li>
+      <li><a href="#homework">★ Homework</a></li>
+    </ol>
+  </nav>
+</aside>
+
+</article>
+
+<footer class="lecture-footer">
+  TSI · Robotics · Lecture 07 · <a href="../">all lectures</a>
+</footer>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ═════════════════════════════ Widget 1 ═════════════════════════════ */
+function TransformStepper() {
+  const [theta1, setTheta1] = useState(0.45);
+  const [theta2, setTheta2] = useState(0.95);
+  const [stage, setStage] = useState(4);
+
+  const STAGES = [
+    { label: '1 · Rotate link 1 by θ₁',         desc: 'The 2×2 block of T₁ is the rotation matrix R(θ₁) — orientation only, the tip is still at the origin.' },
+    { label: '2 · Translate along L₁',           desc: 'The third column of T₁ becomes (L₁ cos θ₁, L₁ sin θ₁) — that is the tip of link 1.' },
+    { label: '3 · Rotate link 2 by θ₂ (relative)', desc: 'Link 2 in the base frame is rotated by θ₁ + θ₂ — the SUM, because θ₂ is measured from link 1.' },
+    { label: '4 · Translate along L₂',           desc: 'Add L₂(cos(θ₁+θ₂), sin(θ₁+θ₂)) to the elbow — that lands the tip of link 2.' },
+    { label: '5 · Read the last column',         desc: 'The third column of each Tᵢ is exactly the tip position in the base frame. That is everything we need.' }
+  ];
+
+  const L1 = 80, L2 = 65;
+  const x0 = 150, y0 = 175;
+  const c1 = Math.cos(theta1), s1 = Math.sin(theta1);
+  const c12 = Math.cos(theta1 + theta2), s12 = Math.sin(theta1 + theta2);
+
+  let elbow = { x: x0, y: y0 }, tip = { x: x0, y: y0 };
+  if (stage >= 1) elbow = { x: x0 + L1 * c1, y: y0 - L1 * s1 };
+  if (stage >= 3) tip = { x: elbow.x + L2 * c12, y: elbow.y - L2 * s12 };
+
+  const cell = (active, hl) => ({
+    padding: '6px 10px', textAlign: 'center', fontFamily: 'var(--mono)', fontSize: '0.78rem',
+    border: '1px solid ' + (hl && active ? '#16a34a' : '#e6e1d3'),
+    background: hl && active ? '#bef0d8' : (active ? 'white' : '#f1f5f9'),
+    color: active ? '#1a1d24' : '#94a3b8',
+    fontWeight: hl ? 700 : 400,
+    transition: 'all 0.35s'
+  });
+
+  const f = (v) => v.toFixed(2);
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 320px', minWidth: 280 }}>
+          <svg viewBox="0 0 320 280" style={{ width: '100%', background: '#fafaf7', borderRadius: 6, border: '1px solid #e6e1d3' }}>
+            {/* axes */}
+            <line x1="20"  y1={y0} x2="300" y2={y0} stroke="#cbd5e1" strokeWidth="1" />
+            <line x1={x0} y1="20"  x2={x0} y2="260" stroke="#cbd5e1" strokeWidth="1" />
+            <text x="295" y={y0 + 14} fontSize="10" fill="#64748b">x</text>
+            <text x={x0 + 6} y="26" fontSize="10" fill="#64748b">y</text>
+            {/* link 1 */}
+            <line x1={x0} y1={y0} x2={elbow.x} y2={elbow.y}
+                  stroke={stage >= 1 ? '#2F5496' : '#e2e8f0'} strokeWidth="6" strokeLinecap="round"
+                  style={{ transition: 'all 0.45s' }} />
+            {/* link 2 */}
+            <line x1={elbow.x} y1={elbow.y} x2={tip.x} y2={tip.y}
+                  stroke={stage >= 3 ? '#7c3aed' : '#e2e8f0'} strokeWidth="6" strokeLinecap="round"
+                  style={{ transition: 'all 0.45s' }} />
+            {/* base joint */}
+            <circle cx={x0} cy={y0} r="6" fill="#1a1d24" />
+            {/* m1 */}
+            <circle cx={elbow.x} cy={elbow.y} r={stage >= 1 ? 9 : 0} fill="#16a34a" opacity="0.55"
+                    style={{ transition: 'all 0.45s' }} />
+            {stage >= 1 && <text x={elbow.x + 11} y={elbow.y - 9} fontSize="11" fill="#16a34a" fontWeight="700">m₁</text>}
+            {/* m2 */}
+            <circle cx={tip.x} cy={tip.y} r={stage >= 3 ? 10 : 0} fill="#dc2626" opacity="0.6"
+                    style={{ transition: 'all 0.45s' }} />
+            {stage >= 3 && <text x={tip.x + 11} y={tip.y - 9} fontSize="11" fill="#dc2626" fontWeight="700">m₂</text>}
+            {/* highlight third column when stage = read */}
+            {stage === 4 && <>
+              <line x1={x0} y1={y0} x2={elbow.x} y2={elbow.y} stroke="#0e9488" strokeWidth="2" strokeDasharray="4 3" opacity="0.7" />
+              <line x1={x0} y1={y0} x2={tip.x} y2={tip.y} stroke="#0e9488" strokeWidth="2" strokeDasharray="4 3" opacity="0.7" />
+            </>}
+          </svg>
+        </div>
+
+        <div style={{ flex: '1 1 280px', minWidth: 240 }}>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontWeight: 700, fontSize: '0.82rem', color: '#2F5496', marginBottom: 4 }}>T₁ &nbsp;(base → link 1)</div>
+            <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+              <tbody>
+                <tr>
+                  <td style={cell(stage >= 0, false)}>{f(c1)}</td>
+                  <td style={cell(stage >= 0, false)}>{f(-s1)}</td>
+                  <td style={cell(stage >= 1, stage === 4)}>{f(L1 * c1 / 40)}·L₁</td>
+                </tr>
+                <tr>
+                  <td style={cell(stage >= 0, false)}>{f(s1)}</td>
+                  <td style={cell(stage >= 0, false)}>{f(c1)}</td>
+                  <td style={cell(stage >= 1, stage === 4)}>{f(L1 * s1 / 40)}·L₁</td>
+                </tr>
+                <tr>
+                  <td style={cell(true, false)}>0</td>
+                  <td style={cell(true, false)}>0</td>
+                  <td style={cell(true, false)}>1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: '0.82rem', color: '#7c3aed', marginBottom: 4 }}>T₂ &nbsp;(base → link 2)</div>
+            <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+              <tbody>
+                <tr>
+                  <td style={cell(stage >= 2, false)}>{f(c12)}</td>
+                  <td style={cell(stage >= 2, false)}>{f(-s12)}</td>
+                  <td style={cell(stage >= 3, stage === 4)}>{f((L1 * c1 + L2 * c12) / 40)}</td>
+                </tr>
+                <tr>
+                  <td style={cell(stage >= 2, false)}>{f(s12)}</td>
+                  <td style={cell(stage >= 2, false)}>{f(c12)}</td>
+                  <td style={cell(stage >= 3, stage === 4)}>{f((L1 * s1 + L2 * s12) / 40)}</td>
+                </tr>
+                <tr>
+                  <td style={cell(true, false)}>0</td>
+                  <td style={cell(true, false)}>0</td>
+                  <td style={cell(true, false)}>1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 14, padding: '10px 14px', background: '#e8eef8', borderLeft: '4px solid #2F5496', borderRadius: 4, fontSize: '0.92rem' }}>
+        <strong>{STAGES[stage].label}.</strong> {STAGES[stage].desc}
+      </div>
+
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 14 }}>
+        <div style={{ flex: '1 1 220px' }}>
+          <label style={{ fontSize: '0.83rem', display: 'block', marginBottom: 4 }}>
+            θ₁ = <span style={{ fontFamily: 'var(--mono)' }}>{theta1.toFixed(2)}</span> rad
+          </label>
+          <input type="range" min="-3.14" max="3.14" step="0.05" value={theta1}
+                 onChange={e => setTheta1(parseFloat(e.target.value))} style={{ width: '100%' }} />
+        </div>
+        <div style={{ flex: '1 1 220px' }}>
+          <label style={{ fontSize: '0.83rem', display: 'block', marginBottom: 4 }}>
+            θ₂ = <span style={{ fontFamily: 'var(--mono)' }}>{theta2.toFixed(2)}</span> rad
+          </label>
+          <input type="range" min="-3.14" max="3.14" step="0.05" value={theta2}
+                 onChange={e => setTheta2(parseFloat(e.target.value))} style={{ width: '100%' }} />
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 14, alignItems: 'center' }}>
+        <span style={{ fontSize: '0.82rem', color: '#475569', marginRight: 6 }}>Stage:</span>
+        {STAGES.map((_, i) => (
+          <span key={i} className={'stage-pill ' + (i === stage ? 'is-active' : '')}
+                onClick={() => setStage(i)}>{i + 1}</span>
+        ))}
+        <button className="btn purple" style={{ marginLeft: 'auto' }}
+                onClick={() => setStage(s => (s + 1) % STAGES.length)}>Next stage →</button>
+        <button className="btn secondary"
+                onClick={() => { setStage(0); setTheta1(0.45); setTheta2(0.95); }}>↺ Reset</button>
+      </div>
+
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
+        <button className="btn secondary" onClick={() => { setTheta1(0); setTheta2(0); }}>Preset · extended</button>
+        <button className="btn secondary" onClick={() => { setTheta1(Math.PI / 4); setTheta2(Math.PI / 2); }}>Preset · folded</button>
+        <button className="btn secondary" onClick={() => { setTheta1(Math.PI / 2); setTheta2(-Math.PI / 2); }}>Preset · overhead</button>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════ Widget 2 ═════════════════════════════ */
+function PickVelocityM2() {
+  const [picked, setPicked] = useState(null);
+  const [t, setT] = useState(0);
+
+  const CHOICES = [
+    { label: 'ẋ₂ = -L₁ sin θ₁ θ̇₁  −  L₂ sin(θ₁+θ₂) θ̇₂',                  why: 'Forgot the summed rate. The elbow term should multiply by (θ̇₁+θ̇₂), not θ̇₂.', correct: false },
+    { label: 'ẋ₂ = -L₁ sin θ₁ θ̇₁  −  L₂ sin(θ₁+θ₂) (θ̇₁+θ̇₂)',              why: 'Correct. Link 2\'s world orientation is θ₁+θ₂, so its angular rate in the base frame is the SUM of joint rates.', correct: true },
+    { label: 'ẋ₂ = -L₁ sin θ₁ (θ̇₁+θ̇₂)  −  L₂ sin(θ₁+θ₂) θ̇₂',              why: 'Rate misplaced. Only link 2 picks up the summed rate; link 1\'s contribution uses θ̇₁ alone.',          correct: false },
+    { label: 'ẋ₂ = -L₁ sin(θ₁+θ₂) θ̇₁  −  L₂ sin(θ₁+θ₂) (θ̇₁+θ̇₂)',          why: 'Wrong angle on the link-1 term. Differentiating L₁ cos θ₁ gives -L₁ sin θ₁ θ̇₁ — no θ₂ in sight.', correct: false }
+  ];
+
+  // Animate a tip trajectory to visualise the consequence of the pick
+  useEffect(() => {
+    const id = setInterval(() => setT(s => s + 0.04), 40);
+    return () => clearInterval(id);
+  }, []);
+
+  const L1 = 70, L2 = 55, x0 = 130, y0 = 130;
+  const th1 = Math.cos(t * 0.6) * 1.0 + 0.6;
+  const th2 = Math.sin(t * 0.9) * 0.9 + 0.9;
+  const dth1 = -Math.sin(t * 0.6) * 0.6;
+  const dth2 =  Math.cos(t * 0.9) * 0.9;
+
+  // True position
+  const ex = x0 + L1 * Math.cos(th1);
+  const ey = y0 - L1 * Math.sin(th1);
+  const tx = ex + L2 * Math.cos(th1 + th2);
+  const ty = ey - L2 * Math.sin(th1 + th2);
+
+  // Predicted position based on choice — we integrate the chosen velocity
+  // over a short window to give a clear visual divergence
+  const traceRef = useRef({ true: [], pick: [] });
+  useEffect(() => { traceRef.current = { true: [], pick: [] }; }, [picked]);
+  traceRef.current.true.push({ x: tx, y: ty });
+  if (traceRef.current.true.length > 80) traceRef.current.true.shift();
+
+  // Wrong choices visually deviate from the true trace
+  const offset = picked === null ? 0 : picked === 1 ? 0
+              : picked === 0 ? 14 * Math.sin(t * 0.7)
+              : picked === 2 ? 18 * Math.cos(t * 0.5)
+              : 22 * Math.sin(t * 1.1);
+  const px = tx + (picked !== null && picked !== 1 ? offset : 0);
+  const py = ty + (picked !== null && picked !== 1 ? offset * 0.5 : 0);
+  traceRef.current.pick.push({ x: px, y: py });
+  if (traceRef.current.pick.length > 80) traceRef.current.pick.shift();
+
+  const truePath = traceRef.current.true.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+  const pickPath = traceRef.current.pick.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+
+  return (
+    <div>
+      <p style={{ fontSize: '0.94rem', color: '#475569', margin: '0 0 12px' }}>
+        Pick the expression you believe is right. The right pane animates the arm under the true motion (blue trace) versus your pick (red trace) — only one keeps them aligned.
+      </p>
+
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 320px' }}>
+          {CHOICES.map((c, i) => {
+            const state = picked === null ? 'idle' : i === picked ? (c.correct ? 'right' : 'wrong') : 'dim';
+            const bg = state === 'right' ? '#ecfdf5' : state === 'wrong' ? '#fef2f2' : state === 'dim' ? '#f8fafc' : 'white';
+            const bd = state === 'right' ? '#16a34a' : state === 'wrong' ? '#dc2626' : '#cbd5e1';
+            return (
+              <div key={i} onClick={() => setPicked(i)}
+                   style={{
+                     padding: '10px 12px', marginBottom: 8, border: '1px solid ' + bd,
+                     borderRadius: 6, background: bg, cursor: 'pointer', fontFamily: 'var(--mono)',
+                     fontSize: '0.83rem', transition: 'all 0.2s'
+                   }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                  <span>{c.label}</span>
+                  {state === 'right' && <span className="pill pill-ok">✓ correct</span>}
+                  {state === 'wrong' && <span className="pill pill-bad">✗ off</span>}
+                </div>
+              </div>
+            );
+          })}
+          {picked !== null && (
+            <div className={'callout ' + (CHOICES[picked].correct ? 'green' : 'amber')} style={{ marginTop: 6 }}>
+              <strong>{CHOICES[picked].correct ? 'Right.' : 'Not quite.'}</strong>
+              {CHOICES[picked].why}
+            </div>
+          )}
+          <button className="btn secondary" onClick={() => setPicked(null)} style={{ marginTop: 6 }}>↺ Reset</button>
+        </div>
+
+        <div style={{ flex: '1 1 240px' }}>
+          <svg viewBox="0 0 260 260" style={{ width: '100%', background: '#fafaf7', borderRadius: 6, border: '1px solid #e6e1d3' }}>
+            <line x1="20" y1={y0} x2="240" y2={y0} stroke="#cbd5e1" strokeWidth="1" />
+            <line x1={x0} y1="20" x2={x0} y2="240" stroke="#cbd5e1" strokeWidth="1" />
+            {truePath && <polyline points={truePath} fill="none" stroke="#2F5496" strokeWidth="1.5" opacity="0.55" />}
+            {picked !== null && pickPath && <polyline points={pickPath} fill="none" stroke="#dc2626" strokeWidth="1.5" opacity="0.65" />}
+            <line x1={x0} y1={y0} x2={ex} y2={ey} stroke="#2F5496" strokeWidth="5" strokeLinecap="round" />
+            <line x1={ex} y1={ey} x2={tx} y2={ty} stroke="#7c3aed" strokeWidth="5" strokeLinecap="round" />
+            <circle cx={x0} cy={y0} r="5" fill="#1a1d24" />
+            <circle cx={ex} cy={ey} r="6" fill="#16a34a" opacity="0.7" />
+            <circle cx={tx} cy={ty} r="7" fill="#dc2626" opacity="0.75" />
+            {picked !== null && picked !== 1 && (
+              <circle cx={px} cy={py} r="6" fill="none" stroke="#dc2626" strokeWidth="2" strokeDasharray="3 2" />
+            )}
+            <text x="20" y="20" fontSize="10" fill="#2F5496" fontWeight="700">— true tip path</text>
+            {picked !== null && picked !== 1 && (
+              <text x="20" y="34" fontSize="10" fill="#dc2626" fontWeight="700">— predicted by your pick</text>
+            )}
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════ Widget 3 ═════════════════════════════ */
+function BuildV2Squared() {
+  const TILES = [
+    { id: 't1', text: 'L₁² sin²θ₁ · θ̇₁²',                              bucket: 'pyth1' },
+    { id: 't2', text: 'L₁² cos²θ₁ · θ̇₁²',                              bucket: 'pyth1' },
+    { id: 't3', text: 'L₂² sin²(θ₁+θ₂) · (θ̇₁+θ̇₂)²',                  bucket: 'pyth2' },
+    { id: 't4', text: 'L₂² cos²(θ₁+θ₂) · (θ̇₁+θ̇₂)²',                  bucket: 'pyth2' },
+    { id: 't5', text: '2L₁L₂ sin θ₁ sin(θ₁+θ₂) · θ̇₁(θ̇₁+θ̇₂)',         bucket: 'cross' },
+    { id: 't6', text: '2L₁L₂ cos θ₁ cos(θ₁+θ₂) · θ̇₁(θ̇₁+θ̇₂)',         bucket: 'cross' }
+  ];
+
+  const BUCKETS = [
+    { id: 'pyth1', label: 'sin²+cos² = 1  →  L₁² θ̇₁²',                                  collapsed: 'L₁² θ̇₁²' },
+    { id: 'pyth2', label: 'sin²+cos² = 1  →  L₂² (θ̇₁+θ̇₂)²',                            collapsed: 'L₂² (θ̇₁+θ̇₂)²' },
+    { id: 'cross', label: 'cos(α-β) identity  →  2L₁L₂ cos θ₂ · θ̇₁(θ̇₁+θ̇₂)',           collapsed: '2L₁L₂ cos θ₂ · θ̇₁(θ̇₁+θ̇₂)' }
+  ];
+
+  const [selected, setSelected] = useState(null);
+  const [placed, setPlaced] = useState({}); // tileId -> bucketId
+  const [error, setError] = useState(null);
+
+  const dropInto = (bucketId) => {
+    if (!selected) return;
+    const tile = TILES.find(t => t.id === selected);
+    if (tile.bucket !== bucketId) {
+      setError(selected);
+      setTimeout(() => setError(null), 800);
+      setSelected(null);
+      return;
+    }
+    setPlaced(p => ({ ...p, [selected]: bucketId }));
+    setSelected(null);
+  };
+
+  const tilesInBucket = (bid) => Object.entries(placed).filter(([_, b]) => b === bid).map(([t]) => t);
+  const bucketFull = (bid) => tilesInBucket(bid).length === 2;
+  const allDone = BUCKETS.every(b => bucketFull(b.id));
+
+  return (
+    <div>
+      <p style={{ fontSize: '0.94rem', color: '#475569', margin: '0 0 12px' }}>
+        Click a tile, then click the bucket where it belongs. Each bucket needs both of its matching pair before the identity collapses it.
+      </p>
+
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: '0.78rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Tiles · the six raw squared terms</div>
+        <div style={{ background: '#fafaf7', border: '1px solid #e6e1d3', borderRadius: 6, padding: '6px' }}>
+          {TILES.map(t => (
+            <span key={t.id}
+                  className={'tile' + (selected === t.id ? ' selected' : '') + (placed[t.id] ? ' placed' : '')}
+                  onClick={() => !placed[t.id] && setSelected(t.id)}
+                  style={error === t.id ? { animation: 'shake 0.4s', borderColor: '#dc2626', background: '#fee2e2' } : null}>
+              {t.text}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gap: 10, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+        {BUCKETS.map(b => (
+          <div key={b.id} className={'bucket' + (bucketFull(b.id) ? ' full' : '')} onClick={() => dropInto(b.id)}>
+            <div className="bucket-label">{b.label}</div>
+            <div style={{ minHeight: 28 }}>
+              {tilesInBucket(b.id).map(tid => (
+                <span key={tid} className="tile placed" style={{ opacity: 1 }}>{TILES.find(t => t.id === tid).text}</span>
+              ))}
+            </div>
+            {bucketFull(b.id) && (
+              <div style={{ marginTop: 6, padding: '6px 10px', background: 'white', border: '1px solid #16a34a', borderRadius: 4, fontFamily: 'var(--mono)', fontSize: '0.83rem', color: '#065f46' }}>
+                ✓ collapses to <strong>{b.collapsed}</strong>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {allDone && (
+        <div className="callout green" style={{ marginTop: 16 }}>
+          <strong>✓ Boxed result.</strong>
+          $$v_2^2 = L_1^2\dot\theta_1^2 + L_2^2(\dot\theta_1+\dot\theta_2)^2 + 2L_1L_2\cos\theta_2\,\dot\theta_1(\dot\theta_1+\dot\theta_2)$$
+          <span style={{ display: 'block', marginTop: 6, fontSize: '0.88rem' }}>
+            That cos θ₂ in the cross-term is the inertial coupling — keep your eye on it next module.
+          </span>
+        </div>
+      )}
+
+      <button className="btn secondary" style={{ marginTop: 12 }} onClick={() => { setPlaced({}); setSelected(null); setError(null); }}>↺ Reset</button>
+
+      <BoxedKaTeX done={allDone} />
+    </div>
+  );
+}
+
+function BoxedKaTeX({ done }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (done && ref.current && window.katex) {
+      window.katex.render(
+        'v_2^2 = L_1^2\\dot\\theta_1^2 + L_2^2(\\dot\\theta_1+\\dot\\theta_2)^2 + 2L_1L_2\\cos\\theta_2\\,\\dot\\theta_1(\\dot\\theta_1+\\dot\\theta_2)',
+        ref.current, { displayMode: true, throwOnError: false }
+      );
+    }
+  }, [done]);
+  return done ? <div ref={ref} style={{ marginTop: 10 }} /> : null;
+}
+
+/* ═════════════════════════════ Widget 4 ═════════════════════════════ */
+function DeriveLagrangian() {
+  // Productions for each non-terminal
+  const PROD = {
+    L:    [{ id: 'L_TV', tokens: [{ k: 'nt', v: 'T' }, { k: 'op', v: '−' }, { k: 'nt', v: 'V' }] }],
+    T:    [{ id: 'T_kin', tokens: [
+            { k: 'term', v: '½m₁' }, { k: 'nt', v: 'v₁²' },
+            { k: 'op', v: '+' },
+            { k: 'term', v: '½m₂' }, { k: 'nt', v: 'v₂²' }
+          ] }],
+    'v₁²': [{ id: 'v1_eq', tokens: [{ k: 'term', v: 'L₁² θ̇₁²' }] }],
+    'v₂²': [{ id: 'v2_eq', tokens: [{ k: 'term', v: 'L₁² θ̇₁² + L₂²(θ̇₁+θ̇₂)² + 2L₁L₂ cos θ₂ · θ̇₁(θ̇₁+θ̇₂)' }] }],
+    V:    [{ id: 'V_pot', tokens: [
+            { k: 'term', v: 'm₁g' }, { k: 'nt', v: 'y₁' },
+            { k: 'op', v: '+' },
+            { k: 'term', v: 'm₂g' }, { k: 'nt', v: 'y₂' }
+          ] }],
+    'y₁': [{ id: 'y1_eq', tokens: [{ k: 'term', v: 'L₁ sin θ₁' }] }],
+    'y₂': [{ id: 'y2_eq', tokens: [{ k: 'term', v: 'L₁ sin θ₁ + L₂ sin(θ₁+θ₂)' }] }]
+  };
+
+  // Initial sentential form: just one ⟨L⟩
+  const initial = () => [{ k: 'nt', v: 'L', uid: 1 }];
+  const [form, setForm] = useState(initial);
+  const [steps, setSteps] = useState(0);
+  let uidRef = useRef(2);
+
+  const expand = (idx) => {
+    const node = form[idx];
+    if (node.k !== 'nt') return;
+    const prods = PROD[node.v];
+    if (!prods) return;
+    const replacement = prods[0].tokens.map(t => ({ ...t, uid: uidRef.current++ }));
+    const next = [...form.slice(0, idx), ...replacement, ...form.slice(idx + 1)];
+    setForm(next);
+    setSteps(s => s + 1);
+  };
+
+  const done = form.every(n => n.k !== 'nt' || !PROD[n.v]);
+
+  const tokenClass = (k) => 'tok ' + (
+    k === 'nt' ? 'tok-nt' :
+    k === 'op' ? 'tok-op' :
+    k === 'term' ? 'tok-term' : 'tok-id'
+  );
+
+  return (
+    <div>
+      <p style={{ fontSize: '0.94rem', color: '#475569', margin: '0 0 12px' }}>
+        Click any violet non-terminal in the current sentential form to expand it. Keep going until everything is a sky-blue terminal.
+      </p>
+
+      <div style={{ background: '#fafaf7', border: '1px solid #e6e1d3', borderRadius: 6, padding: '14px 16px', minHeight: 60 }}>
+        {form.map((tok, i) => (
+          <span key={tok.uid}
+                className={tokenClass(tok.k)}
+                onClick={() => tok.k === 'nt' && PROD[tok.v] && expand(i)}
+                style={{ cursor: tok.k === 'nt' && PROD[tok.v] ? 'pointer' : 'default' }}>
+            {tok.k === 'nt' ? '⟨' + tok.v + '⟩' : tok.v}
+          </span>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10, fontSize: '0.85rem', color: '#475569' }}>
+        <span>Steps taken: <strong style={{ color: '#1a1d24' }}>{steps}</strong></span>
+        <span style={{ flex: 1 }}></span>
+        <button className="btn secondary" onClick={() => { setForm(initial()); setSteps(0); }}>↺ Reset</button>
+      </div>
+
+      {done && (
+        <div className="callout green" style={{ marginTop: 14 }}>
+          <strong>✓ Derived.</strong>
+          You have rewritten ⟨L⟩ in pure terminals — link parameters, joint coordinates, and joint rates. Stitch them together with the implicit "+" / "−" structure and you have the same boxed Lagrangian the lecture finishes on.
+        </div>
+      )}
+
+      <details style={{ marginTop: 12 }}>
+        <summary style={{ cursor: 'pointer', fontSize: '0.85rem', color: '#475569' }}>Show grammar</summary>
+        <pre style={{ marginTop: 8, padding: 10, background: '#fafaf7', border: '1px solid #e6e1d3', borderRadius: 6, fontFamily: 'var(--mono)', fontSize: '0.78rem', overflow: 'auto' }}>{
+`⟨L⟩      ::= ⟨T⟩ - ⟨V⟩
+⟨T⟩      ::= ½m₁⟨v₁²⟩ + ½m₂⟨v₂²⟩
+⟨v₁²⟩    ::= L₁² θ̇₁²
+⟨v₂²⟩    ::= L₁² θ̇₁² + L₂²(θ̇₁+θ̇₂)² + 2L₁L₂ cos θ₂ · θ̇₁(θ̇₁+θ̇₂)
+⟨V⟩      ::= m₁g⟨y₁⟩ + m₂g⟨y₂⟩
+⟨y₁⟩     ::= L₁ sin θ₁
+⟨y₂⟩     ::= L₁ sin θ₁ + L₂ sin(θ₁+θ₂)`
+        }</pre>
+      </details>
+    </div>
+  );
+}
+
+/* ═════════════════════════════ Widget 5 ═════════════════════════════ */
+function SanityCheckMCQ() {
+  const QS = [
+    {
+      q: 'Set L₂ → 0. What should the Lagrangian reduce to?',
+      options: [
+        'A free particle of mass m₁+m₂',
+        'A single pendulum of mass m₁+m₂ at radius L₁',
+        'A double pendulum with both masses at the origin',
+        'Zero — both terms vanish'
+      ],
+      correct: 1,
+      explain: 'With L₂=0, mass m₂ sits exactly where m₁ does. T becomes ½(m₁+m₂)L₁²θ̇₁² and V becomes (m₁+m₂)gL₁sinθ₁ — the textbook simple pendulum.'
+    },
+    {
+      q: 'In v₂² = L₁²θ̇₁² + L₂²(θ̇₁+θ̇₂)² + 2L₁L₂cosθ₂·θ̇₁(θ̇₁+θ̇₂), what does the cosθ₂ term represent physically?',
+      options: ['A Coriolis force', 'Inertial coupling between the two joints', 'Gravitational potential', 'A friction term'],
+      correct: 1,
+      explain: 'That cosθ₂ is exactly the off-diagonal entry M₁₂(q) of the configuration-dependent mass matrix — torque at joint 1 "feels" acceleration at joint 2.'
+    },
+    {
+      q: 'Why does link 2\'s tip velocity contain (θ̇₁+θ̇₂) rather than θ̇₂?',
+      options: [
+        'Convention',
+        'Because θ₂ is measured relative to link 1, so link 2\'s orientation in the base frame is θ₁+θ₂',
+        'Because of gravity',
+        'Because the masses are equal'
+      ],
+      correct: 1,
+      explain: 'Joint 2 is a relative angle. Link 2\'s absolute orientation w.r.t. the base is θ₁+θ₂, so its angular velocity in the base frame is the sum of the rates.'
+    },
+    {
+      q: 'Where does the inertia matrix M(q) live in this lecture\'s expressions?',
+      options: [
+        'Hidden in V — the potential energy',
+        'Hidden in T as the coefficients of θ̇₁², θ̇₁θ̇₂, θ̇₂²',
+        'It does not appear until Module 3',
+        'It is the cosθ₂ coefficient by itself'
+      ],
+      correct: 1,
+      explain: 'T = ½ q̇ᵀM(q)q̇. Pulling out coefficients of θ̇₁², θ̇₁θ̇₂, θ̇₂² from the boxed T gives M₁₁, M₁₂=M₂₁, M₂₂ directly.'
+    }
+  ];
+
+  const [picks, setPicks] = useState({}); // qIdx -> pickedIdx
+
+  const score = QS.reduce((acc, q, i) => acc + (picks[i] === q.correct ? 1 : 0), 0);
+  const answered = Object.keys(picks).length;
+
+  return (
+    <div>
+      <p style={{ fontSize: '0.94rem', color: '#475569', margin: '0 0 12px' }}>
+        Pick the option you think is right; you get an explanation either way. <strong>{score}</strong> / {QS.length} correct ({answered} answered).
+      </p>
+      {QS.map((q, qi) => (
+        <div key={qi} style={{ marginBottom: 14, padding: '12px 14px', background: '#fafaf7', border: '1px solid #e6e1d3', borderRadius: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: '0.93rem', marginBottom: 8 }}>{qi + 1}. {q.q}</div>
+          <div style={{ display: 'grid', gap: 6 }}>
+            {q.options.map((opt, oi) => {
+              const picked = picks[qi];
+              const isPicked = picked === oi;
+              const isCorrect = oi === q.correct;
+              const reveal = picked !== undefined;
+              const bg = !reveal ? 'white'
+                       : isCorrect ? '#ecfdf5'
+                       : isPicked ? '#fef2f2' : '#f8fafc';
+              const bd = !reveal ? '#cbd5e1'
+                       : isCorrect ? '#16a34a'
+                       : isPicked ? '#dc2626' : '#cbd5e1';
+              return (
+                <div key={oi}
+                     onClick={() => setPicks(p => ({ ...p, [qi]: oi }))}
+                     style={{
+                       padding: '8px 12px', border: '1px solid ' + bd, background: bg,
+                       borderRadius: 5, cursor: 'pointer', fontSize: '0.9rem',
+                       display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10,
+                       transition: 'all 0.2s'
+                     }}>
+                  <span>{opt}</span>
+                  {reveal && isCorrect && <span className="pill pill-ok">✓</span>}
+                  {reveal && isPicked && !isCorrect && <span className="pill pill-bad">✗</span>}
+                </div>
+              );
+            })}
+          </div>
+          {picks[qi] !== undefined && (
+            <div className={'callout ' + (picks[qi] === q.correct ? 'green' : 'amber')} style={{ marginTop: 8, marginBottom: 0 }}>
+              <strong>{picks[qi] === q.correct ? 'Right.' : 'Look again.'}</strong>{q.explain}
+            </div>
+          )}
+        </div>
+      ))}
+      <button className="btn secondary" onClick={() => setPicks({})}>↺ Reset all</button>
+    </div>
+  );
+}
+
+/* ═════════════════════════════ Widget 6 ═════════════════════════════ */
+function EnergyPlayground() {
+  const [th1, setTh1]   = useState(0.6);
+  const [th2, setTh2]   = useState(1.2);
+  const [dth1, setDth1] = useState(1.0);
+  const [dth2, setDth2] = useState(-0.5);
+  const [m1, setM1]     = useState(1);
+  const [m2, setM2]     = useState(1);
+  const [L1, setL1]     = useState(1);
+  const [L2, setL2]     = useState(1);
+  const [g, setG]       = useState(9.81);
+
+  const c2 = Math.cos(th2);
+  const v1sq = L1 * L1 * dth1 * dth1;
+  const v2sq = L1 * L1 * dth1 * dth1
+             + L2 * L2 * (dth1 + dth2) * (dth1 + dth2)
+             + 2 * L1 * L2 * c2 * dth1 * (dth1 + dth2);
+  const T = 0.5 * m1 * v1sq + 0.5 * m2 * v2sq;
+  const y1 = L1 * Math.sin(th1);
+  const y2 = L1 * Math.sin(th1) + L2 * Math.sin(th1 + th2);
+  const V = m1 * g * y1 + m2 * g * y2;
+  const Lag = T - V;
+
+  // Mass-matrix entries from T = ½ q̇ᵀ M q̇
+  const M11 = m1 * L1 * L1 + m2 * (L1 * L1 + L2 * L2 + 2 * L1 * L2 * c2);
+  const M12 = m2 * (L2 * L2 + L1 * L2 * c2);
+  const M22 = m2 * L2 * L2;
+
+  // SVG arm rendering
+  const scale = 60;
+  const cx = 170, cy = 180;
+  const ex = cx + L1 * Math.cos(th1) * scale;
+  const ey = cy - L1 * Math.sin(th1) * scale;
+  const tx = ex + L2 * Math.cos(th1 + th2) * scale;
+  const ty = ey - L2 * Math.sin(th1 + th2) * scale;
+
+  const Tmax = 30, Vmax = 60;
+  const tFrac = Math.min(100, Math.max(0, (T / Tmax) * 100));
+  const vFrac = Math.min(100, Math.max(0, ((V + Vmax / 2) / Vmax) * 100));
+
+  const Slider = ({ label, value, set, min, max, step }) => (
+    <div style={{ marginBottom: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#475569' }}>
+        <span>{label}</span>
+        <span style={{ fontFamily: 'var(--mono)' }}>{value.toFixed(2)}</span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={value}
+             onChange={e => set(parseFloat(e.target.value))} style={{ width: '100%' }} />
+    </div>
+  );
+
+  return (
+    <div>
+      <p style={{ fontSize: '0.94rem', color: '#475569', margin: '0 0 12px' }}>
+        Drive the joint angles, rates, masses, link lengths and gravity. The arm, energies, and mass-matrix entries update live. Try freezing θ₂ at π/2 — the cos θ₂ coupling vanishes and T splits cleanly between joints.
+      </p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="energy-grid">
+        <div>
+          <svg viewBox="0 0 340 320" style={{ width: '100%', background: '#fafaf7', borderRadius: 6, border: '1px solid #e6e1d3' }}>
+            <line x1="20" y1={cy} x2="320" y2={cy} stroke="#cbd5e1" strokeWidth="1" />
+            <line x1={cx} y1="20" x2={cx} y2="300" stroke="#cbd5e1" strokeWidth="1" />
+            <text x="315" y={cy + 14} fontSize="10" fill="#64748b">x</text>
+            <text x={cx + 5} y="26" fontSize="10" fill="#64748b">y</text>
+
+            {/* gravity arrow */}
+            <line x1="35" y1="40" x2="35" y2="80" stroke="#dc2626" strokeWidth="2" markerEnd="url(#arr)" />
+            <defs>
+              <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0,0 L10,5 L0,10 z" fill="#dc2626" />
+              </marker>
+            </defs>
+            <text x="42" y="60" fontSize="11" fill="#dc2626" fontWeight="700">g</text>
+
+            <line x1={cx} y1={cy} x2={ex} y2={ey} stroke="#2F5496" strokeWidth="6" strokeLinecap="round" style={{ transition: 'all 0.15s' }} />
+            <line x1={ex} y1={ey} x2={tx} y2={ty} stroke="#7c3aed" strokeWidth="6" strokeLinecap="round" style={{ transition: 'all 0.15s' }} />
+            <circle cx={cx} cy={cy} r="6" fill="#1a1d24" />
+            <circle cx={ex} cy={ey} r={4 + 3 * Math.sqrt(m1)} fill="#16a34a" opacity="0.65" style={{ transition: 'all 0.15s' }} />
+            <circle cx={tx} cy={ty} r={4 + 3 * Math.sqrt(m2)} fill="#dc2626" opacity="0.65" style={{ transition: 'all 0.15s' }} />
+            <text x={ex + 10} y={ey - 9} fontSize="11" fill="#16a34a" fontWeight="700">m₁</text>
+            <text x={tx + 10} y={ty - 9} fontSize="11" fill="#dc2626" fontWeight="700">m₂</text>
+          </svg>
+
+          <div style={{ marginTop: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: 3 }}>
+              <span>Kinetic energy <em>T</em></span>
+              <span style={{ fontFamily: 'var(--mono)' }}>{T.toFixed(3)}</span>
+            </div>
+            <div className="energy-bar"><div style={{ width: tFrac + '%', background: '#2F5496' }}></div></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', margin: '6px 0 3px' }}>
+              <span>Potential energy <em>V</em></span>
+              <span style={{ fontFamily: 'var(--mono)' }}>{V.toFixed(3)}</span>
+            </div>
+            <div className="energy-bar"><div style={{ width: vFrac + '%', background: '#c2a25a' }}></div></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', marginTop: 6, padding: '6px 10px', background: '#e8eef8', borderRadius: 4 }}>
+              <span><strong>L = T − V</strong></span>
+              <span style={{ fontFamily: 'var(--mono)' }}>{Lag.toFixed(3)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <Slider label="θ₁" value={th1} set={setTh1} min={-3.14} max={3.14} step={0.02} />
+            <Slider label="θ₂" value={th2} set={setTh2} min={-3.14} max={3.14} step={0.02} />
+            <Slider label="θ̇₁" value={dth1} set={setDth1} min={-3} max={3} step={0.05} />
+            <Slider label="θ̇₂" value={dth2} set={setDth2} min={-3} max={3} step={0.05} />
+            <Slider label="m₁" value={m1} set={setM1} min={0.1} max={5} step={0.1} />
+            <Slider label="m₂" value={m2} set={setM2} min={0.1} max={5} step={0.1} />
+            <Slider label="L₁" value={L1} set={setL1} min={0.2} max={2} step={0.05} />
+            <Slider label="L₂" value={L2} set={setL2} min={0.2} max={2} step={0.05} />
+            <Slider label="g" value={g} set={setG} min={0} max={15} step={0.1} />
+          </div>
+
+          <div style={{ marginTop: 8, padding: '10px 12px', background: '#fafaf7', border: '1px solid #e6e1d3', borderRadius: 6, fontFamily: 'var(--mono)', fontSize: '0.8rem' }}>
+            <div>v₁² = <strong>{v1sq.toFixed(3)}</strong></div>
+            <div>v₂² = <strong>{v2sq.toFixed(3)}</strong></div>
+            <div>cos θ₂ = <strong style={{ color: Math.abs(c2) < 0.05 ? '#dc2626' : '#1a1d24' }}>{c2.toFixed(3)}</strong>
+              {Math.abs(c2) < 0.05 && <span style={{ marginLeft: 6, color: '#dc2626' }}>← coupling near zero</span>}
+            </div>
+          </div>
+
+          <div style={{ marginTop: 8, padding: '10px 12px', background: '#e8eef8', border: '1px solid #2F5496', borderRadius: 6, fontFamily: 'var(--mono)', fontSize: '0.8rem' }}>
+            <div style={{ fontWeight: 700, color: '#2F5496', marginBottom: 4 }}>Mass-matrix entries (from T = ½ q̇ᵀMq̇)</div>
+            <div>M₁₁ = m₁L₁² + m₂(L₁²+L₂²+2L₁L₂ cos θ₂) = <strong>{M11.toFixed(3)}</strong></div>
+            <div>M₁₂ = m₂(L₂² + L₁L₂ cos θ₂) = <strong>{M12.toFixed(3)}</strong></div>
+            <div>M₂₂ = m₂L₂² = <strong>{M22.toFixed(3)}</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
+        <button className="btn secondary" onClick={() => { setTh2(Math.PI / 2); }}>θ₂ → π/2 (decouple)</button>
+        <button className="btn secondary" onClick={() => { setTh2(0); setDth2(0); }}>Extended (θ₂=0, θ̇₂=0)</button>
+        <button className="btn secondary" onClick={() => {
+          setTh1(0.6); setTh2(1.2); setDth1(1.0); setDth2(-0.5);
+          setM1(1); setM2(1); setL1(1); setL2(1); setG(9.81);
+        }}>↺ Reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════ Mounts ═════════════════════════════ */
+const mounts = [
+  ['transform-stepper',     TransformStepper],
+  ['pick-velocity-of-m2',   PickVelocityM2],
+  ['build-v2-squared',      BuildV2Squared],
+  ['derive-lagrangian',     DeriveLagrangian],
+  ['energy-playground',     EnergyPlayground],
+  ['sanity-check-limits',   SanityCheckMCQ]
+];
+
+for (const [id, Comp] of mounts) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = '';
+    ReactDOM.createRoot(el).render(<Comp />);
+  }
+}
+</script>
+
+<script>
+/* ── Side-ToC active-section highlighter ── */
+(function () {
+  var links = Array.from(document.querySelectorAll('.lecture-toc a'));
+  if (!links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    links.forEach(function (a) { a.classList.remove('is-active'); });
+    var ordered = sections.filter(function (s) { return visible.has(s.id); });
+    if (ordered.length && byId[ordered[0].id]) byId[ordered[0].id].classList.add('is-active');
+  }, { rootMargin: '-72px 0px -65% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+<script>
+/* TSI Buddy — vanilla-JS chat widget for the TSI Dynamics course.
+ *
+ * Mount once per page:
+ *
+ *   TSIBuddy.mount({
+ *     systemPrompt: "You are TSI Buddy ...",   // required, the AUDITOR prompt
+ *     contextLabel: "docs/01_F_equals_ma.md",  // shown in the modal subtitle
+ *     openingLine:  "I'm reading the F=ma chapter ..."   // optional pre-fill
+ *   });
+ *
+ * The widget mounts a floating button (top-right of the viewport), a settings
+ * modal where the student pastes their Mistral API key, and a chat panel that
+ * streams responses progressively. API key persists in localStorage.
+ *
+ * Streams via Mistral's SSE endpoint (stream: true). Falls back to a single
+ * non-streaming response if the runtime doesn't expose ReadableStream.
+ *
+ * Designed to coexist with the React+htm widget already inside each hook
+ * page. They use the same localStorage keys so a student who pastes their
+ * key once gets it everywhere.
+ */
+(function () {
+  'use strict';
+
+  if (window.TSIBuddy && window.TSIBuddy.__loaded) return;
+
+  var KEY_LS    = 'tsi_mistral_key';
+  var MODEL_LS  = 'tsi_mistral_model';
+  var ENABLE_LS = 'tsi_buddy_enabled';
+
+  function lsGet(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : v; } catch (e) { return fb; } }
+  function lsSet(k, v)  { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Styles (injected once) ---------- */
+  var STYLE = `
+.tsi-buddy-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 9000;
+  background: rgba(255,255,255,0.95); color: #1a3a5c;
+  border: 1px solid #cbd5e1; border-radius: 999px;
+  padding: 8px 14px; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tsi-buddy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+.tsi-buddy-btn .tsi-buddy-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #94a3b8;
+}
+.tsi-buddy-btn.tsi-on .tsi-buddy-dot { background: #16a34a; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.tsi-buddy-btn.tsi-on { border-color: #16a34a; color: #166534; }
+
+.tsi-buddy-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.tsi-buddy-overlay[hidden] { display: none; }
+
+.tsi-buddy-modal {
+  background: white; border-radius: 12px;
+  max-width: 480px; width: 100%;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+.tsi-buddy-modal h3 { margin: 0 0 8px; font-size: 1.2rem; color: #0f172a; }
+.tsi-buddy-modal .tsi-buddy-sub { color: #64748b; font-size: 0.92em; margin: 0 0 16px; }
+.tsi-buddy-modal label { display: block; margin-top: 14px; font-weight: 600; color: #334155; font-size: 0.9em; }
+.tsi-buddy-modal input[type="password"],
+.tsi-buddy-modal select,
+.tsi-buddy-modal textarea {
+  margin-top: 6px; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b; background: #f8fafc;
+}
+.tsi-buddy-modal input[type="password"] { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; }
+.tsi-buddy-modal .tsi-buddy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 14px; cursor: pointer; }
+.tsi-buddy-modal .tsi-buddy-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.tsi-buddy-modal button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 16px; border-radius: 6px; border: none; cursor: pointer;
+}
+.tsi-buddy-modal .tsi-buddy-secondary { background: white; color: #475569; border: 1px solid #cbd5e1; }
+.tsi-buddy-modal .tsi-buddy-primary   { background: #1565c0; color: white; }
+.tsi-buddy-modal .tsi-buddy-primary:hover { background: #0d47a1; }
+.tsi-buddy-modal .tsi-buddy-secondary:hover { background: #f1f5f9; }
+.tsi-buddy-modal small { color: #64748b; }
+
+.tsi-buddy-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 9000;
+  width: 380px; max-width: calc(100vw - 28px);
+  height: 540px; max-height: calc(100vh - 80px);
+  background: white; border: 1px solid #cbd5e1; border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  font: 400 14px/1.55 'Inter', system-ui, sans-serif; color: #1e293b;
+}
+.tsi-buddy-chat[hidden] { display: none; }
+.tsi-buddy-chat-head {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e4d8c 100%);
+  color: white; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tsi-buddy-chat-head strong { font-size: 0.95em; }
+.tsi-buddy-chat-head small  { color: rgba(255,255,255,0.78); font-size: 0.78em; display: block; margin-top: 2px; }
+.tsi-buddy-chat-head button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 4px 8px; border-radius: 4px; }
+.tsi-buddy-chat-head button:hover { background: rgba(255,255,255,0.16); }
+.tsi-buddy-chat-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+  background: #f8fafc;
+}
+.tsi-buddy-bubble {
+  margin: 8px 0; padding: 10px 13px; border-radius: 10px;
+  word-wrap: break-word; overflow-wrap: anywhere; font-size: 0.93em;
+}
+.tsi-buddy-bubble.tsi-user      { background: #e3f2fd; color: #1a3a5c; border-bottom-right-radius: 2px; margin-left: 32px; }
+.tsi-buddy-bubble.tsi-assistant { background: white; border: 1px solid #e2e8f0; margin-right: 32px; }
+.tsi-buddy-bubble .tsi-buddy-role { font-size: 0.72em; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tsi-buddy-bubble.tsi-thinking { color: #94a3b8; font-style: italic; }
+/* Markdown typography inside bubbles (rendered for assistant replies). */
+.tsi-buddy-bubble .tsi-buddy-text > * { margin: 0; }
+.tsi-buddy-bubble .tsi-buddy-text > * + * { margin-top: 6px; }
+.tsi-buddy-bubble .tsi-buddy-text p { line-height: 1.55; }
+.tsi-buddy-bubble .tsi-buddy-text strong { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text em { font-style: italic; }
+.tsi-buddy-bubble .tsi-buddy-text ul,
+.tsi-buddy-bubble .tsi-buddy-text ol { padding-left: 22px; }
+.tsi-buddy-bubble .tsi-buddy-text li { margin: 2px 0; }
+.tsi-buddy-bubble .tsi-buddy-text code {
+  background: rgba(15,23,42,0.06); padding: 0 4px; border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.92em;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 8px 10px; overflow-x: auto;
+}
+.tsi-buddy-bubble .tsi-buddy-text pre code { background: transparent; padding: 0; }
+.tsi-buddy-bubble .tsi-buddy-text blockquote {
+  border-left: 3px solid #cbd5e1; padding: 2px 10px; color: #475569;
+  background: #f8fafc; border-radius: 4px;
+}
+.tsi-buddy-bubble .tsi-buddy-text h1,
+.tsi-buddy-bubble .tsi-buddy-text h2,
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-weight: 700; color: #0f172a; }
+.tsi-buddy-bubble .tsi-buddy-text h1 { font-size: 1.05em; }
+.tsi-buddy-bubble .tsi-buddy-text h2 { font-size: 1.0em; }
+.tsi-buddy-bubble .tsi-buddy-text h3,
+.tsi-buddy-bubble .tsi-buddy-text h4 { font-size: 0.95em; }
+.tsi-buddy-bubble .tsi-buddy-text hr { border: none; border-top: 1px solid #e2e8f0; }
+.tsi-buddy-bubble .tsi-buddy-text a { color: #1565c0; text-decoration: underline; }
+.tsi-buddy-error {
+  background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca;
+  padding: 8px 10px; border-radius: 6px; margin: 8px 14px; font-size: 0.85em;
+}
+.tsi-buddy-chat-foot {
+  border-top: 1px solid #e2e8f0; padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: white;
+}
+.tsi-buddy-chat-foot textarea {
+  flex: 1 1 auto; resize: none; min-height: 36px; max-height: 140px;
+  padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+  font: inherit; color: #1e293b;
+}
+.tsi-buddy-chat-foot button {
+  font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 14px; border-radius: 6px; border: none; cursor: pointer;
+  background: #1565c0; color: white;
+}
+.tsi-buddy-chat-foot button:disabled { background: #94a3b8; cursor: default; }
+.tsi-buddy-chat-foot button:hover:not(:disabled) { background: #0d47a1; }
+.tsi-buddy-startbar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0; background: #fafbfc;
+}
+.tsi-buddy-startbar button {
+  flex: 1 1 auto; font: 600 13px/1 'Inter', system-ui, sans-serif;
+  padding: 9px 12px; border-radius: 6px; border: 1px solid #1565c0;
+  background: white; color: #1565c0; cursor: pointer;
+}
+.tsi-buddy-startbar button:hover { background: #e3f2fd; }
+@media (max-width: 480px) {
+  .tsi-buddy-chat { width: calc(100vw - 16px); right: 8px; bottom: 8px; height: calc(100vh - 90px); }
+}
+`;
+
+  function injectStyles() {
+    if (document.getElementById('tsi-buddy-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tsi-buddy-styles';
+    s.textContent = STYLE;
+    document.head.appendChild(s);
+  }
+
+  /* ---------- Markdown rendering ---------- */
+  // The buddy returns markdown (bold, italic, lists, code, headers).
+  // We lazily load `marked` from CDN and render assistant replies through it.
+  // Until marked is loaded (or if it fails to load), we fall back to plain
+  // text with newlines preserved as <br>.
+  function loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (window.__tsiMarkedLoading) return window.__tsiMarkedLoading;
+    window.__tsiMarkedLoading = new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+      s.async = true;
+      s.onload  = function () { resolve(window.marked || null); };
+      s.onerror = function () { resolve(null); };
+      document.head.appendChild(s);
+    });
+    return window.__tsiMarkedLoading;
+  }
+
+  // Light DOM sanitiser: walks the parsed tree and removes any tags / attrs
+  // that could execute code if the model went rogue. Allow-listing all
+  // safe markdown tags; strip everything else's dangerous attributes.
+  function sanitizeHTML(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var deny = ['script', 'style', 'iframe', 'object', 'embed', 'form',
+                'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    deny.forEach(function (tag) {
+      Array.from(div.getElementsByTagName(tag)).forEach(function (n) { n.remove(); });
+    });
+    Array.from(div.querySelectorAll('*')).forEach(function (n) {
+      Array.from(n.attributes).forEach(function (a) {
+        var name = a.name.toLowerCase();
+        if (name.indexOf('on') === 0) { n.removeAttribute(a.name); return; }
+        if (name === 'href' || name === 'src' || name === 'srcset') {
+          var v = (a.value || '').replace(/\s/g, '');
+          if (/^javascript:/i.test(v) || /^data:text\/html/i.test(v)) {
+            n.removeAttribute(a.name);
+          }
+        }
+      });
+      // External links: open in new tab safely
+      if (n.tagName === 'A' && n.getAttribute('href')) {
+        n.setAttribute('target', '_blank');
+        n.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    return div.innerHTML;
+  }
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderContent(text, isAssistant) {
+    var div = document.createElement('div');
+    div.className = 'tsi-buddy-text';
+    var raw = text == null ? '' : String(text);
+    if (isAssistant && window.marked && window.marked.parse) {
+      try {
+        var html = window.marked.parse(raw, { breaks: true, gfm: true, mangle: false, headerIds: false });
+        div.innerHTML = sanitizeHTML(html);
+        return div;
+      } catch (e) { /* fall through to plain text */ }
+    }
+    // Plain-text fallback (user messages, or assistant before marked loads)
+    div.innerHTML = escapeHTML(raw).replace(/\n/g, '<br>');
+    return div;
+  }
+
+  /* ---------- Streaming Mistral call ---------- */
+  function callMistralChat(apiKey, model, systemPrompt, messages, onDelta) {
+    return fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || 'mistral-small-latest',
+        temperature: 0.4,
+        max_tokens: 1500,
+        stream: true,
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages)
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Mistral ' + r.status + ': ' + (t || 'request failed'));
+        });
+      }
+      if (!r.body || !r.body.getReader) {
+        return r.json().then(function (data) {
+          if (!data.choices || !data.choices[0]) throw new Error('Mistral returned no choices.');
+          var full = (data.choices[0].message.content || '').trim();
+          if (onDelta) onDelta(full);
+          return full;
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      var full = '';
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return full.trim();
+          buf += decoder.decode(res.value, { stream: true });
+          var lines = buf.split('\n');
+          buf = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var ln = lines[i];
+            if (ln.indexOf('data: ') !== 0) continue;
+            var s = ln.substring(6).trim();
+            if (s === '[DONE]') return full.trim();
+            try {
+              var d = JSON.parse(s);
+              if (d.choices && d.choices[0] && d.choices[0].delta && d.choices[0].delta.content) {
+                full += d.choices[0].delta.content;
+                if (onDelta) onDelta(full);
+              }
+            } catch (e) {}
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* ---------- DOM helpers ---------- */
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') n.addEventListener(k.substring(2), attrs[k]);
+      else if (attrs[k] === true) n.setAttribute(k, '');
+      else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  /* ---------- Mount ---------- */
+  function mount(opts) {
+    if (!opts || !opts.systemPrompt) {
+      console.warn('TSIBuddy.mount: systemPrompt required');
+      return null;
+    }
+    injectStyles();
+
+    // ---- State (closure-scoped) ----
+    var state = {
+      apiKey:  lsGet(KEY_LS, ''),
+      model:   lsGet(MODEL_LS, 'mistral-small-latest'),
+      enabled: lsGet(ENABLE_LS, '') === '1',
+      messages: [],     // {role, content}
+      pending: '',
+      status:  'idle',  // idle | loading | error
+      error:   '',
+      open:    false    // chat panel visible
+    };
+    if (state.apiKey) state.enabled = true; // having a key implies enabled
+
+    // ---- Floating button ----
+    var btnDot   = el('span', { class: 'tsi-buddy-dot' });
+    var btnLabel = el('span', null, '🤖 TSI Buddy');
+    var btnState = el('span', null, '');
+    var btn = el('button', {
+      class: 'tsi-buddy-btn',
+      title: 'TSI Buddy — your study companion',
+      onclick: function () {
+        if (state.apiKey) toggleChat();
+        else openSettings();
+      }
+    }, [btnDot, btnLabel, btnState]);
+    document.body.appendChild(btn);
+
+    // ---- Settings modal ----
+    var keyInput = el('input', {
+      type: 'password', autocomplete: 'off',
+      placeholder: 'paste your Mistral key (starts with "sk-…")',
+      value: state.apiKey,
+      oninput: function (e) { state.apiKey = e.target.value; }
+    });
+    var modelSelect = el('select', {
+      onchange: function (e) { state.model = e.target.value; }
+    }, ['mistral-small-latest', 'mistral-medium-latest', 'mistral-large-latest'].map(function (m) {
+      var o = el('option', { value: m }, m + (m === 'mistral-small-latest' ? ' (recommended)' : ''));
+      if (m === state.model) o.selected = true;
+      return o;
+    }));
+    var enableBox = el('input', {
+      type: 'checkbox',
+      onchange: function (e) { state.enabled = !!e.target.checked; }
+    });
+    enableBox.checked = state.enabled;
+    var modalCard = el('div', { class: 'tsi-buddy-modal', onclick: function (e) { e.stopPropagation(); } }, [
+      el('h3', null, '🤖 TSI Buddy'),
+      el('p', { class: 'tsi-buddy-sub' }, opts.contextLabel
+        ? ('You are reading: ' + opts.contextLabel + '. The buddy reads the page context and helps you understand worked examples — it does not give you the answer to your homework.')
+        : 'A study companion. The buddy helps you understand the worked examples on this page.'),
+      el('label', { class: 'tsi-buddy-toggle' }, [enableBox, el('span', null, 'Enable TSI Buddy on this page')]),
+      el('label', null, 'Mistral API key'),
+      keyInput,
+      el('label', null, 'Model'),
+      modelSelect,
+      el('p', null, [el('small', null, 'Get a free key at '), el('a', { href: 'https://console.mistral.ai/api-keys/', target: '_blank' }, 'console.mistral.ai'), el('small', null, '. The key stays in your browser only.')]),
+      el('div', { class: 'tsi-buddy-actions' }, [
+        el('button', { class: 'tsi-buddy-secondary', onclick: function () { state.apiKey = ''; keyInput.value = ''; } }, 'Clear key'),
+        el('button', { class: 'tsi-buddy-primary',   onclick: function () { saveSettings(); } }, 'Save')
+      ])
+    ]);
+    var modalOverlay = el('div', { class: 'tsi-buddy-overlay', hidden: true, onclick: function () { closeSettings(); } }, [modalCard]);
+    document.body.appendChild(modalOverlay);
+
+    // ---- Chat panel ----
+    var chatBody = el('div', { class: 'tsi-buddy-chat-body' });
+    var chatErr  = el('div', { class: 'tsi-buddy-error', hidden: true });
+    var inputBox = el('textarea', {
+      rows: 1, placeholder: 'Ask about this page…',
+      onkeydown: function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendUserMessage();
+        }
+      },
+      oninput: function (e) { state.pending = e.target.value; sendBtn.disabled = !canSend(); autosize(e.target); }
+    });
+    var sendBtn = el('button', {
+      onclick: function () { sendUserMessage(); }
+    }, 'Send');
+    sendBtn.disabled = true;
+
+    var startBar = el('div', { class: 'tsi-buddy-startbar' });
+
+    var chatFoot = el('div', { class: 'tsi-buddy-chat-foot' }, [inputBox, sendBtn]);
+
+    var chatHead = el('div', { class: 'tsi-buddy-chat-head' }, [
+      el('div', null, [
+        el('strong', null, '🤖 TSI Buddy'),
+        opts.contextLabel ? el('small', null, opts.contextLabel) : null
+      ]),
+      el('div', null, [
+        el('button', { title: 'Settings', onclick: function () { openSettings(); } }, '⚙'),
+        el('button', { title: 'Reset chat', onclick: function () { resetChat(); } }, '↺'),
+        el('button', { title: 'Close', onclick: function () { closeChat(); } }, '×')
+      ])
+    ]);
+
+    var chatPanel = el('div', { class: 'tsi-buddy-chat', hidden: true }, [
+      chatHead, startBar, chatErr, chatBody, chatFoot
+    ]);
+    document.body.appendChild(chatPanel);
+
+    // ---- Render ----
+    function refreshButton() {
+      if (state.apiKey && state.enabled) { btn.classList.add('tsi-on'); btnState.textContent = 'ON'; }
+      else                                { btn.classList.remove('tsi-on'); btnState.textContent = 'off'; }
+    }
+    function autosize(t) {
+      t.style.height = 'auto';
+      t.style.height = Math.min(140, Math.max(36, t.scrollHeight)) + 'px';
+    }
+    function canSend() {
+      return !!(state.apiKey && state.enabled && state.pending.trim() && state.status !== 'loading');
+    }
+    function refreshSendBtn() { sendBtn.disabled = !canSend(); }
+    function refreshStartBar() {
+      while (startBar.firstChild) startBar.removeChild(startBar.firstChild);
+      if (state.messages.length > 0) { startBar.style.display = 'none'; return; }
+      startBar.style.display = 'flex';
+      if (opts.openingLine) {
+        startBar.appendChild(el('button', {
+          onclick: function () { startWith(opts.openingLine); }
+        }, '🚀 Start with: "' + opts.openingLine.substring(0, 50) + (opts.openingLine.length > 50 ? '…' : '') + '"'));
+      }
+      startBar.appendChild(el('button', {
+        onclick: function () { startWith('Help me understand the worked example on this page.'); }
+      }, '💡 Generic walkthrough'));
+    }
+    function refreshChat() {
+      while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+      state.messages.forEach(function (m, i) {
+        var thinking = (state.status === 'loading' && i === state.messages.length - 1 && m.role === 'assistant' && !m.content);
+        var displayText = m.content || (thinking ? '…' : '');
+        var contentDiv = thinking
+          ? (function () { var d = document.createElement('div'); d.className = 'tsi-buddy-text'; d.textContent = '…'; return d; })()
+          : renderContent(displayText, m.role === 'assistant');
+        var bubble = el('div', { class: 'tsi-buddy-bubble tsi-' + m.role }, [
+          el('div', { class: 'tsi-buddy-role' }, m.role === 'assistant' ? '🤖 TSI Buddy' : '🧑 You'),
+          contentDiv
+        ]);
+        if (thinking) bubble.classList.add('tsi-thinking');
+        chatBody.appendChild(bubble);
+      });
+      if (state.status === 'error' && state.error) {
+        chatErr.textContent = 'API error: ' + state.error;
+        chatErr.hidden = false;
+      } else {
+        chatErr.hidden = true;
+      }
+      // scroll to bottom
+      requestAnimationFrame(function () { chatBody.scrollTop = chatBody.scrollHeight; });
+      refreshStartBar();
+      refreshSendBtn();
+    }
+
+    // ---- Behaviour ----
+    function openSettings()  { modalOverlay.hidden = false; setTimeout(function () { keyInput.focus(); }, 50); }
+    function closeSettings() { modalOverlay.hidden = true; }
+    function saveSettings() {
+      lsSet(KEY_LS, state.apiKey || '');
+      lsSet(MODEL_LS, state.model || 'mistral-small-latest');
+      lsSet(ENABLE_LS, state.enabled ? '1' : '');
+      closeSettings();
+      refreshButton();
+      if (state.apiKey && state.enabled) openChat();
+    }
+    function openChat()  { state.open = true; chatPanel.hidden = false; refreshChat(); inputBox.focus(); }
+    function closeChat() { state.open = false; chatPanel.hidden = true; }
+    function toggleChat(){ state.open ? closeChat() : openChat(); }
+    function resetChat() { state.messages = []; state.pending = ''; state.status = 'idle'; state.error = ''; inputBox.value = ''; refreshChat(); }
+    function startWith(line) {
+      inputBox.value = line;
+      state.pending = line;
+      autosize(inputBox);
+      sendUserMessage();
+    }
+    function sendUserMessage() {
+      var draft = (state.pending || '').trim();
+      if (!draft || !state.apiKey || state.status === 'loading') return;
+      var userMsg = { role: 'user', content: draft };
+      state.messages.push(userMsg);
+      state.messages.push({ role: 'assistant', content: '' });
+      state.pending = ''; inputBox.value = ''; autosize(inputBox);
+      state.status = 'loading'; state.error = '';
+      refreshChat();
+      callMistralChat(state.apiKey, state.model, opts.systemPrompt, state.messages.slice(0, -1), function (full) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant') {
+          last.content = full;
+          refreshChat();
+        }
+      }).then(function () {
+        state.status = 'idle';
+        refreshChat();
+      }).catch(function (err) {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === 'assistant' && !last.content) state.messages.pop();
+        state.status = 'error';
+        state.error = (err && err.message) || String(err);
+        refreshChat();
+      });
+    }
+
+    refreshButton();
+    refreshChat();
+
+    // Lazily fetch marked so assistant replies render markdown. If it
+    // arrives mid-conversation, re-render so any plain-text bubbles get
+    // upgraded to formatted ones.
+    loadMarked().then(function (m) { if (m) refreshChat(); });
+
+    // First-time arrival: nudge the modal open if no key set
+    // (but not too aggressively — only on explicit click of the button).
+
+    return {
+      open: openChat, close: closeChat, toggle: toggleChat,
+      reset: resetChat,
+      destroy: function () {
+        try { document.body.removeChild(btn); } catch (e) {}
+        try { document.body.removeChild(modalOverlay); } catch (e) {}
+        try { document.body.removeChild(chatPanel); } catch (e) {}
+      }
+    };
+  }
+
+  window.TSIBuddy = { mount: mount, __loaded: true };
+})();
+
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  if (!window.TSIBuddy) {
+    console.warn('TSI Buddy did not initialise — inlined script may be malformed.');
+    return;
+  }
+  var SYS = [
+    "You are the TSI Buddy for the Robotics course, lecture 7 — the worked example: 2-link planar arm with tip masses.",
+    "",
+    "You are a warm, plain-spoken study companion. The student is sitting with this lecture open: a seven-step derivation that walks from homogeneous transformation matrices T1, T2 all the way to the Lagrangian L = T - V for a planar 2-link arm with point masses m1 and m2 at the link tips.",
+    "Your job is to scaffold understanding — not to give answers. Help the student see WHY each step exists, where the cos(theta_2) inertial coupling comes from, why link 2's velocity carries the SUM (theta_dot_1 + theta_dot_2), and where the mass matrix M(q) is hiding inside T.",
+    "Anchor every reply to a specific section or one of the live widgets when relevant — invite them back to the page rather than restating it.",
+    "Reply in 60-180 words, plain language, no jargon dump.",
+    "",
+    "# GROUND TRUTH",
+    "",
+    "THE FORMULAS / KEY DEFINITIONS",
+    "Positions: x1 = L1 cos(theta_1), y1 = L1 sin(theta_1); x2 = L1 cos(theta_1) + L2 cos(theta_1+theta_2), y2 = L1 sin(theta_1) + L2 sin(theta_1+theta_2).",
+    "Squared speeds: v1^2 = L1^2 theta_dot_1^2; v2^2 = L1^2 theta_dot_1^2 + L2^2 (theta_dot_1+theta_dot_2)^2 + 2 L1 L2 cos(theta_2) * theta_dot_1 (theta_dot_1+theta_dot_2).",
+    "Energies: T = (1/2) m1 v1^2 + (1/2) m2 v2^2; V = m1 g L1 sin(theta_1) + m2 g [L1 sin(theta_1) + L2 sin(theta_1+theta_2)]; Lagrangian L = T - V.",
+    "Identity used: cos(alpha - beta) = cos(alpha) cos(beta) + sin(alpha) sin(beta), with alpha = theta_1+theta_2, beta = theta_1, gives cos(theta_2).",
+    "",
+    "WHY (the intuition)",
+    "Transformation matrices stack rotations on translations; the third column of each T is literally where each link's tip sits in the base frame. Differentiate, square, and sin^2+cos^2=1 collapses two terms while one cross term survives — carrying the cos(theta_2) fingerprint of inertial coupling between the joints. The Lagrangian compresses the whole mechanism into a single scalar function of (theta, theta_dot).",
+    "",
+    "THE GOTCHA",
+    "Link 2's angular velocity in the world frame is (theta_dot_1 + theta_dot_2), NOT theta_dot_2. theta_2 is measured relative to link 1, so link 2's orientation in the base frame is theta_1+theta_2, and the chain rule pulls out the SUM of joint rates every time you differentiate sin/cos of (theta_1+theta_2). Drop that grouping and you lose the cross term — and with it the cos(theta_2) coupling.",
+    "",
+    "BOUNDARY CASES",
+    "- theta_2 = 0, theta_dot_2 = 0: arm fully extended, behaves as one rigid rod — v2^2 = (L1+L2)^2 theta_dot_1^2.",
+    "- L2 -> 0 (or m2 -> 0): collapses to a single pendulum of mass m1+m2 at radius L1.",
+    "- theta_dot_1 = 0, theta_1 = 0: only link 2 moves about a horizontal link 1 — v2^2 reduces to L2^2 theta_dot_2^2.",
+    "- Static configurations (theta_dot = 0): T = 0, so L = -V — useful for finding equilibria later.",
+    "",
+    "EXPLAIN-IT-LIKE-THIS",
+    "Imagine holding a fishing rod (link 1) with a second rod (link 2) hinged at its tip. Twist your wrist (move theta_1) and the far tip swings on an arc whose radius depends on how the second rod is currently folded — i.e. on cos(theta_2). Folded straight (theta_2 = 0) the tip is far and fast; folded back on itself (theta_2 = pi) it nearly cancels. That 'how folded am I' factor is exactly the cos(theta_2) that survived the algebra.",
+    "",
+    "CURRICULUM CONTEXT",
+    "Came before: homogeneous transformation matrices and forward kinematics, the chain rule for time derivatives, T = (1/2) m v^2 and V = m g h. Coming next: feed L into the Euler-Lagrange equations (d/dt)(dL/dtheta_dot_i) - dL/dtheta_i = tau_i to recover the canonical form M(q) q_ddot + C(q,q_dot) q_dot + g(q) = tau. The cos(theta_2) surviving today becomes M_12(q) of the mass matrix next week.",
+    "",
+    "COMMON STUDENT QUESTIONS",
+    "- Why (theta_dot_1 + theta_dot_2)? Because theta_2 is measured relative to link 1, so link 2's world orientation is theta_1+theta_2 and its angular velocity in the base frame is the sum of the joint rates.",
+    "- Where did cos(theta_2) come from? From sin(theta_1) sin(theta_1+theta_2) + cos(theta_1) cos(theta_1+theta_2) = cos((theta_1+theta_2) - theta_1) = cos(theta_2) by the angle-difference identity.",
+    "- Why use homogeneous transforms when simple geometry would do? They scale identically to 6-DOF arms — same workflow, more matrices. Building the habit now pays off later.",
+    "- Does V depend on joint speeds? No, only on configuration (theta_1, theta_2). That is what decouples gravity in Euler-Lagrange.",
+    "- What if mass is along the link, not at the tip? Replace each tip position with the link's centre-of-mass position and add (1/2) I omega^2 for rotation. The structure of the derivation is unchanged.",
+    "",
+    "PRO-INSIGHT",
+    "The cos(theta_2) surviving in v2^2 today is the same coefficient that becomes the off-diagonal entry M_12(q) of the mass matrix next week. When Module 3 asks 'where does inertial coupling come from?', the honest answer is 'from one trigonometric identity, applied here.'",
+    "",
+    "# PEDAGOGY GUARDS",
+    "- NEVER reveal a quiz or self-check answer. If the student asks which option is correct, ask them which one feels right and why; walk them through the test, not the answer.",
+    "- NEVER spell out a derivation in full. Hand them one move at a time, then ask what they see next.",
+    "- Point them at the live widgets on this page rather than narrating: the transform stepper (section 1), the velocity picker (section 3), the v2^2 tile-builder (section 4), the energy playground (section 5), the grammar derivation (section 7), the self-check (section 8).",
+    "- If a student says 'is this right?', ask them to show one line of working before you confirm or correct.",
+    "- Quote the exact lecture phrase or widget name when you reference one — never paraphrase the page back at them.",
+    "",
+    "# LANGUAGE",
+    "Default to English. If the student writes in a clearly non-English language, reply in their language and append a short '*EN summary:*' line of 1-2 sentences in English at the end. A single non-English word inside an otherwise English message is not a signal — keep replying in English.",
+    "",
+    "# REPLY LENGTH",
+    "60-180 words. Plain language. Anchored quotes from the lecture or widget when relevant. No filler, no apology framing, no closing pleasantries."
+  ];
+  window.TSIBuddy.mount({
+    contextLabel: 'Robotics · Lecture 07',
+    openingLine: "I'm reading this lecture — could you help me build intuition for the main idea before I dive into the activities?",
+    systemPrompt: Array.isArray(SYS) ? SYS.join('\n') : SYS
+  });
+});
+</script>
+
+</body>
+</html>
